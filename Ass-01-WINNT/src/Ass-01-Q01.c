@@ -9,6 +9,7 @@
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
 	FILE * fp;
+	float* coeff_values;
 
 	//	The first four bytes contain an integer n which is in stored in little endian format which represents the number
 	//	of filter coefficients.
@@ -25,22 +26,23 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 				//else return -1
 
 	fp = fopen(filename, "rb");	//open file for reading
-	int coeff_num = 0;	//? little endian
+	int coeff_num;	//? little endian
 	//coeff_num_p = coeff_num;
+	fscanf(fp, "%i", &coeff_num);
 
-	float coeff_values = *malloc(coeff_num * 8);
+	coeff_values = (float *) malloc(8 * coeff_num);
 	if(coeff_values == NULL){
 		printf("Memory allocation failed, File : %s", filename);
 		return -1;
 	}
 	//store values here
-	if(){//!eof
+	if(1){//!eof
 		return -1;
 	}
-	else if(){//if last float is not full
+	else if(1){//if last float is not full
 		return -1;
 	}
-	else if(){//something else
+	else if(1){//something else
 
 	}
 	return 0;
