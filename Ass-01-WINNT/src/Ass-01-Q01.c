@@ -8,8 +8,7 @@
 
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
-	FILE * fp;
-	double* coeff_values;
+	FILE * file_p;
 	int coeff_num;	//? little endian
 
 	//	The first four bytes contain an integer n which is in stored in little endian format which represents the number
@@ -26,36 +25,42 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 					//
 				//else return -1
 
-	fp = fopen(filename, "rb");	//open file for reading
+	file_p = fopen(filename, "rb");	//open file for reading
+
+	if(file_p == 0){
+		printf("ERROR: File unknown \n");
+		return -1;
+	}
 
 	//coeff_num_p = coeff_num;
-	fscanf(fp, "%i", &coeff_num);
+	fread(&coeff_num, 4, 1, file_p);
 
-	printf("coeff_num : %i", coeff_num);
+	fseek(file_p, 0, SEEK_END);
+	long size_file = ftell(file_p);
 
-	coeff_values = (double *) malloc(8 * coeff_num);
+	if((size_file - 4) % coeff_num != 0){
+		printf("ERROR: File size incorrect for declaration, declaration: %i, file size: %ld \n",coeff_num, size_file);
+		return -1;
+	}
+	else{
+		printf("coeff_num : %i \n", coeff_num);
+		printf("File size: %ld \n", size_file);
+	}
+	fseek(file_p, 4, SEEK_SET);
+
+	double * coeff_values = (double *) malloc(8 * coeff_num);
 	if(coeff_values == 0){
-		printf("Memory allocation failed, File : %s", filename);
+		printf("ERROR: Memory allocation failed, File : %s \n", filename);
 		return -1;
 	}
 
 	//store values here
 	for(int i = 0; i < coeff_num; i++){
-		fscanf(fp, "%d", &);
+		fread(&coeff_values[i], 8, 1, file_p);
 
+		printf("Value of : %i : %lf \n", i, coeff_values[i]);
 	}
 
-	if(1){//!eof
-		free(coeff_values);
-		return -1;
-	}
-	else if(1){//if last float is not full
-		free(coeff_values);
-		return -1;
-	}
-	else if(1){//something else
-
-	}
 	return 0;
 	//
 	// WRITE CODE HERE
