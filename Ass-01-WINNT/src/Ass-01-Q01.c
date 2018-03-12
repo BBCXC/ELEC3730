@@ -8,6 +8,7 @@
 
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
+	FILE * fp;
 
 	//	The first four bytes contain an integer n which is in stored in little endian format which represents the number
 	//	of filter coefficients.
@@ -23,9 +24,9 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 					//
 				//else return -1
 
-	FILE *fopen( const char * filename, "rb");	//open file for reading
+	fp = fopen(filename, "rb");	//open file for reading
 	int coeff_num = 0;	//? little endian
-	coeff_num_p = coeff_num;
+	//coeff_num_p = coeff_num;
 
 	float coeff_values = *malloc(coeff_num * 8);
 	if(coeff_values == NULL){
