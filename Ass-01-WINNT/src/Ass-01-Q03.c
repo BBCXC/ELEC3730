@@ -29,21 +29,37 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 			circular_buffer[idiot] = 0.0;	//TODO change this
 		}
 
-		Question3();
+		/*---------------------------------------Question 2---------------------------------------*/
 
-		something.bytes
+		pcm_wavefile_header_t header;
+		char filename_output[100];
+		char *data;
+		printf("-> Question 2...\n");
+		printf("--> %20s: ",input_wavefilename);
+		if (read_pcm_wavefile(&header, &data, input_wavefilename)==0){
+			if (strcmp(input_wavefilename,"8k16bitpcm.wav")==0){
+				snprintf(filename_output,100,"%s-%s",input_wavefilename, input_wavefilename);
+				printf("--> Write %s", filename_output);
+				write_pcm_wavefile(&header, data, filename_output);
+			}
+			free(data);
+		}
 
-
+		/*---------------------------------------Question 2---------------------------------------*/
 
 		int j = 0;
 		int i = 0;
 		double y[1];
 		for(i=0; i<1; i++){
-			circular_buffer[0] = coeff_values[i];
-			for(j=0; j<coeff_num; j++){
-				y[i] = y[i] + circular_buffer[j] * u[(i - j) % coeff_num];
+			if(i < coeff_num){
+				circular_buffer[0] = coeff_values[i];
 			}
-			//Move buffer along
+			for(j=0; j<coeff_num; j++){
+				output_file[i] = output_file[i] + circular_buffer[j] * data[(i - j) % coeff_num];
+			}
+			if(i < coeff_num){
+				void move_buffer(circular_buffer, coeff_num);
+			}
 		}
 		printf("\n");
 		//
@@ -53,4 +69,10 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 	}
 
 	  return 1;
+}
+
+void move_buffer(double *circular_buffer, int *coeff_num){
+	for(int k=coeff_num; k>0; k--){
+		circular_buffer[k] = circular_buffer[k-1];
+	}
 }
