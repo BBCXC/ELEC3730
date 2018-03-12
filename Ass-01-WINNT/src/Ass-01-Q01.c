@@ -15,6 +15,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	if(file_p == 0){
 		printf("ERROR: File unknown \n");
+		fclose(file_p);
 		return -1;
 	}
 
@@ -25,6 +26,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	if((size_file - sizeof(int)) % coeff_num != 0){
 		printf("ERROR: File size incorrect for declaration, declaration: %i, file size: %ld \n",coeff_num, size_file);
+		fclose(file_p);
 		return -1;
 	}
 
@@ -36,9 +38,11 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	fseek(file_p, sizeof(int), SEEK_SET);
 
-	double * coeff_values = (double *) malloc(8 * coeff_num);
+	double* coeff_values = (double*) malloc(8 * coeff_num);
 	if(coeff_values == 0){
 		printf("ERROR: Memory allocation failed, File : %s \n", filename);
+		fclose(file_p);
+		free(coeff_values);
 		return -1;
 	}
 
@@ -49,8 +53,8 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		printf("Value of : %i : %lf \n", i, coeff_values[i]);
 	}
 
-	coeff_num_p = &coeff_num;
-	coeff_values_p = &coeff_values;
-
+	*coeff_num_p = coeff_num;
+	*coeff_values_p = &coeff_values[0];
+	fclose(file_p);
 	return 0;
 }

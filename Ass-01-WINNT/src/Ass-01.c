@@ -46,6 +46,7 @@ int Ass_01_Main(void)
 	  }
       i++;
     }
+	free(coeff_values);
   }
 
   // Question 2
