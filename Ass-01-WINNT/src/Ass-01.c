@@ -87,6 +87,7 @@ int Ass_01_Main(void)
 	    printf("--> Written %s.\n", filename_output);
 	  }
     }
+	printf("\n");
   }
 
   // Question 4
