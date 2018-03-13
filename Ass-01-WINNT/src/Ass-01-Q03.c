@@ -1,78 +1,66 @@
 //     $Date: 2017-03-13 08:12:38 +1100 (Mon, 13 Mar 2017) $
-// $Revision: 821 $
-//   $Author: Peter $
+//     $Revision: 821 $
+//     $Author: Peter $
 
 #include "Ass-01.h"
 
-int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename)
-{
+int move_buffer(double* circular_buffer, int *coeff_num){
+	for(int k=*coeff_num; k>0; k--){
+		circular_buffer[k] = circular_buffer[k-1];	//Rotate buffer to right
+	}
+	return 0;
+}
 
+int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename){
 
 	int coeff_num = 0;
 	double *coeff_values; // Array of coefficient values
 
-	printf("--> %19s: ", filter_filename);
-	if (read_coefficients(&coeff_num, &coeff_values, filter_filename)==0){
-		printf("coeff_num = %d \n", coeff_num);
-		if (coeff_num > 0){
-			printf("coeff_values[0] = %lf \n", coeff_values[0]);
-			printf("coeff_values[1] = %lf \n", coeff_values[1]);
-			printf("coeff_values[2] = %lf \n", coeff_values[2]);
-			printf("coeff_values[3] = %lf \n", coeff_values[3]);
+	if (read_coefficients(&coeff_num, &coeff_values, filter_filename)==0){	//If success in reading coefficients
+		if (coeff_num <= 0) return -1;	//No coefficients in filter
+
+		pcm_wavefile_header_t header;
+		char *data;
+		if (read_pcm_wavefile(&header, &data, input_wavefilename)==0){
+			if (strcmp(input_wavefilename,"8k16bitpcm.wav")!=0) return -1;	//Error?? TODO figure this out
 		}
 		else{
+			printf("%3s ERROR: Unable to read '.wav' file\n\n", " ");	//Unable to read wavefile
 			return -1;
 		}
-		double* circular_buffer = (double*) malloc(8 * coeff_num);
 
-		for(int idiot=0; idiot<coeff_num; idiot++){
+		//If you got here then things seem good so far
+		double* circular_buffer = (double*) malloc(8 * coeff_num);	//Allocate enough memory for the circular buffer
+
+		for(int idiot=0; idiot<coeff_num; idiot++){	//Initialise array to 0.0 for circular buffing
 			circular_buffer[idiot] = 0.0;	//TODO change this
 		}
 
-		/*---------------------------------------Question 2---------------------------------------*/
-
-		pcm_wavefile_header_t header;
-		char filename_output[100];
-		char *data;
-		printf("-> Question 2...\n");
-		printf("--> %20s: ",input_wavefilename);
-		if (read_pcm_wavefile(&header, &data, input_wavefilename)==0){
-			if (strcmp(input_wavefilename,"8k16bitpcm.wav")==0){
-				snprintf(filename_output,100,"%s-%s",input_wavefilename, input_wavefilename);
-				printf("--> Write %s", filename_output);
-				write_pcm_wavefile(&header, data, filename_output);
-			}
-			free(data);
-		}
-
-		/*---------------------------------------Question 2---------------------------------------*/
-
 		int j = 0;
 		int i = 0;
-		double y[1];
-		for(i=0; i<1; i++){
-			if(i < coeff_num){
-				circular_buffer[0] = coeff_values[i];
+		double output_current;	//Current output value to be inserted into data of output wavefile
+
+		int Wave_length = 0;	//TODO this should contain a value
+
+		for(i=0; i<Wave_length; i++){	//For each sample in the file
+			if(i < coeff_num){	//Load the buffer with the appropriate coefficient
+				circular_buffer[0] = coeff_values[i];	//Set first buffer value to next coefficient
 			}
-			for(j=0; j<coeff_num; j++){
-				output_file[i] = output_file[i] + circular_buffer[j] * data[(i - j) % coeff_num];
+			for(j=0; j<coeff_num; j++){	//For each coefficient filer the input file
+				output_current = output_current + circular_buffer[j] * data[(i - j) % coeff_num];	//Itterate through each buffer value
 			}
-			if(i < coeff_num){
-				void move_buffer(circular_buffer, coeff_num);
+			write_pcm_wavefile(&header, data, output_wavefilename);	//Write the new data to the new file TODO
+			if(i < coeff_num){	//If buffer isn't full
+				if(move_buffer(circular_buffer, &coeff_num)!=0){	//Rotate the buffer
+					printf("%3s ERROR: Move buffer failed\n", " ");	//Log error if buffer failed to rotate
+					return -1;
+				}
 			}
 		}
 		printf("\n");
-		//
-		// WRITE CODE HERE
-		//
-		printf("CODE TO BE WRITTEN...\n");
-	}
 
-	  return 1;
-}
-
-void move_buffer(double *circular_buffer, int *coeff_num){
-	for(int k=coeff_num; k>0; k--){
-		circular_buffer[k] = circular_buffer[k-1];
 	}
+	else return -1;	//Not successful in reading coefficients
+
+	return 0;	//Success
 }

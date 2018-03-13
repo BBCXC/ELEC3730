@@ -33,15 +33,15 @@ int Ass_01_Main(void)
   {
 	int coeff_num;
 	double *coeff_values; // Array of coefficient values
-	printf("-> Question 1...\n");
+	printf("--> Question 1...\n");
 	i=0;
 	while (filename_filter[i] != NULL)
     {
-      printf("--> %19s: ",filename_filter[i]);
+      printf("--> File name %4s = %s: \n", " ", filename_filter[i]);
 	  if (read_coefficients(&coeff_num, &coeff_values, filename_filter[i])==0)
 	  {
-	    printf("coeff_num = %d", coeff_num);
-	    if (coeff_num > 0) printf(", coeff_values[0] = %f", coeff_values[0]);
+		//printf("Array size %5s = %d", " ", coeff_num);
+	    //if (coeff_num > 0) printf(", coeff_values[0] = %f\n", coeff_values[0]);
 	    printf("\n");
 	  }
       i++;
@@ -71,6 +71,7 @@ int Ass_01_Main(void)
 	  }
       i++;
     }
+	printf("\n");
   }
 
   // Question 3
@@ -79,7 +80,7 @@ int Ass_01_Main(void)
 	printf("-> Question 3...\n");
 	for (i=0;i<4;i++)
     {
-      printf("--> %17s: ",filename_filter[i]);
+	  printf("--> File name %4s = %s: \n", " ", filename_filter[i]);
       snprintf(filename_output,100,"%s-%s",filename_filter[i],filename_audio[0]);
 	  if (filter(filename_filter[i], filename_audio[0], filename_output)==0)
 	  {
