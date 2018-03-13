@@ -10,6 +10,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
 	FILE * file_p;	//File
 	int coeff_num;	//Little endian? TODO
+	int pretty_print = 0;
 
 	file_p = fopen(filename, "rb");	//Open file for reading
 
@@ -57,6 +58,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	fread(coeff_values, 8, coeff_num, file_p);	//Read the value into the array
 
+	if(pretty_print == 1){
 		//Pretty printing not really needed
 		for(int i=0; i<coeff_num; i=i+3){	//Loop in groups of 3
 			for(int k=i; k<i+3; k++){	//For each group of 3
@@ -68,6 +70,8 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 			printf("\n");	//Print the line end for the group
 		}
 		printf("\n");
+	}
+	else printf("Not pretty print");
 
 
 

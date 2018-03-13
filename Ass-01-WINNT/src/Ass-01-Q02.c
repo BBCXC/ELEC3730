@@ -12,6 +12,7 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
 	  // WRITE CODE HERE
 	  //
 	  printf("CODE TO BE WRITTEN QUESTION 2...\n\n");
+	  printf("I got here 7");
 	  return 1;
 }
 
@@ -21,5 +22,6 @@ int write_pcm_wavefile(pcm_wavefile_header_t *header_p, char *data, char *filena
   // WRITE CODE
   //
   printf("CODE TO BE WRITTEN QUESTION 2...\n\n");
+  printf("I got here 6");
   return 1;
 }

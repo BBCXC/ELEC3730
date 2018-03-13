@@ -9,6 +9,7 @@ int move_buffer(double* circular_buffer, int *coeff_num){
 		circular_buffer[k] = circular_buffer[k-1];	//Rotate buffer to right
 	}
 	return 0;
+	printf("I got here 2");
 }
 
 int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename){
@@ -26,6 +27,9 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 		}
 		else{
 			printf("%3s ERROR: Unable to read '.wav' file\n\n", " ");	//Unable to read wavefile
+			free(data);
+			free(coeff_values);
+			printf("I got here 1");
 			return -1;
 		}
 
@@ -49,14 +53,24 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 			if(i < coeff_num){	//If buffer isn't full
 				if(move_buffer(circular_buffer, &coeff_num)!=0){	//Rotate the buffer
 					printf("%3s ERROR: Move buffer failed\n", " ");	//Log error if buffer failed to rotate
+					free(data);
+					free(coeff_values);
+					free(circular_buffer);
+					printf("I got here 5");
 					return -1;
 				}
 			}
 		}
+		free(circular_buffer);
 		printf("\n");
 
 	}
-	else return -1;	//Not successful in reading coefficients
-
+	else{
+		free(coeff_values);
+		printf("I got here 3");
+		return -1;	//Not successful in reading coefficients
+	}
+	free(coeff_values);
 	return 0;	//Success
+	printf("I got here 4");
 }
