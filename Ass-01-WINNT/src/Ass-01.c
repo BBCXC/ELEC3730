@@ -41,7 +41,7 @@ int Ass_01_Main(void)
 	  if (read_coefficients(&coeff_num, &coeff_values, filename_filter[i])==0)
 	  {
 		//printf("Array size %5s = %d", " ", coeff_num);
-	    //if (coeff_num > 0) printf(", coeff_values[0] = %f\n", coeff_values[0]);
+	    if (coeff_num > 0) printf("coeff_values[0] = %f\n", coeff_values[0]);
 	    printf("\n");
 	  }
       i++;

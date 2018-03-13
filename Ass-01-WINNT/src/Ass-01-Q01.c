@@ -20,10 +20,19 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		return -1;	//Return Failed
 	}
 
-	fread(&coeff_num, sizeof(int), 1, file_p);	//Read in first 4 bytes
-
 	fseek(file_p, 0, SEEK_END);	//Go to the end of the file
 	long size_file = ftell(file_p);	//Count bytes in remaining file
+
+	if(size_file <= 4){	//If file size too small
+			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_file);
+			fclose(file_p);	//Close file
+			printf("\n");
+			return -1;	//Return Failed
+	}
+
+	fseek(file_p, 0, SEEK_SET);	//Go back to position
+
+	fread(&coeff_num, sizeof(int), 1, file_p);	//Read in first 4 bytes
 
 	if((size_file - sizeof(int)) % coeff_num != 0){	//If remaining bytes doesn't add up TODO this should be (((size_file - 4)/coeff_num) == sizeof(double))
 		printf("%3s ERROR: File size incorrect for declaration, declaration: %i, file size: %ld \n"," ", coeff_num, size_file);
@@ -34,8 +43,6 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	else printf("--> Array size %3s = %d\n", " ", coeff_num);	//All seems good print size of array
 
-	fseek(file_p, sizeof(int), SEEK_SET);	//Go back to position after int
-
 	double* coeff_values = (double*) calloc(coeff_num, 8);	//Allocate memory
 	if(coeff_values == 0){	//If malloc fails returns NULL ptr
 		printf("%3s ERROR: Memory allocation failed, File : %s \n"," ", filename);	//Log Error
@@ -45,24 +52,22 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		return -1;	//Return Failed
 	}
 
-	//Store values here
+	//Store
 	printf("--> Array contents =\n");
-	for(int i = 0; i < coeff_num; i++){	//For the number of expected values
-		fread(&coeff_values[i], 8, 1, file_p);	//Read the value into the array
-	}
 
+	fread(coeff_values, 8, coeff_num, file_p);	//Read the value into the array
 
-	//Pretty printing not really needed
-	for(int i=0; i<coeff_num; i=i+3){	//Loop in groups of 3
-		for(int k=i; k<i+3; k++){	//For each group of 3
-			if(k<coeff_num){	//Check we haven't accidentally passed further than the array
-				if(coeff_values[k]<0)printf("%3s %lf", " ", coeff_values[k]);	//If negative use less spaces
-				else printf("%4s %lf", " ", coeff_values[k]);	//If positive use more spaces
+		//Pretty printing not really needed
+		for(int i=0; i<coeff_num; i=i+3){	//Loop in groups of 3
+			for(int k=i; k<i+3; k++){	//For each group of 3
+				if(k<coeff_num){	//Check we haven't accidentally passed further than the array
+					if(coeff_values[k]<0)printf("%3s %lf", " ", coeff_values[k]);	//If negative use less spaces
+					else printf("%4s %lf", " ", coeff_values[k]);	//If positive use more spaces
+				}
 			}
+			printf("\n");	//Print the line end for the group
 		}
-		printf("\n");	//Print the line end for the group
-	}
-	printf("\n");
+		printf("\n");
 
 
 
