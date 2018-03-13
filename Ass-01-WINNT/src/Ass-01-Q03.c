@@ -30,11 +30,7 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 		}
 
 		//If you got here then things seem good so far
-		double* circular_buffer = (double*) malloc(8 * coeff_num);	//Allocate enough memory for the circular buffer
-
-		for(int idiot=0; idiot<coeff_num; idiot++){	//Initialise array to 0.0 for circular buffing
-			circular_buffer[idiot] = 0.0;	//TODO change this
-		}
+		double* circular_buffer = (double*) calloc(coeff_num, 8);	//Allocate enough memory for the circular buffer to 0.0
 
 		int j = 0;
 		int i = 0;

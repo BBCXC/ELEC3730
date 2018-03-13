@@ -36,7 +36,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	fseek(file_p, sizeof(int), SEEK_SET);	//Go back to position after int
 
-	double* coeff_values = (double*) malloc(8 * coeff_num);	//Allocate memory
+	double* coeff_values = (double*) calloc(coeff_num, 8);	//Allocate memory
 	if(coeff_values == 0){	//If malloc fails returns NULL ptr
 		printf("%3s ERROR: Memory allocation failed, File : %s \n"," ", filename);	//Log Error
 		fclose(file_p);	//Close file
