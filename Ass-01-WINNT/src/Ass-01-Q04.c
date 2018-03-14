@@ -23,7 +23,84 @@
  *
  */
 
+/*for (two times){
+ * if second time(){malloc array of words}
+ * 	token = strchr(inp, delim)
+ * 	if token == prevtoken +1 //only moved by one must be another space
+ * 	if token > prevtoken+1 {length of word = token - previous token
+ * 							numwords++
+ * 							if second time { arrayofwords[numwords] = malloc length of word }
+ * 							}
+ *
+ * 	}
+ */
+
+
 int string_parser(char *inp, char **array_of_words_p[]){
+	char Current_char;
+	char Previous_char = ' ';
+	int Num_words = 0;
+	char Word_temp;
+	int Length_word = 0;
+
+	for(int i=0; i<strlen(inp); i++){
+		Current_char = inp[i];
+		if(Current_char == '\0') return 0;	//No words in string
+		else if(Current_char == ' ' && Previous_char == ' '){
+			//Multiple spaces in a row
+		}
+		else if(Current_char != ' ' && Previous_char == ' '){
+			//Found new word
+			Num_words++;
+			printf("Found new word\n");
+		}
+		else{
+			//Currently in word, don't do anything
+		}
+		Previous_char = Current_char;
+	}
+
+	*array_of_words_p = (char**) malloc(sizeof(char) * Num_words);
+	for(int j = 0; j < Num_words; j++){
+		array_of_words_p[j] = NULL;
+	}
+
+	Previous_char = ' ';
+
+	for(int i=0; i<strlen(inp); i++){
+		Current_char = inp[i];
+				if(Current_char == '\0') return 0;	//No words in string
+				else if(Current_char == ' ' && Previous_char == ' '){
+					//Multiple spaces in a row
+				}
+				else if(Current_char != ' ' && Previous_char == ' '){
+					//Found new word
+					Num_words++;
+					Length_word = 1;
+					printf("Found new word\n");
+				}
+				else if(Current_char == ' ' && Previous_char != ' '){
+					//Found end of word
+					Word_temp = (char) malloc(sizeof(char) * (Length_word + 1));
+					for(int k=(i); ; k++){
+
+					}
+					//array_of_words_p[Num_words] = &Word_temp;
+					printf("Found Whole Word :%s\n", &Word_temp);
+				}
+				else{
+					//Currently in word
+					Length_word++;
+				}
+				Previous_char = Current_char;
+	}
+
+	return 0;
+}
+
+
+
+/*int string_parser(char *inp, char **array_of_words_p[]){
 	int num_words = 0;
 	char character;
 	int character_count = 0;
@@ -98,7 +175,7 @@ int string_parser(char *inp, char **array_of_words_p[]){
 			}
 		}
 	}
-}
+}*/
 
 
 /*typedef struct{
