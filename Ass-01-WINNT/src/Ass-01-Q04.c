@@ -4,7 +4,7 @@
 
 #include "Ass-01.h"
 
-typedef struct{
+/*typedef struct{
 	unsigned char num_words;
 	char** str;
 } string_t;
@@ -69,77 +69,84 @@ int string_parser(char *inp, char **array_of_words_p[]){
 	string_t result = tokeniser(inp, ' ', 0);
 	*array_of_words_p = result.str;
 	return result.num_words;
-}
+}*/
 
-//int string_parser(char *inp, char **array_of_words_p[]){
-//	printf("\nCODE TO BE WRITTEN...\n");
-//
-//	//read each character in string
-//	    char prev_space = 0;
-//	    char word_start = 1;
-//	    int No_words = 0;
-//		int index = 0;
-//		char mem;
-//		char Next_char;
-//
-//		mem = inp[index];
-//		while(mem != NULL){
-//			index++;
-//			mem = inp[index];
-//		}
-//
-//	    for(int k=0; k<2; k++){
-//	    	if(k>0){
-//	    		*array_of_words_p = (char**) malloc(sizeof(char) * No_words);
-//	    	}
-//
-//			for(int i=0; i<index-1; ++i){
-//				//printf("%c\n", inp[i]);
-//
-//				Next_char = inp[i];
-//
-//				if(Next_char == 0){    //NULL
-//					if(No_words == 0){
-//						printf("No words in string\n");
-//						return No_words; //?
-//					}
-//					else{
-//						//Words were found
-//						return No_words;
-//					}
-//				}
-//				else if(isspace(Next_char) != 0){
-//					prev_space = 1;
-//
-//					//printf("Found a space\n");
-//					word_start = 1;
-//					if(No_words<0){
-//						printf("Full word found %d\n", No_words);
-//					}
-//				}
-//
-//				//If i get to here must be a character
-//				else{
-//					if(word_start == 1){
-//						//Store number of words
-//						No_words++;
-//						printf("Start of word found\n");
-//						word_start = 0;
-//
-//						//Store stream position
-//						if(k>0){
-//							*array_of_words_p[No_words] = inp;
-//						}
-//						prev_space = 0;
-//					}
-//					else{
-//						//currently in a word already, do nothing
-//						prev_space = 0;
-//						word_start = 0;
-//					}
-//				}
-//			}
-//	    }
-//    printf("Success");
-//	return No_words;
-//}
+int string_parser(char *inp, char **array_of_words_p[]){
+	printf("\nCODE TO BE WRITTEN...\n");
+
+	//read each character in string
+	    char prev_space = 0;
+	    char word_start = 0;
+	    int No_words = 0;
+		int index = 0;
+		char mem;
+		char Next_char;
+		int word_begin = 0;
+		int current_position = 0;
+
+	    for(int k=0; k<2; k++){
+	    	if(k>0){
+	    		*array_of_words_p = (char**) malloc(sizeof(char) * No_words);
+	    	}
+
+			for(int i=0; i<20; ++i){
+				//printf("%c\n", inp[i]);
+
+				Next_char = inp[i];
+
+				if(Next_char == 0){    //NULL
+					if(No_words == 0){
+						printf("No words in string\n");
+						return No_words; //?
+					}
+					else{
+						//Words were found
+						return No_words;
+					}
+				}
+				if(isspace(Next_char) == 0){
+					prev_space = 1;
+
+					//printf("Found a space\n");
+					word_start = 1;
+					if(No_words<1){
+						printf("Full word found %d\n", No_words);
+					}
+					if(k>0){
+						for(int j=word_begin; j<i; j++){
+							*array_of_words_p[No_words][j] = inp[j];
+							printf("inp %s", &inp[j]);
+						}
+						printf("\n");
+					}
+				}
+
+				//If i get to here must be a character
+				else{
+					if(word_start == 1){
+						//Store number of words
+						No_words++;
+						printf("Start of word found, :%s\n", &inp[i]);
+						word_start = 0;
+
+						//Store stream position
+						if(k>0){
+							//*array_of_words_p[No_words] = inp;
+						}
+						prev_space = 0;
+						word_begin = current_position;
+						printf("word_begin %i", word_begin);
+						current_position++;
+					}
+					else{
+						//currently in a word already, do nothing
+						current_position++;
+						prev_space = 0;
+						word_start = 0;
+					}
+				}
+			}
+	    }
+    printf("Success");
+	return No_words;
+}
