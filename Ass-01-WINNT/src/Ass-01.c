@@ -107,7 +107,7 @@ int Ass_01_Main(void)
 	    {
 		  printf("---> %d: '%s'\n", j+1, (array_of_words)[j]);
 	    }
-   	    free(array_of_words[0]);
+   	    //free(array_of_words[0]);
 		free(array_of_words);
 	  }
       i++;

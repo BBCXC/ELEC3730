@@ -36,6 +36,13 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 		//If you got here then things seem good so far
 		double* circular_buffer = (double*) calloc(coeff_num, 8);	//Allocate enough memory for the circular buffer to 0.0
 
+		if(circular_buffer == 0){	//If malloc fails returns NULL ptr
+			printf("%3s ERROR: Memory allocation failed circular_buffer \n", " ");	//Log Error
+			printf("\n");
+			free(circular_buffer);	//TODO Shouldn't be needed
+			return -1;	//Return Failed
+		}
+
 		int j = 0;
 		int i = 0;
 		double output_current;	//Current output value to be inserted into data of output wavefile
