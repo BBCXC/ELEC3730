@@ -9,9 +9,54 @@ typedef struct{
 	char** str;
 } string_t;
 
+char* spacefinder(char* str2, char delim){
+	int k;
+
+//	for(int i=0; i<strlen(str2); i++){
+//		if(str2[i] == delim){
+//			for(k=i; k<strlen(str2); k++){
+//				if(str2[k] == delim){
+//					for(int j=k; j<strlen(str2); j++){
+//						if(str2[j] != delim){
+//							return &str2[j];
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	for(int i=0; i<strlen(str2); i++){
+		if(str2[i] != delim){
+			for(k=i; k<strlen(str2); k++){
+				if(str2[k] == delim){
+					for(int j=k; j<strlen(str2); j++){
+						if(str2[j] != delim){
+							return &str2[j-1];
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+
+//	for(k=0; k<strlen(str2); k++){
+//			if(str2[k] == delim){
+//				for(int j=k; j<strlen(str2); j++){
+//					if(str2[j] != delim){
+//						return &str2[j];
+//					}
+//				}
+//			}
+//		}
+	return NULL; //This probably needs to be somethig
+}
+
 string_t tokeniser(char* str, char delim, unsigned char index){
-	char* token = strchr(str, delim);
-	if(token) *token = '\0';
+	char* token = spacefinder(str, delim);
+	//if(token) *token = '\0';
 	string_t mem = (token == NULL)
 				 ? (string_t){index + 1, malloc((index + 1) * sizeof(char*))}
 				 : tokeniser(token+1, delim, index+1);
@@ -21,40 +66,80 @@ string_t tokeniser(char* str, char delim, unsigned char index){
 
 int string_parser(char *inp, char **array_of_words_p[]){
 
-//	printf("\nCODE TO BE WRITTEN...\n");
-//
-//	//char prev_space = 0;
-//	//char word_start = 1;
-//	int No_words = 0;
-//	//char current_position = 0;
-//
-//	//char Next_char;
-//	char* token;
-//	char str[] = "Hello this is my string -ish";
-//	char delim = ' ';
-//	const char *result = inp;
-//
-//
-//	while((result = strchr(result, delim)) != NULL) {
-//	    printf("Found '%c' starting at '%s'\n", delim, result);
-//	    ++result; // Increment result, otherwise we'll find target at the same location
-//	}
-//
-//	//*array_of_words_p = (char**) malloc(No_words * sizeof(char));
-//
-//	for(const char* ptr = inp; ;) {
-//		const char* begin = ptr;
-//		const char* end = strchr(ptr, delim);
-//
-//		ptr = end;
-//	}
-//
-//	printf("inp %s\n", inp);
-//	token = strchr(str, delim);
-//	printf("token %s\n", token);
-//	token = strchr(inp, delim);
-
 	string_t result = tokeniser(inp, ' ', 0);
 	*array_of_words_p = result.str;
 	return result.num_words;
 }
+
+//int string_parser(char *inp, char **array_of_words_p[]){
+//	printf("\nCODE TO BE WRITTEN...\n");
+//
+//	//read each character in string
+//	    char prev_space = 0;
+//	    char word_start = 1;
+//	    int No_words = 0;
+//		int index = 0;
+//		char mem;
+//		char Next_char;
+//
+//		mem = inp[index];
+//		while(mem != NULL){
+//			index++;
+//			mem = inp[index];
+//		}
+//
+//	    for(int k=0; k<2; k++){
+//	    	if(k>0){
+//	    		*array_of_words_p = (char**) malloc(sizeof(char) * No_words);
+//	    	}
+//
+//			for(int i=0; i<index-1; ++i){
+//				//printf("%c\n", inp[i]);
+//
+//				Next_char = inp[i];
+//
+//				if(Next_char == 0){    //NULL
+//					if(No_words == 0){
+//						printf("No words in string\n");
+//						return No_words; //?
+//					}
+//					else{
+//						//Words were found
+//						return No_words;
+//					}
+//				}
+//				else if(isspace(Next_char) != 0){
+//					prev_space = 1;
+//
+//					//printf("Found a space\n");
+//					word_start = 1;
+//					if(No_words<0){
+//						printf("Full word found %d\n", No_words);
+//					}
+//				}
+//
+//				//If i get to here must be a character
+//				else{
+//					if(word_start == 1){
+//						//Store number of words
+//						No_words++;
+//						printf("Start of word found\n");
+//						word_start = 0;
+//
+//						//Store stream position
+//						if(k>0){
+//							*array_of_words_p[No_words] = inp;
+//						}
+//						prev_space = 0;
+//					}
+//					else{
+//						//currently in a word already, do nothing
+//						prev_space = 0;
+//						word_start = 0;
+//					}
+//				}
+//			}
+//	    }
+//    printf("Success");
+//	return No_words;
+//}
