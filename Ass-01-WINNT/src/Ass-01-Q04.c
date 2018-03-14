@@ -4,6 +4,103 @@
 
 #include "Ass-01.h"
 
+
+/*
+ * string with words seperated by space char
+ * allocate memory for pointer size of number of words 		(char*) malloc(sizeof(char*) * num_words);
+ * allocate memory for each word 							(char) malloc(sizeof(word) + char)
+ *
+ * array_of_words_p[word[0], word[1], word[2]]
+ * char* word[0] = malloc(sizeof(char) * wordlen[0]);
+ *
+ * return max index of word[index]
+ *
+ * case - 1 word
+ * case - no words - space
+ * 				   - null
+ * case - multiple spaces
+ *
+ *
+ */
+
+int string_parser(char *inp, char **array_of_words_p[]){
+	int num_words = 0;
+	char character;
+	int character_count = 0;
+	char* Words;
+	int prev_c_space = 0;
+
+	for(int i=0; i<strlen(inp); i++){
+		//Go through and find how many words
+		character = inp[i];
+		if(character == '\0'){
+			//No word in input, end function
+			return 0;
+		}
+		if(isspace(character) !=0){
+			//Character is white space
+			//3 conditions, previous character was white space => still whitespace
+			//				previous character was letter => end of word
+			//				??
+			prev_c_space = 1;
+			if(prev_c_space == 0){
+				//if previous character was not space
+				//Found end of word.
+				Words[num_words] = (char*) malloc(sizeof(char) * character_count);
+				character_count = 0;
+			}
+		}
+		else{
+			//Character is a character
+			if(prev_c_space == 1){
+				//Previous was WS => new word
+				num_words++;	//New word
+				character_count++;	//New character of current word
+				prev_c_space = 0; //Reset
+			}
+			else{
+				//Currently in word
+				character_count++;
+			}
+		}
+	}
+
+	for(int i=0; i<strlen(inp); i++){
+		//Go through and find the word string and store
+		character = inp[i];
+		if(character == '\0'){
+			//No word in input, end function
+			return 0;
+		}
+		if(isspace(character) !=0){
+			//Character is white space
+			//3 conditions, previous character was white space => still whitespace
+			//				previous character was letter => end of word
+			//				??
+			if(prev_c_space == 0){
+				//if previous character was not space
+				//Found end of word.
+				character_count = 0;
+			}
+		}
+		else{
+			//Character is a character
+			if(prev_c_space == 1){
+				//Previous was WS => new word
+				Words[character_count] = character;
+				num_words++;	//New word
+				character_count++;	//New character of current word
+			}
+			else{
+				//Currently in word
+				Words[character_count] = character;
+				character_count++;
+			}
+		}
+	}
+}
+
+
 /*typedef struct{
 	unsigned char num_words;
 	char** str;
@@ -71,7 +168,7 @@ int string_parser(char *inp, char **array_of_words_p[]){
 	return result.num_words;
 }*/
 
-int string_parser(char *inp, char **array_of_words_p[]){
+/*int string_parser(char *inp, char **array_of_words_p[]){
 	printf("\nCODE TO BE WRITTEN...\n");
 
 	//read each character in string
@@ -149,4 +246,4 @@ int string_parser(char *inp, char **array_of_words_p[]){
 	    }
     printf("Success");
 	return No_words;
-}
+}*/

@@ -12,6 +12,17 @@ int move_buffer(double* circular_buffer, int *coeff_num){
 	printf("I got here 2");
 }
 
+
+/*
+ *  Handle different lengths of coefficient files
+ *  Negative inputs will be 0,
+ *  yk must be converted back to a fixed point number before writing	()yk
+ *  only read in number of uk values needed at a time
+ *  current circular buffer can be improved
+ *  whole data structure can be improved
+ */
+
+
 int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename){
 
 	int coeff_num = 0;
