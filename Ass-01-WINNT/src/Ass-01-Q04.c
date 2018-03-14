@@ -40,8 +40,9 @@ int string_parser(char *inp, char **array_of_words_p[]){
 	char Current_char;
 	char Previous_char = ' ';
 	int Num_words = 0;
-	char Word_temp;
+	char* Word_temp;
 	int Length_word = 0;
+	int Index = 0;
 
 	for(int i=0; i<strlen(inp); i++){
 		Current_char = inp[i];
@@ -81,12 +82,14 @@ int string_parser(char *inp, char **array_of_words_p[]){
 				}
 				else if(Current_char == ' ' && Previous_char != ' '){
 					//Found end of word
-					Word_temp = (char) malloc(sizeof(char) * (Length_word + 1));
-					for(int k=(i); ; k++){
-
+					*Word_temp = (char*) malloc(sizeof(char) * (Length_word + 1));
+					Index = 0;
+					for(int k=(i-Length_word); k<i; k++){
+						Word_temp[Index] = inp[k];
+						Index++;
 					}
 					//array_of_words_p[Num_words] = &Word_temp;
-					printf("Found Whole Word :%s\n", &Word_temp);
+					printf("Found Whole Word :%s\n", Word_temp);
 				}
 				else{
 					//Currently in word
