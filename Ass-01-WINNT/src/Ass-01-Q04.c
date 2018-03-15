@@ -44,6 +44,10 @@ int string_parser(char *inp, char **array_of_words_p[]){
 	int Length_word = 0;
 	int Index = 0;
 
+	printf("\n");
+
+	//printf("Printing here %s\n", *array_of_words_p[0]);
+
 	for(int i=0; i<strlen(inp); i++){
 		Current_char = inp[i];
 		if(Current_char == '\0') return 0;	//No words in string
@@ -61,44 +65,69 @@ int string_parser(char *inp, char **array_of_words_p[]){
 		Previous_char = Current_char;
 	}
 
-	*array_of_words_p = (char**) malloc(sizeof(char) * Num_words);
-	for(int j = 0; j < Num_words; j++){
-		array_of_words_p[j] = NULL;
+
+//	*array_of_words_p = (char**) malloc(sizeof(char*) * Num_words);
+//	for(int j = 0; j < Num_words; j++){
+//		array_of_words_p[j] = NULL;
+//	}
+	char* str = (char*) malloc(sizeof(char*));
+	str = "My String Is This";
+	//array_of_words_p[0] = &str;
+	//array_of_words_p[1] = &str;
+	printf("str : %s\n", str);
+
+	array_of_words_p = (char***) calloc(Num_words, sizeof(char*));
+
+	for(int i=0; i<3; i++){
+		array_of_words_p[i] = malloc(sizeof(char*));
+		*array_of_words_p[i] = str;
+		printf("Printing here, %i, %s\n", i, *array_of_words_p[i]);
 	}
+	//printf("Printing here %s\n", *array_of_words_p[0]);
+	//*array_of_words_p[0] = str;
+	//*array_of_words_p[1] = str;
+	//printf("Printing here 2 %s\n", *array_of_words_p[0]);
 
-	Previous_char = ' ';
 
-	for(int i=0; i<strlen(inp); i++){
-		Current_char = inp[i];
-				if(Current_char == '\0') return 0;	//No words in string
-				else if(Current_char == ' ' && Previous_char == ' '){
-					//Multiple spaces in a row
-				}
-				else if(Current_char != ' ' && Previous_char == ' '){
-					//Found new word
-					Num_words++;
-					Length_word = 1;
-					printf("Found new word\n");
-				}
-				else if(Current_char == ' ' && Previous_char != ' '){
-					//Found end of word
-					*Word_temp = (char*) malloc(sizeof(char) * (Length_word + 1));
-					Index = 0;
-					for(int k=(i-Length_word); k<i; k++){
-						Word_temp[Index] = inp[k];
-						Index++;
-					}
-					//array_of_words_p[Num_words] = &Word_temp;
-					printf("Found Whole Word :%s\n", Word_temp);
-				}
-				else{
-					//Currently in word
-					Length_word++;
-				}
-				Previous_char = Current_char;
-	}
 
-	return 0;
+
+
+//	Previous_char = ' ';
+//	Num_words = 0;
+//
+//	for(int i=0; i<strlen(inp); i++){
+//		Current_char = inp[i];
+//				if(Current_char == '\0') return Num_words;
+//				else if(Current_char == ' ' && Previous_char == ' '){
+//					//Multiple spaces in a row
+//				}
+//				else if(Current_char != ' ' && Previous_char == ' '){
+//					//Found new word
+//					Num_words++;
+//					Length_word = 1;
+//					//printf("Found new word\n");
+//				}
+//				else if(Current_char == ' ' && Previous_char != ' '){
+//					//Found end of word
+//					Word_temp = (char*) malloc(sizeof(char) * (Length_word + 1));
+//					Index = 0;
+//					for(int k=(i-Length_word); k<i; k++){
+//						Word_temp[Index] = inp[k];
+//						Index++;
+//					}
+//					Word_temp[Index] = '\0';
+//					//array_of_words_p[Num_words] = &Word_temp;
+//					printf("Found Whole Word :%s\n", Word_temp);
+//				}
+//				else{
+//					//Currently in word
+//					Length_word++;
+//				}
+//				Previous_char = Current_char;
+//				//No words in string
+//	}
+
+	return Num_words;
 }
 
 
@@ -188,24 +217,17 @@ int string_parser(char *inp, char **array_of_words_p[]){
 
 char* spacefinder(char* str2, char delim){
 	int k;
+	if(strlen(str2) < 1){
+		return 0;
+	}
+	for(int i=0; i<strlen(str2)-1; i++){
+		if(str2[i] == delim && str2[i+1] != delim){
+			//a
+			if(i>1) return &str2[i];
+			else return &str2[i+1];
 
-//	for(int i=0; i<strlen(str2); i++){
-//		if(str2[i] == delim){
-//			for(k=i; k<strlen(str2); k++){
-//				if(str2[k] == delim){
-//					for(int j=k; j<strlen(str2); j++){
-//						if(str2[j] != delim){
-//							return &str2[j];
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-
-	for(int i=0; i<strlen(str2); i++){
-		if(str2[i] != delim){
 			for(k=i; k<strlen(str2); k++){
+				//' '
 				if(str2[k] == delim){
 					for(int j=k; j<strlen(str2); j++){
 						if(str2[j] != delim){
@@ -215,19 +237,10 @@ char* spacefinder(char* str2, char delim){
 				}
 			}
 		}
+		else{
+
+		}
 	}
-
-
-
-//	for(k=0; k<strlen(str2); k++){
-//			if(str2[k] == delim){
-//				for(int j=k; j<strlen(str2); j++){
-//					if(str2[j] != delim){
-//						return &str2[j];
-//					}
-//				}
-//			}
-//		}
 	return NULL; //This probably needs to be somethig
 }
 
@@ -308,7 +321,7 @@ int string_parser(char *inp, char **array_of_words_p[]){
 
 						//Store stream position
 						if(k>0){
-							//*array_of_words_p[No_words] = inp;
+							*array_of_words_p[No_words] = inp;
 						}
 						prev_space = 0;
 						word_begin = current_position;
