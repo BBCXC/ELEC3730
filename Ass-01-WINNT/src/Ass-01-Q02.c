@@ -6,35 +6,34 @@
 
 #include "Ass-01.h"
 
-//int byteswap(pcm_wavefile_header_t num, int size){
-//
-//	if(size == 8){
-//
-//	}
-//	else if(size == 16){
-//		pcm_wavefile_header_t num = (num>>8) | (num<<8);
-//	}
-//	else if(size == 32){
-//		pcm_wavefile_header_t num = ((num>>24)&0xff) | // move byte 3 to byte 0
-//	          	  	  	   	   	    ((num<<8)&0xff0000) | // move byte 1 to byte 2
-//									((num>>8)&0xff00) | // move byte 2 to byte 1
-//									((num<<24)&0xff000000); // byte 0 to byte 3
-//	}
-//	return 0;
-//}
+//! Byte swap unsigned short
+uint16_t swap_uint16( uint16_t val )
+{
+    return (val << 8) | (val >> 8 );
+}
+
+//! Byte swap short
+int16_t swap_int16( int16_t val )
+{
+    return (val << 8) | ((val >> 8) & 0xFF);
+}
+
+//! Byte swap unsigned int
+uint32_t swap_uint32( uint32_t val )
+{
+    val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
+    return (val << 16) | (val >> 16);
+}
+
+//! Byte swap int
+int32_t swap_int32( int32_t val )
+{
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
+    return (val << 16) | ((val >> 16) & 0xFFFF);
+}
 
 int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *filename)
 {
-
-	/*
-	 * Read in file from filename rb
-	 * Read header, store information in header_p
-	 * allocate memory for data
-	 * read in data
-	 * return 0 success
-	 * else return -1
-	 * print header information
-	 */
 	FILE* file_p;
 	pcm_wavefile_header_t head_data;
 
@@ -43,43 +42,45 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
 
 	if(file_p == 0){	//If file pointer returns NULL
 			printf("%3s ERROR: File unknown \n", " ");	//Log Error
-			fclose(file_p);	//Close file
+			if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 			printf("\n");
 			return -1;	//Return Failed
 	}
 
-	fseek(file_p, 0, SEEK_END);	//Go to the end of the file
-	long size_file = ftell(file_p);	//Count bytes in remaining file
+	if(fseek(file_p, 0, SEEK_END) != 0) printf("ERROR : fseek\n");	//Go to the end of the file
+	long size_head = ftell(file_p);	//Count bytes in remaining file
 
-	if(size_file <= 44){	//If file size too small
-			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_file);
-			fclose(file_p);	//Close file
+	if(size_head <= 44){	//If file size too small
+			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_head);
+			if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 			printf("\n");
 			return -1;	//Return Failed
 	}
 
-	fseek(file_p, 0, SEEK_SET);	//Go back to position
+	if(fseek(file_p, 0, SEEK_SET) != 0) printf("ERROR : fseek\n");	//Go back to position
 
-	fread(&head_data.ChunkID,     	 4, 1, file_p);  //big
-	fread(&head_data.ChunkSize,      4, 1, file_p);  //little
-	fread(&head_data.Format,         4, 1, file_p);  //big
+	if(fread(&head_data.ChunkID,     	 4, 1, file_p) != 1) printf("ERROR : fread\n");  //big
+	if(fread(&head_data.ChunkSize,      4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.Format,         4, 1, file_p) != 1) printf("ERROR : fread\n");  //big
 
-	fread(&head_data.Subchunk1ID,    4, 1, file_p);  //big
-	fread(&head_data.Subchunk1Size,  4, 1, file_p);  //little
-	fread(&head_data.AudioFormat,    2, 1, file_p);  //little
-	fread(&head_data.NumChannels,    2, 1, file_p);  //little
-	fread(&head_data.SampleRate,     4, 1, file_p);  //little
-	fread(&head_data.ByteRate,       4, 1, file_p);  //little
-	fread(&head_data.BlockAlign,     2, 1, file_p);  //little
-	fread(&head_data.BitsPerSample,  2, 1, file_p);  //little
+	if(fread(&head_data.Subchunk1ID,    4, 1, file_p) != 1) printf("ERROR : fread\n");  //big
+	if(fread(&head_data.Subchunk1Size,  4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.AudioFormat,    2, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.NumChannels,    2, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.SampleRate,     4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.ByteRate,       4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.BlockAlign,     2, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+	if(fread(&head_data.BitsPerSample,  2, 1, file_p) != 1) printf("ERROR : fread\n");  //little
 
-	fread(&head_data.Subchunk2ID,    4, 1, file_p);  //big
-	fread(&head_data.Subchunk2Size,  4, 1, file_p);  //little
+	if(fread(&head_data.Subchunk2ID,    4, 1, file_p) != 1) printf("ERROR : fread\n");  //big
+	if(fread(&head_data.Subchunk2Size,  4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
 
-//	if(byteswap(&head_data.Subchunk1ID, 8) != 0){
-//		printf("Error in byteswap\n");
-//		return -1;
-//	}
+	//TODO
+	//Convert endian of
+	//ChunkID
+	//Format
+	//Subchunk1ID
+	//Subchunk2ID
 
 
 	printf("ChunkID : %s\n",       head_data.ChunkID);
@@ -100,23 +101,36 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
 
 
 	if(head_data.AudioFormat != 1){
-		printf("Wrong audio format, Expected : 1, Got : %u\n\n", head_data.AudioFormat);
+		printf("ERROR: Wrong audio format, Expected : 1, Got : %u\n\n", head_data.AudioFormat);
 		return -1;
+	}
+
+	long curr_pos = ftell(file_p);
+	if(fseek(file_p, 0, SEEK_END) != 0) printf("ERROR : fseek\n");	//Go to the end of the file
+	long size_data = ftell(file_p);	//Count bytes in remaining file
+
+	if(size_data <= head_data.Subchunk2Size){	//If file size too small
+			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_data);
+			if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
+			printf("\n");
+			return -1;	//Return Failed
+	}
+	else{
+		if(fseek(file_p, curr_pos, SEEK_SET) != 0) printf("ERROR : fseek\n");
 	}
 
 	data_p = (char**) calloc(head_data.Subchunk2Size, sizeof(char));
 
-	for(int i=0; i<3; i++){
-		fread(data_p[i],  4, 1, file_p);  //little
-		printf("Data Reading : %s\n", data_p[i]);
-	}
+	/*for(int i=0; i<head_data.Subchunk2Size; i++){
+		if(fread(data_p[i],  4, 1, file_p) != 1) printf("ERROR : fread\n");  //little
+		//if(i % 1000 == 0) printf("Data Reading : %s\n", data_p[i]);
+	}*/
 
-	//
-	// WRITE CODE HERE
-	//
+
+	if(fclose(file_p) != 0) printf("ERROR : fclose\n");
+
 	printf("CODE TO BE WRITTEN QUESTION 2...\n\n");
-	printf("I got here 7");
-	return 1;
+	return 0;
 }
 
 int write_pcm_wavefile(pcm_wavefile_header_t *header_p, char *data, char *filename)
@@ -125,6 +139,5 @@ int write_pcm_wavefile(pcm_wavefile_header_t *header_p, char *data, char *filena
   // WRITE CODE
   //
   printf("CODE TO BE WRITTEN QUESTION 2...\n\n");
-  printf("I got here 6");
   return 1;
 }

@@ -16,28 +16,28 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	if(file_p == 0){	//If file pointer returns NULL
 		printf("%3s ERROR: File unknown \n", " ");	//Log Error
-		fclose(file_p);	//Close file
+		if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 		printf("\n");
 		return -1;	//Return Failed
 	}
 
-	fseek(file_p, 0, SEEK_END);	//Go to the end of the file
+	if(fseek(file_p, 0, SEEK_END) != 0) printf("ERROR : fseek");	//Go to the end of the file
 	long size_file = ftell(file_p);	//Count bytes in remaining file
 
 	if(size_file <= 4){	//If file size too small
 			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_file);
-			fclose(file_p);	//Close file
+			if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 			printf("\n");
 			return -1;	//Return Failed
 	}
 
-	fseek(file_p, 0, SEEK_SET);	//Go back to position
+	if(fseek(file_p, 0, SEEK_SET) != 0) printf("ERROR : fseek");	//Go back to position
 
-	fread(&coeff_num, sizeof(int), 1, file_p);	//Read in first 4 bytes
+	if(fread(&coeff_num, sizeof(int), 1, file_p) != 1) printf("ERROR : fread\n");	//Read in first 4 bytes
 
 	if((size_file - sizeof(int)) % coeff_num != 0){	//If remaining bytes doesn't add up TODO this should be (((size_file - 4)/coeff_num) == sizeof(double))
 		printf("%3s ERROR: File size incorrect for declaration, declaration: %i, file size: %ld \n"," ", coeff_num, size_file);
-		fclose(file_p);	//Close file
+		if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 		printf("\n");
 		return -1;	//Return Failed
 	}
@@ -47,7 +47,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 	double* coeff_values = (double*) calloc(coeff_num, 8);	//Allocate memory
 	if(coeff_values == 0){	//If malloc fails returns NULL ptr
 		printf("%3s ERROR: Memory allocation failed, File : %s \n"," ", filename);	//Log Error
-		fclose(file_p);	//Close file
+		if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 		printf("\n");
 		free(coeff_values);	//TODO Shouldn't be needed
 		return -1;	//Return Failed
@@ -56,7 +56,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 	//Store
 	printf("--> Array contents =\n");
 
-	fread(coeff_values, 8, coeff_num, file_p);	//Read the value into the array
+	if(fread(coeff_values, 8, coeff_num, file_p) != coeff_num) printf("EROOR : fread\n");	//Read the value into the array
 
 	if(pretty_print == 1){
 		//Pretty printing not really needed
@@ -77,6 +77,6 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 
 	*coeff_num_p = coeff_num;	//Return values to ptr
 	*coeff_values_p = &coeff_values[0];	//Return values to ptr
-	fclose(file_p);	//Close file
+	if(fclose(file_p) != 0) printf("ERROR : fclose\n");	//Close file
 	return 0;	//Return Success!
 }
