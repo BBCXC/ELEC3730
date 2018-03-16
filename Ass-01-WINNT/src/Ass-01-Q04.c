@@ -37,157 +37,72 @@
 
 
 int string_parser(char *inp, char **array_of_words_p[]){
-	char Current_char;
-	char Previous_char = ' ';
-	int Num_words = 0;
-	char* Word_temp;
-	int Length_word = 0;
-	int Index = 0;
+    char curr_char;
+    char prev_char = ' ';
+    int num_words = 0;
+    int len_word = 0;
 
-	printf("\n");
+    printf("\n");
 
-	for(int i=0; i<strlen(inp); i++){
-		Current_char = inp[i];
+    for(int i=0; i<strlen(inp); i++){
+        curr_char = inp[i];
 
-		if(Current_char == '\0') return 0;	//No words in string
-		else if(Current_char == ' ' && Previous_char == ' '){
-			//Multiple spaces in a row
-		}
-		else if(Current_char != ' ' && Previous_char == ' '){
-			//Found new word
-			Num_words++;
-			printf("Found new word\n");
-		}
-		else{
-			//Currently in word, don't do anything
-		}
-		Previous_char = Current_char;
-	}
-
-    *array_of_words_p = (char**) calloc(Num_words, sizeof(char*));
-
-    Previous_char = ' ';
-    Num_words     = 0;
-    for (int i = 0; i < strlen(inp);) {
-        Current_char = inp[i];
-        printf("Current_char '%c'\n", Current_char);
-        if (Current_char == '\0' && Length_word == 0){
-        	printf("Last word was: %s\n", (*array_of_words_p)[Num_words - 1]);
-                    return Num_words;
+        if(curr_char == '\0') return 0;  //No words in string
+        else if(curr_char == ' ' && prev_char == ' '){
+            //Multiple spaces in a row
         }
-        else if (Current_char == ' ' && Previous_char == ' ') {
+        else if(curr_char != ' ' && prev_char == ' '){
+            //Found new word
+            num_words++;
+        }
+        else{
+            //Currently in word, don't do anything
+        }
+        prev_char = curr_char;
+    }
+
+    *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
+
+    prev_char = ' ';
+    num_words     = 0;
+    for (int i = 0; i < strlen(inp);) {
+        curr_char = inp[i];
+
+        if (curr_char == '\0' && len_word == 0){
+            return num_words;
+        }
+        else if (curr_char == ' ' && prev_char == ' ') {
             // Multiple spaces in a row
         }
-        else if (Current_char != ' ' && Previous_char == ' ') {
+        else if (curr_char != ' ' && prev_char == ' ') {
             // Found new word
-            Num_words++;
-            Length_word = 1;
+            num_words++;
+            len_word = 1;
             // printf("Found new word\n");
         }
-        else if (Current_char == ' ' && Previous_char != ' ') {
+        else if (curr_char == ' ' && prev_char != ' ') {
             // Found end of word
-            (*array_of_words_p)[Num_words - 1] = (char*) calloc(Length_word + 1, sizeof(char));
-            strncpy((*array_of_words_p)[Num_words - 1], (inp + (i - Length_word)), Length_word);
-            printf("Found Whole Word: %s\n", (*array_of_words_p)[Num_words - 1]);
-            Length_word = 0;
+            (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));
+            strncpy((*array_of_words_p)[num_words - 1], (inp + (i - len_word)), len_word);
+            //printf("Found Whole Word: %s\n", (*array_of_words_p)[num_words - 1]);
+            len_word = 0;
         }
         else {
             // Currently in word
-            Length_word++;
+            len_word++;
         }
-        Previous_char = Current_char;
+        prev_char = curr_char;
         // No words in string
         i++;
     }
-//    if(Length_word != 0){
-//    	 (*array_of_words_p)[Num_words - 1] = (char*) calloc(Length_word + 1, sizeof(char));
-//    	 strncpy((*array_of_words_p)[Num_words - 1], (inp + (i - Length_word)), Length_word);
-//    	 printf("Found Whole Word: %s\n", (*array_of_words_p)[Num_words - 1]);
-//    	 Length_word = 0;
-//    }
-
-    printf("Returning Here %i\n", strlen(inp));
-	return Num_words;
+    if(len_word != 0){
+         (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));
+         strncpy((*array_of_words_p)[num_words - 1], (inp + (strlen(inp) - len_word)), len_word);
+         //printf("Found Whole Word: %s\n", (*array_of_words_p)[num_words - 1]);
+         len_word = 0;
+    }
+    return num_words;
 }
-
-
-
-/*int string_parser(char *inp, char **array_of_words_p[]){
-	int num_words = 0;
-	char character;
-	int character_count = 0;
-	char* Words;
-	int prev_c_space = 0;
-
-	for(int i=0; i<strlen(inp); i++){
-		//Go through and find how many words
-		character = inp[i];
-		if(character == '\0'){
-			//No word in input, end function
-			return 0;
-		}
-		if(isspace(character) !=0){
-			//Character is white space
-			//3 conditions, previous character was white space => still whitespace
-			//				previous character was letter => end of word
-			//				??
-			prev_c_space = 1;
-			if(prev_c_space == 0){
-				//if previous character was not space
-				//Found end of word.
-				Words[num_words] = (char*) malloc(sizeof(char) * character_count);
-				character_count = 0;
-			}
-		}
-		else{
-			//Character is a character
-			if(prev_c_space == 1){
-				//Previous was WS => new word
-				num_words++;	//New word
-				character_count++;	//New character of current word
-				prev_c_space = 0; //Reset
-			}
-			else{
-				//Currently in word
-				character_count++;
-			}
-		}
-	}
-
-	for(int i=0; i<strlen(inp); i++){
-		//Go through and find the word string and store
-		character = inp[i];
-		if(character == '\0'){
-			//No word in input, end function
-			return 0;
-		}
-		if(isspace(character) !=0){
-			//Character is white space
-			//3 conditions, previous character was white space => still whitespace
-			//				previous character was letter => end of word
-			//				??
-			if(prev_c_space == 0){
-				//if previous character was not space
-				//Found end of word.
-				character_count = 0;
-			}
-		}
-		else{
-			//Character is a character
-			if(prev_c_space == 1){
-				//Previous was WS => new word
-				Words[character_count] = character;
-				num_words++;	//New word
-				character_count++;	//New character of current word
-			}
-			else{
-				//Currently in word
-				Words[character_count] = character;
-				character_count++;
-			}
-		}
-	}
-}*/
 
 
 /*typedef struct{

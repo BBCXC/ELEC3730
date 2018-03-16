@@ -71,7 +71,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		}
 		printf("\n");
 	}
-	else printf("Not pretty print");
+	else printf("Not pretty print\n");
 
 
 
