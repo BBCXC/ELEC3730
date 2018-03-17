@@ -41,7 +41,7 @@ int Ass_01_Main(void)
 	  if (read_coefficients(&coeff_num, &coeff_values, filename_filter[i])==0)
 	  {
 		//printf("Array size %5s = %d", " ", coeff_num);
-	    if (coeff_num > 0) printf("coeff_values[0] = %f\n", coeff_values[0]);
+	    if (coeff_num > 0) //printf("coeff_values[0] = %f\n", coeff_values[0]);
 	    printf("\n");
 	  }
       i++;
@@ -102,7 +102,7 @@ int Ass_01_Main(void)
 	  count = string_parser(parse_string[i], &array_of_words);
 	  if (count != 0)
 	  {
-		printf("count = %d\n", count);
+		printf(" count = %d\n", count);
 	    for (j=0;j<count;j++)
 	    {
 		  printf("---> %d: '%s'\n", j+1, (array_of_words)[j]);

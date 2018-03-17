@@ -42,8 +42,6 @@ int string_parser(char *inp, char **array_of_words_p[]){
     int num_words = 0;
     int len_word = 0;
 
-    printf("\n");
-
     for(int i=0; i<strlen(inp); i++){
         curr_char = inp[i];
 

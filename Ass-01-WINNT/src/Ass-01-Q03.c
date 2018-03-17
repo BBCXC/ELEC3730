@@ -47,6 +47,8 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
     for(int var=0; var<coeff_num; var++){
     	printf("circular_buffer %lf\n", circular_buffer[var]);
     }
+    printf("\n");
+
     int input_len = header.SampleRate * header.NumChannels * header.BitsPerSample / 8;  //TODO this should contain a value
 
     int j = 0;
@@ -71,7 +73,9 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
       }
     }
 
-    //write_pcm_wavefile(&header, output_current, output_wavefilename); //Write the new data to the new file TODO
+    char* output_fixed = (char*) output;	//Convert back to fixed point TODO
+
+    write_pcm_wavefile(&header, output_fixed, output_wavefilename); //Write the new data to the new file TODO
 
     free(circular_buffer);
     free(output);
