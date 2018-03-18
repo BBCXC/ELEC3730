@@ -80,9 +80,8 @@ int string_parser(char *inp, char **array_of_words_p[]){
         }
         else if (curr_char == ' ' && prev_char != ' ') {
             // Found end of word
-            (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));
-            strncpy((*array_of_words_p)[num_words - 1], (inp + (i - len_word)), len_word);
-            //printf("Found Whole Word: %s\n", (*array_of_words_p)[num_words - 1]);
+            (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));	// Allocate enough memory for each word
+            strncpy((*array_of_words_p)[num_words - 1], (inp + (i - len_word)), len_word);	// Copy inp into memory allocation
             len_word = 0;
         }
         else {
@@ -94,9 +93,8 @@ int string_parser(char *inp, char **array_of_words_p[]){
         i++;
     }
     if(len_word != 0){
-         (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));
-         strncpy((*array_of_words_p)[num_words - 1], (inp + (strlen(inp) - len_word)), len_word);
-         //printf("Found Whole Word: %s\n", (*array_of_words_p)[num_words - 1]);
+         (*array_of_words_p)[num_words - 1] = (char*) calloc(len_word + 1, sizeof(char));	// Allocate enough memory for each word
+         strncpy((*array_of_words_p)[num_words - 1], (inp + (strlen(inp) - len_word)), len_word);	// Copy inp into memory allocation
          len_word = 0;
     }
     return num_words;
