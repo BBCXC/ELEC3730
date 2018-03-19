@@ -20,7 +20,8 @@ int Ass_01_Main(void)
   char *parse_string[] = {"one two three"," one  two three  ","",NULL};
 
   // Loop variables
-  int i,j;
+  int i;
+  int j;
 
 #endif
 

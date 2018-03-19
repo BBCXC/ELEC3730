@@ -45,7 +45,7 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
 
     circular_buffer = coeff_values;
     for(int var=0; var<coeff_num; var++){
-    	printf("circular_buffer %lf\n", circular_buffer[var]);
+    	//printf("circular_buffer %lf\n", circular_buffer[var]);
     }
     printf("\n");
 
