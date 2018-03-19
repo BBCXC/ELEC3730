@@ -76,7 +76,7 @@ int Ass_01_Main(void)
   }
 
   // Question 3
-  {
+  /*{
 	char filename_output[100];
 	printf("-> Question 3...\n");
 	for (i=0;i<4;i++)
@@ -89,7 +89,7 @@ int Ass_01_Main(void)
 	  }
     }
 	printf("\n");
-  }
+  }*/
 
   // Question 4
   {

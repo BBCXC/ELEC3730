@@ -5,36 +5,6 @@
 #include "Ass-01.h"
 
 
-/*
- * string with words seperated by space char
- * allocate memory for pointer size of number of words 		(char*) malloc(sizeof(char*) * num_words);
- * allocate memory for each word 							(char) malloc(sizeof(word) + char)
- *
- * array_of_words_p[word[0], word[1], word[2]]
- * char* word[0] = malloc(sizeof(char) * wordlen[0]);
- *
- * return max index of word[index]
- *
- * case - 1 word
- * case - no words - space
- * 				   - null
- * case - multiple spaces
- *
- *
- */
-
-/*for (two times){
- * if second time(){malloc array of words}
- * 	token = strchr(inp, delim)
- * 	if token == prevtoken +1 //only moved by one must be another space
- * 	if token > prevtoken+1 {length of word = token - previous token
- * 							numwords++
- * 							if second time { arrayofwords[numwords] = malloc length of word }
- * 							}
- *
- * 	}
- */
-
 
 int string_parser(char *inp, char **array_of_words_p[]){
     char curr_char;
