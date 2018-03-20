@@ -56,7 +56,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 	//Store
 	printf("--> Array contents =\n");
 
-	if(fread(coeff_values, 8, coeff_num, file_p) != coeff_num) printf("%3s EROOR : fread\n", " ");	//Read the value into the array
+	if(fread(coeff_values, 8, coeff_num, file_p) != coeff_num) printf("%3s ERROR : fread\n", " ");	//Read the value into the array
 
 	if(pretty_print == 1){
 		//Pretty printing not really needed
