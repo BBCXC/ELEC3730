@@ -9,8 +9,8 @@
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
 	FILE * file_p;	//File
-	int coeff_num;	//Little endian? TODO
-	int pretty_print = 0;
+	int coeff_num;	//Number of ceofficients
+	int pretty_print = 0;	//Toggles whether array prints
 
 	file_p = fopen(filename, "rb");	//Open file for reading
 

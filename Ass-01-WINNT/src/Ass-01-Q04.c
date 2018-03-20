@@ -71,6 +71,81 @@ int string_parser(char *inp, char **array_of_words_p[]){
 }
 
 
+
+int string_parser_2(char *inp, char **array_of_words_p[]){
+    char curr_char;
+    char prev_char = ' ';
+    int num_words = 0;
+    int len_word = 0;
+    int characters = 0;
+
+    for(int i=0; i<strlen(inp); i++){
+        curr_char = inp[i];
+
+        if(curr_char == '\0') return 0;  //No words in string
+        else if(curr_char == ' ' && prev_char == ' '){
+            //Multiple spaces in a row
+        }
+        else if(curr_char != ' ' && prev_char == ' '){
+            //Found new word
+            num_words++;
+            characters++;
+        }
+        else{
+            //Currently in word, don't do anything
+            characters++;
+        }
+        prev_char = curr_char;
+    }
+
+    *array_of_words_p = (char**) calloc(num_words, sizeof(char*)); 
+    char* word_array = (char*) calloc((characters + num_words), sizeof(char));
+    (*array_of_words_p)[num_words] = word_array[characters + num_words];
+
+    prev_char = ' ';
+    num_words     = 0;
+    characters = 0;
+    for (int i = 0; i < strlen(inp);) {
+        curr_char = inp[i];
+
+        if (curr_char == '\0' && len_word == 0){
+            return num_words;
+        }
+        else if (curr_char == ' ' && prev_char == ' ') {
+            // Multiple spaces in a row
+        }
+        else if (curr_char != ' ' && prev_char == ' ') {
+            // Found new word
+            num_words++;
+            characters++;
+            len_word = 1;
+            // printf("Found new word\n");
+        }
+        else if (curr_char == ' ' && prev_char != ' ') {
+            // Found end of word
+
+            strncpy(word_array[characters - len_word], (inp + (i - len_word)), len_word);  // Copy inp into memory allocation
+            len_word = 0;
+            characters++;
+            word_array[characters] = NULL;
+        }
+        else {
+            // Currently in word
+            len_word++;
+        }
+        prev_char = curr_char;
+        // No words in string
+        i++;
+    }
+    if(len_word != 0){
+        strncpy(word_array[characters - len_word], (inp + (i - len_word)), len_word);  // Copy inp into memory allocation
+        len_word = 0;
+        characters++;
+    }
+    return num_words;
+}
+
+
 /*typedef struct{
 	unsigned char num_words;
 	char** str;

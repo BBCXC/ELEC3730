@@ -13,7 +13,8 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   FILE* file_p;    /* variable of type file */
   pcm_wavefile_header_t head_data;
   const char* RIFF_string = "RIFF";
-  const char* fmt_string = "fmt";
+  const char* sub1_string = "fmt";
+  const char* fmt_string = "";
   int ui8_t_size = sizeof(uint8_t);
   int ui16_t_size = sizeof(uint16_t);
   int ui32_t_size = sizeof(uint32_t);
@@ -34,11 +35,15 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   if(fread(&head_data.ChunkSize, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.ChunkSize");
 
   if(fread(head_data.Format, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.Format");
+  if (strncmp(fmt_string, (char*)head_data.Fotmat, 3) != 0) {
+    printf("%3s ERROR: Incorrect Format expected: %s got: %c%c%c%c\n", " ", fmt_string, head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2], head_data.Subchunk1ID[3]);
+    return -1;
+  }
 
   if(fread(head_data.Subchunk1ID, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.Subchunk1ID");
 
-  if (strncmp(fmt_string, (char*)head_data.Subchunk1ID, 3) != 0) {
-    printf("%3s ERROR: Incorrect Subchunk1ID expected: %s got: %c%c%c%c\n", " ", fmt_string, head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2], head_data.Subchunk1ID[3]);
+  if (strncmp(sub1_string, (char*)head_data.Subchunk1ID, 3) != 0) {
+    printf("%3s ERROR: Incorrect Subchunk1ID expected: %s got: %c%c%c%c\n", " ", sub1_string, head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2], head_data.Subchunk1ID[3]);
     return -1;
   }
 
@@ -57,6 +62,10 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   }
 
   if(fread(&head_data.NumChannels, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.NumChannels");
+  if(&head_data.NumChannels != 1){
+    printf("%3s ERROR : NumChannels > 1\n", " ");
+  }
+
   if(fread(&head_data.SampleRate, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.SampleRate");
   if(fread(&head_data.ByteRate, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.ByteRate");
   if(fread(&head_data.BlockAlign, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.BlockAlign");

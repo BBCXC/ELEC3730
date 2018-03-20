@@ -7,7 +7,7 @@
 int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename){
 
   int coeff_num = 0;
-  double *coeff_values; // Array of coefficient values
+  double *coeff_values; // Array of filter coefficient values
 
   if (read_coefficients(&coeff_num, &coeff_values, filter_filename)==0){  //If success in reading coefficients
     if (coeff_num <= 0) return -1;  //No coefficients in filter
