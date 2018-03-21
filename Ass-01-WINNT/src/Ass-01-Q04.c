@@ -66,7 +66,7 @@ int string_parser_1(char *inp, char **array_of_words_p[]){
     return num_words;
 }
 
-int string_parser_2(char *inp, char **array_of_words_p[]){
+int string_parser(char *inp, char **array_of_words_p[]){
     char curr_char;
     char prev_char = ' ';
     int num_words = 0;
