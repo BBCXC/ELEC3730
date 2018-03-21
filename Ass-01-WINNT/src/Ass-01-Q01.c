@@ -15,23 +15,21 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 	file_p = fopen(filename, "rb");	//Open file for reading
 
 	if(file_p == 0){	//If file pointer returns NULL
-		printf("%3s ERROR: File unknown \n", " ");	//Log Error
-		if(fclose(file_p) != 0) printf("%3s ERROR : fclose\n", " ");	//Close file
+		printf("%3s ERROR: Unable to open file for reading\n", " ");	//Log Error
 		printf("\n");
 		return -1;	//Return Failed
 	}
 
 	if(fseek(file_p, 0, SEEK_END) != 0) printf("%3s ERROR : fseek", " ");	//Go to the end of the file
 	long size_file = ftell(file_p);	//Count bytes in remaining file
+	if(fseek(file_p, 0, SEEK_SET) != 0) printf("%3s ERROR : fseek", " ");	//Go back to position
 
 	if(size_file <= 4){	//If file size too small
-			printf("%3s ERROR: File size incorrect, file size: %ld \n"," ", size_file);
-			if(fclose(file_p) != 0) printf("%3s ERROR : fclose\n", " ");	//Close file
-			printf("\n");
-			return -1;	//Return Failed
+		printf("%3s ERROR: File too small, file size: %ld \n"," ", size_file);
+		if(fclose(file_p) != 0) printf("%3s ERROR : fclose\n", " ");	//Close file
+		printf("\n");
+		return -1;	//Return Failed
 	}
-
-	if(fseek(file_p, 0, SEEK_SET) != 0) printf("%3s ERROR : fseek", " ");	//Go back to position
 
 	if(fread(&coeff_num, sizeof(int), 1, file_p) != 1) printf("%3s ERROR : fread\n", " ");	//Read in first 4 bytes
 
@@ -41,7 +39,6 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		printf("\n");
 		return -1;	//Return Failed
 	}
-
 	else printf("--> Array size %3s = %d\n", " ", coeff_num);	//All seems good print size of array
 
 	double* coeff_values = (double*) calloc(coeff_num, 8);	//Allocate memory
@@ -53,7 +50,7 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		return -1;	//Return Failed
 	}
 
-	//Store
+	//Store values
 	printf("--> Array contents =\n");
 
 	if(fread(coeff_values, 8, coeff_num, file_p) != coeff_num) printf("%3s ERROR : fread\n", " ");	//Read the value into the array
@@ -72,8 +69,6 @@ int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 		printf("\n");
 	}
 	else printf("\n%4sNot pretty print\n\n", " ");
-
-
 
 	*coeff_num_p = coeff_num;	//Return values to ptr
 	*coeff_values_p = &coeff_values[0];	//Return values to ptr
