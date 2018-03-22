@@ -17,15 +17,11 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   int ui16_t_size = sizeof(uint16_t); //Pre calculate values
   int ui32_t_size = sizeof(uint32_t); //Pre calculate values
 
-  printf("\n");
-
   file_p = fopen(filename, "rb"); //Open the file for reading
   if(file_p == 0){  //If file pointer returns NULL
     printf("%3s ERROR: File unknown \n", " ");  //Log Error
     return -1;
   }
-
-  printf("--> Reading %s data <--\n", filename);
 
   /********************************************************************************************************************/
   /*                                                 Read Header Data                                                 */
@@ -104,7 +100,6 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   // Read Sub Chunk 2 Size 
   // Compare to expected value
   if(fread(&head_data.Subchunk2Size, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.Subchunk2Size");
-  if(head_data.Subchunk2Size % 2 != 0) printf("WARN: Buffer byte detected in : %s\n", filename);
 
   int subchunk_bytes = head_data.SampleRate * head_data.NumChannels * head_data.BitsPerSample / 8;
   if(head_data.ByteRate != subchunk_bytes){
@@ -150,6 +145,7 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   if(fread(*data_p,  sizeof(char), head_data.Subchunk2Size, file_p) != head_data.Subchunk2Size) printf("ERROR: Reading data\n");
   else printf("Success reading data\n");
 
+  printf("\n");
 
   if(fclose(file_p) != 0) printf("%3s ERROR : fclose\n", " ");
 
@@ -202,21 +198,21 @@ int write_pcm_wavefile(pcm_wavefile_header_t *header_p, char *data, char *filena
   /*                                                Print Header Data                                                 */
   /********************************************************************************************************************/
 
-  printf("-> ChunkID = %c%c%c%c \n", head_data.ChunkID[0], head_data.ChunkID[1], head_data.ChunkID[2], head_data.ChunkID[3]);
-  printf("-> ChunkSize : %u\n", head_data.ChunkSize);
-  printf("-> Chunk Format = %c%c%c%c \n\n", head_data.Format[0], head_data.Format[1], head_data.Format[2], head_data.Format[3]);
+  printf("ChunkID = %c%c%c%c \n", head_data.ChunkID[0], head_data.ChunkID[1], head_data.ChunkID[2], head_data.ChunkID[3]);
+  printf("ChunkSize : %u\n", head_data.ChunkSize);
+  printf("Chunk Format = %c%c%c%c \n\n", head_data.Format[0], head_data.Format[1], head_data.Format[2], head_data.Format[3]);
 
-  printf("-> Subchunk1ID = %c%c%c \n", head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2]);
-  printf("-> Subchunk1Size : %u\n", head_data.Subchunk1Size);
-  printf("-> AudioFormat : %u\n", head_data.AudioFormat);
-  printf("-> NumChannels : %u\n", head_data.NumChannels);
-  printf("-> SampleRate : %u\n", head_data.SampleRate);
-  printf("-> ByteRate : %u\n", head_data.ByteRate);
-  printf("-> BlockAlign : %u\n", head_data.BlockAlign);
-  printf("-> BitsPerSample : %u\n\n", head_data.BitsPerSample);
+  printf("Subchunk1ID = %c%c%c \n", head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2]);
+  printf("Subchunk1Size : %u\n", head_data.Subchunk1Size);
+  printf("AudioFormat : %u\n", head_data.AudioFormat);
+  printf("NumChannels : %u\n", head_data.NumChannels);
+  printf("SampleRate : %u\n", head_data.SampleRate);
+  printf("ByteRate : %u\n", head_data.ByteRate);
+  printf("BlockAlign : %u\n", head_data.BlockAlign);
+  printf("BitsPerSample : %u\n\n", head_data.BitsPerSample);
 
-  printf("-> SubChuck2ID = %c%c%c%c \n", head_data.Subchunk2ID[0], head_data.Subchunk2ID[1], head_data.Subchunk2ID[2], head_data.Subchunk2ID[3]);
-  printf("-> Subchunk2Size : %u\n", head_data.Subchunk2Size);
+  printf("SubChuck2ID = %c%c%c%c \n", head_data.Subchunk2ID[0], head_data.Subchunk2ID[1], head_data.Subchunk2ID[2], head_data.Subchunk2ID[3]);
+  printf("Subchunk2Size : %u\n", head_data.Subchunk2Size);
   
   if(fwrite(data, head_data.Subchunk2Size, 1, file_p) != 1) printf("%3s ERROR : fwrite : %s\n", " ", "head_data.Subchunk2Size");
   else printf("\nSuccess writing data\n");
