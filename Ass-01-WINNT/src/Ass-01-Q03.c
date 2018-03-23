@@ -21,10 +21,6 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
       return -1;
     }
 
-    if(header.Subchunk1Size != 16){
-      printf("Only 16 bit files supported\n");
-    }
-
     printf("\n");
 
     int input_len = header.Subchunk2Size;
@@ -39,11 +35,16 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
       if(header.Subchunk1Size == 16){
         input[i] = data[i*2]+(data[i*2+1]<<8);
       }
-      if(header.Subchunk1Size == 8){
+      else if(header.Subchunk1Size == 8){
         //input[i] = data[i];
-        printf("Currently in development\n");
+        printf("Only 16 bit files supported\n");
+        printf("ERROR: 8 bit functionality Currently in development\n");
+        return -1;
       }
-    }
+      else{
+        printf("ERROR: Incorrect Subchunk1Size\n");
+        return -1;
+      }
 
     //For each sample in the file
     for(int i=0; i<input_len/divisor; i++){
@@ -62,7 +63,13 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
       }
       else if(header.Subchunk1Size == 8){
         //output_fixed[i] = (char)(int)output;
-        printf("Currently in development\n");
+        printf("Only 16 bit files supported\n");
+        printf("ERROR: 8 bit functionality Currently in development\n");
+        return -1;
+      }
+      else{
+        printf("ERROR: Incorrect Subchunk1Size\n");
+        return -1;
       }
     }
 

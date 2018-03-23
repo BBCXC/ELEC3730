@@ -1,9 +1,3 @@
-//     $Date: 2018-03-11 05:18:25 +1100 (Sun, 11 Mar 2018) $
-// $Revision: 1206 $
-//   $Author: Peter $
-
-// Question 1
-
 #include "Ass-01.h"
 
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
