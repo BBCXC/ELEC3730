@@ -98,7 +98,6 @@ int string_parser(char *inp, char **array_of_words_p[]){
     *array_of_words_p = (char**) calloc(num_words, sizeof(char*)); 
     //Set pointer to first word
     char* word_array = (char*) calloc((characters + num_words), sizeof(char));
-    //printf("Size of word array %i\n",(characters + num_words));
 
     //Reset variables
     prev_char = ' ';
@@ -117,33 +116,21 @@ int string_parser(char *inp, char **array_of_words_p[]){
             characters++;
             num_words++;
             len_word = 1;
-            //printf("char : %c numchar : %i, ", curr_char, characters);
-            //printf("nwds : %i, len : %i\n", num_words, len_word);
             (*array_of_words_p)[num_words - 1] = &word_array[characters - 1 + (num_words - 1)];
         }
         else if (curr_char == ' ' && prev_char != ' ') { // Found end of word
             strncpy(&word_array[characters - len_word + (num_words - 1)], (inp + (i - len_word)), len_word);  // Copy inp into memory allocation
-            //if((num_words -2) >=0) printf("Previous word %s\n",(*array_of_words_p)[num_words - 2]);
-            //printf("Current word %s\n",&word_array[characters - len_word + (num_words - 1)]);
-            //printf("Curr word stating pos in wrd array %i\n",(characters - len_word + (num_words - 1)));
-            //printf("NULL position %i\n", (characters + 1));
-            //printf("NULL NEW position %i\n", (characters + (num_words - 1)));
             len_word = 0;
             word_array[characters + (num_words - 1)] = '\0';
         }
         else{ //Currently in word, don't do anything
             characters++;
             len_word++;
-            //printf("char : %c numchar : %i, ", curr_char, characters);
-            //printf("nwds : %i, len : %i\n", num_words, len_word);
         }
         prev_char = curr_char;
     }
     if(len_word != 0){
     	strncpy(&word_array[characters - len_word + (num_words - 1)], (inp + (i - len_word)), len_word);  // Copy inp into memory allocation
-    	//if((num_words -2) >=0) printf("Previous word %s\n",(*array_of_words_p)[num_words - 2]);
-    	//printf("Current word %s\n",&word_array[characters - len_word + (num_words - 1)]);
-    	//printf("Current store pos %i\n",(characters - len_word + (num_words - 1)));
     	len_word = 0;
         word_array[characters + (num_words - 1)] = '\0';
     }
