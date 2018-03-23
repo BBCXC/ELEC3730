@@ -1,5 +1,25 @@
+/*
+ * Author 	   : Mitchell Marotta C3258958
+ * 				 Taylor Young C3206230
+ * Date	  	   : 23 March 2018
+ * Description : Reads first 4 bytes to determine the number of coefficient values
+ * 				 Reads coefficient values from input file
+*/
+
 #include "Ass-01.h"
 
+/********************************************************************************************************************/
+/*                                            Read Coefficients Function                                            */
+/********************************************************************************************************************/
+
+/*
+ * Input  : Pointer to coeff_num_p
+ * 			Pointer to *coeff_values_p
+ * 			Pointer to input file
+ * Output : Number of coefficients : coeff_num_p
+ * 			Array of coefficients  : coeff_values_p
+ * 			Success returns 0; Failure returns -1
+ */
 int read_coefficients(int *coeff_num_p, double **coeff_values_p, char *filename)
 {
 	FILE * file_p;	//File

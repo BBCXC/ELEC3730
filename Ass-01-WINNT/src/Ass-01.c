@@ -18,7 +18,7 @@ int Ass_01_Main(void)
 		                    "8kmp38.wav","8k16bitpcm-Bad-0.wav",
 							"8k16bitpcm-Bad-1.wav","8k16bitpcm-Bad-2.wav","8k16bitpcm-Bad-3.wav",NULL};
   //char *parse_string[] = {"one two three"," one  two three  ","",NULL};
-  char *parse_string[] = {"       one two    three      ","one  two      three four    ","one    two three four    five"," one two       three four five six","one two three four five six seven",NULL};
+  char *parse_string[] = {"0 0000       one two    three      ","one  two      three four    ","one    two three four    five"," one two       three four five six","one two three four five six seven",NULL};
 
   // Loop variables
   int i;

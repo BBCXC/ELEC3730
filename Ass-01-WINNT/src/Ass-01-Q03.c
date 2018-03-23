@@ -1,13 +1,28 @@
+/*
+ * Author 	   : Mitchell Marotta C3258958
+ * 				 Taylor Young C3206230
+ * Date	  	   : 23 March 2018
+ * Description : Applys given filter to given wavefile
+ * 				 Outputs new filtered wavefile
+*/
+
 #include "Ass-01.h"
 
 /********************************************************************************************************************/
 /*                                                 Filter Function                                                  */
 /********************************************************************************************************************/
 
+/*
+ * Input  : Pointer to filter name
+ * 			Pointer to input wavefile
+ * 			Pointer to output file
+ * Output : New filtered wavefile
+ * 			Success returns 0; Failure returns -1
+ */
 int filter(char *filter_filename, char *input_wavefilename, char *output_wavefilename){
 
   int coeff_num = 0;
-  double *coeff_values; // Array of filter coefficient values
+  double *coeff_values; //Array of filter coefficient values
   pcm_wavefile_header_t header;
   char *data;
 
@@ -45,6 +60,7 @@ int filter(char *filter_filename, char *input_wavefilename, char *output_wavefil
         printf("ERROR: Incorrect Subchunk1Size\n");
         return -1;
       }
+    }
 
     //For each sample in the file
     for(int i=0; i<input_len/divisor; i++){

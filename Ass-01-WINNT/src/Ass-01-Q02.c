@@ -1,8 +1,27 @@
+/*
+ * Author 	   : Mitchell Marotta C3258958
+ * 				 Taylor Young C3206230
+ * Date	  	   : 23 March 2018
+ * Description : Reads header of wav file, stores in struct *header_p
+ * 				 Reads data according to header, stores in **data_p
+ * 				 Writes wav file header
+ * 				 Writes wav file data
+*/
+
 #include "Ass-01.h"
 
 /********************************************************************************************************************/
 /*                                                  Read Function                                                   */
 /********************************************************************************************************************/
+
+/*
+ * Input  : Pointer to struct *header_p
+ * 			Pointer to **data_p
+ * 			Pointer to input file
+ * Output : Header data : *header_p
+ * 			Array of data  : *data_p
+ * 			Success returns 0; Failure returns -1
+ */
 int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *filename){
 
   FILE* file_p;
@@ -31,36 +50,36 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
   /*                                                 Read Header Data                                                 */
   /********************************************************************************************************************/
 
-  // Read Chunk ID
-  // Compare to expected value
+  //Read Chunk ID
+  //Compare to expected value
   if(fread(head_data.ChunkID, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.ChunkID");
   if (strncmp(RIFF_string, (char*)head_data.ChunkID, 4) != 0){ /* Checking to see if the ID is correct */
     printf("%3s ERROR: Incorrect ChunkID expected: %s got: %c%c%c%c\n", " ", RIFF_string, head_data.ChunkID[0], head_data.ChunkID[1], head_data.ChunkID[2], head_data.ChunkID[3]);
     return -1;
   }
 
-  // Read Chunk Size
-  // Compare to expected value
+  //Read Chunk Size
+  //Compare to expected value
   if(fread(&head_data.ChunkSize, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.ChunkSize");
 
-  // Read Format
-  // Compare to expected value
+  //Read Format
+  //Compare to expected value
   if(fread(head_data.Format, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.Format");
   if (strncmp(fmt_string, (char*)head_data.Format, 3) != 0) {
     printf("%3s ERROR: Incorrect Format expected: %s got: %c%c%c%c\n", " ", fmt_string, head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2], head_data.Subchunk1ID[3]);
     return -1;
   }
 
-  // Read Sub Chunk ID 1
-  // Compare to expected value
+  //Read Sub Chunk ID 1
+  //Compare to expected value
   if(fread(head_data.Subchunk1ID, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.Subchunk1ID");
   if (strncmp(sub1_string, (char*)head_data.Subchunk1ID, 3) != 0) {
     printf("%3s ERROR: Incorrect Subchunk1ID expected: %s got: %c%c%c%c\n", " ", sub1_string, head_data.Subchunk1ID[0], head_data.Subchunk1ID[1], head_data.Subchunk1ID[2], head_data.Subchunk1ID[3]);
     return -1;
   }
 
-  // Read Sub Chunk 1 Size
-  // Compare to expected value
+  //Read Sub Chunk 1 Size
+  //Compare to expected value
   if(fread(&head_data.Subchunk1Size, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.Subchunk1Size");
   //TODO Why am i doing this?
   if (head_data. Subchunk1Size != 16) {
@@ -74,35 +93,35 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
     if(fread(&head_data.AudioFormat, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.AudioFormat");
   }
 
-  // Read Number of Channels
-  // Compare to expected value
+  //Read Number of Channels
+  //Compare to expected value
   if(fread(&head_data.NumChannels, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.NumChannels");
   if(head_data.NumChannels != 1){
     printf("%3s ERROR : NumChannels > 1\n", " ");
   }
 
-  // Read SampleRate
+  //Read SampleRate
   if(fread(&head_data.SampleRate, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.SampleRate");
 
-  // Read ByteRate
+  //Read ByteRate
   if(fread(&head_data.ByteRate, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.ByteRate");
 
-  // Read Block Align
+  //Read Block Align
   if(fread(&head_data.BlockAlign, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.BlockAlign");
 
-  // Read Bits Per Sample
+  //Read Bits Per Sample
   if(fread(&head_data.BitsPerSample, ui16_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.BitsPerSample");
 
-  // Read Sub Chunk ID 2
-  // Compare to expected value
+  //Read Sub Chunk ID 2
+  //Compare to expected value
   if(fread(head_data.Subchunk2ID, ui8_t_size, 4, file_p) != 4) printf("%3s ERROR : fread : %s\n", " ", "head_data.Subchunk2ID");
   if (strncmp(schunk2id_string, (char*)head_data.Subchunk2ID, 3) != 0) {
     printf("%3s ERROR: Incorrect Format expected: %s got: %c%c%c%c\n", " ", schunk2id_string, head_data.Subchunk2ID[0], head_data.Subchunk2ID[1], head_data.Subchunk2ID[2], head_data.Subchunk2ID[3]);
     return -1;
   }
 
-  // Read Sub Chunk 2 Size 
-  // Compare to expected value
+  //Read Sub Chunk 2 Size 
+  //Compare to expected value
   if(fread(&head_data.Subchunk2Size, ui32_t_size, 1, file_p) != 1) printf("%3s ERROR : fread : %s\n", " ", "&head_data.Subchunk2Size");
   if(head_data.Subchunk2Size % 2 != 0) printf("WARN: Buffer byte detected in : %s\n", filename);
 
@@ -160,6 +179,13 @@ int read_pcm_wavefile(pcm_wavefile_header_t *header_p, char **data_p, char *file
 /*                                                 Write Function                                                   */
 /********************************************************************************************************************/
 
+/*
+* Input  :  Pointer to struct *header_p
+* 			Pointer to **data
+* 			Pointer to output file
+* Output :  Wavefile with output file name
+* 			Success returns 0; Failure returns -1
+*/
 int write_pcm_wavefile(pcm_wavefile_header_t *header_p, char *data, char *filename_output){ /* I changed the signature from *filename to *filename_output */
 
   FILE* file_p; //variable of type file

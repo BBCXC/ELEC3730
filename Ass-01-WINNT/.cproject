@@ -40,7 +40,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Ass-01-Q03-2.c|Audio-grapher.c|Hello_world.c|bode 2.c|bode_generator.c|Bode plot generator.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="bode_2taylor.c|Ass-01-Q03-2.c|Audio-grapher.c|Hello_world.c|bode 2.c|bode_generator.c|Bode plot generator.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -85,7 +85,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Ass-01-Q03-2.c|Audio-grapher.c|Hello_world.c|bode 2.c|bode_generator.c|Bode plot generator.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="bode_2taylor.c|Ass-01-Q03-2.c|Audio-grapher.c|Hello_world.c|bode 2.c|bode_generator.c|Bode plot generator.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
