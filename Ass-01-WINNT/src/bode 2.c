@@ -13,7 +13,7 @@ int main()
     float Xre[N], Xim[N]; // DFT of x (real and imaginary parts)
     float P[N];           // power spectrum of x
      
-    // Generate random discrete-time signal x in range (-1,+1)
+
     float x[29] = {-0.026728, -0.000000,  0.050455,
                              -0.000000,  0.000000, -0.000000,
                              -0.075683,  0.000000,  0.062366,
