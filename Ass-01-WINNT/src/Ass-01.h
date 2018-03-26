@@ -17,6 +17,8 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
 // Data types
 typedef struct
