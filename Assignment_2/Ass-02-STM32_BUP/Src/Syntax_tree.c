@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-char* input_string[] = {"1", "add", "2", "multi", "4", "add", "(","5", "sub", "3", ")", NULL};
 char* input;
 
 double result;

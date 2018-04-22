@@ -26,31 +26,6 @@ extern void Ass_02_Main(void);
 //
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE 
 //
-typedef struct{
-  int Area_[][] = {(0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0),
-			       (0,0,0,0)
-			   };
-}
-  grid_struct;
 
 // Question 1
 extern void CommandLineParserInit(void);

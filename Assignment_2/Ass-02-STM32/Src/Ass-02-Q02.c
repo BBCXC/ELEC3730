@@ -8,7 +8,6 @@
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE 
 //
 
-/* //Example code
 void CalculatorInit(void)
 {
   // STEPIEN: Assume horizontal display
@@ -126,71 +125,4 @@ void CalculatorProcess(void)
   {
   }
   }
-}
-*/
-
-//TODO needs to be modified for my code
-//Use LCD_read to store major functions
-
-
-
-
-
-void CalculatorInit(void)
-{
-  // STEPIEN: Assume horizontal display
-
-  // Initialize and turn on LCD and calibrate the touch panel
-  BSP_LCD_Init();
-  BSP_LCD_DisplayOn();
-  BSP_TP_Init();
-
-  // Display welcome message
-  BSP_LCD_Clear(LCD_COLOR_WHITE);
-  BSP_LCD_SetFont(&Font12);
-  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  BSP_LCD_DisplayStringAt(5,5, (uint8_t*)"ELEC3730 Assignment 2",LEFT_MODE);
-  BSP_LCD_DisplayStringAt(5,20, (uint8_t*)"Calculator Example",LEFT_MODE);
-
-  //Calculate grid positions
-  
-  if(calculator_layout(int scaled_width, int scaled_height) == 0){
-    if(debug_sys == 1) printf("DEBUG_SYS: Calculator Init Layout Failed\n");
-  }
-
-  //Populate grid positions
-
-  if(draw_numpad() == 0){
-    if(debug_sys == 1) printf("DEBUG_SYS: Calculator Init Populate Failed\n");
-  }
-
-}
-
-void CalculatorProcess(void){
-
-  //Variables
-  char* calc_string;
-  int cell_num;
-
-
-  //Loop through looking for touch screen press
-  while(1){
-    //Ontouch get object
-    getDisplayPoint(&display, Read_Ads7846(), &matrix );
-    if (BSP_TP_GetDisplayPoint(&display) == 0){
-    //Act upon object
-
-      cell_num = get_touch_pos(grid_space, display.x, display.y);
-
-    //Options
-    //Add char to string 
-    //Equate string =
-    //Reset string AC
-    //Change display < >
-    //
-    }
-
-  }
-
-  return;
 }

@@ -11,7 +11,6 @@
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE
 //
 
-/*  //Example code
 void CommandLineParserInit(void)
 {
   // Print welcome message
@@ -55,4 +54,3 @@ void CommandLineParserProcess(void)
   printf("SERIAL: Got '%c'\n", c);
 #endif
 }
-*/
