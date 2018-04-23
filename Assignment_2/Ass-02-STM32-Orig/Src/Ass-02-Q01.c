@@ -11,7 +11,6 @@
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE
 //
 
-  //Example code
 void CommandLineParserInit(void)
 {
   // Print welcome message

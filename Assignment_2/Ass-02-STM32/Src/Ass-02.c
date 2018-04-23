@@ -15,6 +15,7 @@ void Ass_02_Main(void)
 #endif
 
   // Initialise
+
   CommandLineParserInit();
 #ifdef STM32F407xx
   CalculatorInit();

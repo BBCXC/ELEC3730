@@ -15,14 +15,9 @@ void Ass_02_Main(void)
 #endif
 
   // Initialise
-
   CommandLineParserInit();
 #ifdef STM32F407xx
-  grid_struct grid_space;
-  char **input;
-
-  CalculatorInit(&grid_space, &input);
-  printf("Left init\n");
+  CalculatorInit();
 #endif
 
   // Loop indefinitely
@@ -30,8 +25,7 @@ void Ass_02_Main(void)
   {
     CommandLineParserProcess();
 #ifdef STM32F407xx
-    //printf("Starting process\n");
-    CalculatorProcess(&grid_space, &input);
+    CalculatorProcess();
 #endif
 
 #ifdef STM32F407xx
