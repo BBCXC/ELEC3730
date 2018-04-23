@@ -28,14 +28,12 @@ extern void Ass_02_Main(void);
 //
 typedef struct{
   int Area[25][5];
-  static char *items[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
-                     		"<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
-                     		"=", "(", "ANS", "sqrt", "^", ">", ")", "atan", "acos", "asin",
-                     		"<", "pi", "tan", "cos", "sin", "AC", "", "log", "ln", "exp", "DEL"};
+  char **items;
   char **input;
+  int num_char;
 
   char *formula;
-  char *result;
+  double result;
 }
   grid_struct;
   grid_struct grid_space_p;
@@ -50,10 +48,11 @@ extern int calculator_layout(void);
 extern int draw_numpad(void);
 extern int draw_sym(void);
 extern int draw_item(int cell_number);
-extern int LCD_ClearCell(int x_min, int x_max, int y_min, int y_max);
+extern int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, char text_colour, char cell_colour);
 extern void CalculatorProcess(void);
-extern int get_touch_pos(voidint display_x, int display_y);
-
+extern int get_touch_pos(int display_x, int display_y);
+extern int Input_append(char *item);
+extern int LCD_Cell_Highlight(int status, int cell_number);
 
 extern double parseFormula();
 extern double parseSub();

@@ -1,6 +1,6 @@
 //     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
 // $Revision: 1217 $
-//   $Author: Peter $\
+//   $Author: Peter $
 
 /*
 LCD_COLOR_BLUE          0x001F
@@ -30,10 +30,9 @@ LCD_COLOR_BROWN         0xA145
 LCD_COLOR_ORANGE        0xFD20
 */
 
-
 #include "Ass-02.h"
 
-#define debug_sys = 1;
+#define debugsys 1
 
 /*******************************************************************************************
 **********************************Calculator Initilisation**********************************
@@ -51,6 +50,16 @@ void CalculatorInit(){
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   //TODO Add some sort of animation here
 
+
+
+
+  char *item[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
+ 		            "<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
+                    "=", "(", "ANS", "sqrt", "^", ">", ")", "atan", "acos", "asin",
+                    "<", "pi", "tan", "cos", "sin", "AC", "", "log", "ln", "exp", "DEL"};
+
+  grid_space_p.items = item;
+
   //Set basic layout
   if(calculator_layout() != 0){
 	  printf("SYSTEM ERROR : unable to draw layout");
@@ -62,8 +71,8 @@ void CalculatorInit(){
   }
 
   //Calloc enough memory for the input string pointers
-  *input = (char**) calloc(1, sizeof(char*));
-  if(*input == 0){
+  grid_space_p.input = (char**) calloc(1, sizeof(char*));
+  if(grid_space_p.input == 0){
 	  printf("ERROR: Calloc input memory");
   }
 
@@ -83,7 +92,7 @@ int calculator_layout(){
     int cell_width = display_width / num_Vline;
     int cell_height = display_height / num_Hline;
 
-    if(debug_sys == 1) printf("DEBUG_SYS 1: cew %i, ceh %i\n", cell_width, cell_height);
+    if(debugsys == 1) printf("DEBUGSYS 1: cew %i, ceh %i\n", cell_width, cell_height);
 
     //Populate grid_space struct
     int prev_width = display_width;
@@ -96,7 +105,7 @@ int calculator_layout(){
     	prev_height = curr_height;
     	curr_height = curr_height - cell_height;
     	curr_width = display_width;
-        if(debug_sys == 1) printf("DEBUG_SYS 2: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
+        if(debugsys == 1) printf("DEBUGSYS 2: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
         for(int j=0; j<num_Vline; j++){
         	prev_width = curr_width;
             curr_width = prev_width - cell_width;
@@ -106,7 +115,7 @@ int calculator_layout(){
             grid_space_p.Area[temp][2] = curr_height;
             grid_space_p.Area[temp][3] = prev_height;
 
-            if(debug_sys == 1) printf("DEBUG_SYS 3: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
+            if(debugsys == 1) printf("DEBUGSYS 3: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
             temp = temp+1;
 
         }
@@ -133,7 +142,7 @@ int calculator_layout(){
     	}
         x_pos = l * cell_width;
         BSP_LCD_DrawVLine(x_pos, y_pos, len);
-        if(debug_sys == 1) printf("DEBUG_SYS Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+        if(debugsys == 1) printf("DEBUGSYS Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
     }
 
     //x_pos is fixed for horizontal lines
@@ -146,7 +155,7 @@ int calculator_layout(){
     for(int l=0; l<num_Hline; l++){
         y_pos = l * cell_height;
         BSP_LCD_DrawHLine(0, y_pos, len);
-        if(debug_sys == 1) printf("DEBUG_SYS Hline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+        if(debugsys == 1) printf("DEBUGSYS Hline: x %i, y %i, len %i\n", x_pos, y_pos, len);
     }
 
     return 0;
@@ -162,7 +171,7 @@ int draw_numpad(){
     for(int i=0; i<21; i++){
   		if(draw_item(i) == 0){
   			grid_space_p.Area[i][4] = i - 0;
-  			if(debug_sys == 1) printf("DEBUG_SYS numpad: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+  			if(debugsys == 1) printf("DEBUGSYS numpad: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
   		}
     }
@@ -178,7 +187,7 @@ int draw_sym(){
     for(int i=21; i<42; i++){
     	if(draw_item(i) == 0){
     		grid_space_p.Area[i][4] = i;
-    		if(debug_sys == 1) printf("DEBUG_SYS: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+    		if(debugsys == 1) printf("DEBUGSYS: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
     	}
    }
@@ -202,7 +211,7 @@ int draw_item(int cell_number){
 
   	BSP_LCD_SetFont(&Font16);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-    BSP_LCD_DisplayStringAt(x_pos, y_pos, (uint8_t*)grid_space_p.item[cell_number], CENTER_MODE);
+    BSP_LCD_DisplayStringAt(x_pos, y_pos, (uint8_t*)grid_space_p.items[cell_number], CENTER_MODE);
 
     return 0;
 }
@@ -231,7 +240,10 @@ void CalculatorProcess(){
 	static double prev_ans = 0;
 	static int num_char = 0;
 
-  char output[50];
+	int button_highlight = 0;
+	static int touch_pos = 0;
+
+    char output[50];
 
 	// getDisplayPoint(&display, Read_Ads7846(), &matrix );
 	if (BSP_TP_GetDisplayPoint(&display) == 0 && button_debounce >= 1000 && button_highlight == 0){
@@ -239,13 +251,13 @@ void CalculatorProcess(){
 
 		button_debounce = 0;
 
-		int touch_pos = get_touch_pos(display.x, display.y);
+		touch_pos = get_touch_pos(display.x, display.y);
 		printf("touch_pos %i, position touched %i, %i\n", touch_pos, display.x, display.y);
 		if(touch_pos != 100){
 
 			printf("Selected %s\n", grid_space_p.items[touch_pos]);
 
-      if(LCD_Cell_Highlight(button_highlight) != 0) printf("ERROR: Could not highlight cell\n");
+      if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");
 
       else button_highlight = 1;
 
@@ -255,7 +267,7 @@ void CalculatorProcess(){
 
 				if(num_char > 0){
 					num_char--;
-					grid_space_p.(*input)[num_char] = '\0';
+					grid_space_p.input[num_char] = '\0';
 				}
 				else{
 					printf("Whole string deleted");
@@ -264,6 +276,15 @@ void CalculatorProcess(){
 
 			else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
 				//Clear All items
+
+				//Clear LCD
+
+				free(grid_space_p.input[0]);
+				free(grid_space_p.input);
+				grid_space_p.input = (char**) calloc(1, sizeof(char*));
+				if(grid_space_p.input == 0){
+					printf("ERROR: Calloc input memory");
+				}
 			}
 
 			else if(strcmp(grid_space_p.items[touch_pos], "<") == 0){ //strcmp(items[touch_pos], "<") == 0 TODO
@@ -307,7 +328,7 @@ void CalculatorProcess(){
 				//TODO somehow make the double a string
         snprintf(output, 50, "%f", prev_ans);
 
-        if(Input_append(&output) != 0) printf("ERROR\n");
+        if(Input_append(output) != 0) printf("ERROR\n");
 			}
 
 			else{
@@ -320,7 +341,7 @@ void CalculatorProcess(){
 		}
 	}
   else if(BSP_TP_GetDisplayPoint(&display) == 1 && button_highlight == 1){
-    if(LCD_Cell_Highlight(button_highlight) != 0) printf("ERROR: Could not highlight cell\n");
+    if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");
     else button_highlight = 0;
   }
 
@@ -328,8 +349,9 @@ void CalculatorProcess(){
 }
 
 
-char *Input_append(char *item){
-        
+int Input_append(char *item){
+
+  int num_char = grid_space_p.num_char;
   char* new_string = (char*) calloc((strlen(item) + 1), sizeof(char));
   printf("strlen %i\n", strlen(item));
   strncpy(&new_string[0], item, strlen(item));
@@ -358,12 +380,10 @@ int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, char text_colour
 }
 
 
-int LCD_Cell_Highlight(int status){
+int LCD_Cell_Highlight(int status, int cell_number){
   
   //Draw coloured cell
   //Redraw symbol
-
-  char *items[42] = grid_space_p.items;
 
   int x_min = grid_space_p.Area[cell_number][0];
   int x_max = grid_space_p.Area[cell_number][1];
