@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct{
 	char* input;
@@ -15,5 +16,6 @@ extern double parseSub();
 extern double parseSum();
 extern double parsePro();
 extern double parseDiv();
+extern double parsePow();
 extern double parseFactor();
 extern double parseNumber();

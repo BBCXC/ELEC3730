@@ -41,13 +41,23 @@ double parsePro(){
 }
 
 double parseDiv(){
-	double div_1 = parseFactor();
+	double div_1 = parsePow();
 	while(*grid_space_p.input == '/'){
 		++grid_space_p.input;
-		double div_2 = parseFactor();
+		double div_2 = parsePow();
 		div_1 = div_1 / div_2;
 	}
 	return div_1;
+}
+
+double parsePow(){
+	double pow_1 = parseFactor();
+	while(*grid_space_p.input == '^'){
+		++grid_space_p.input;
+		double pow_2 = parseFactor();
+		pow_1 = pow(pow_1, pow_2);
+	}
+	return pow_1;
 }
 
 double parseFactor(){
@@ -63,6 +73,186 @@ double parseFactor(){
 		double temp = parseSub();
 		++grid_space_p.input;
 		return temp;
+	}
+	//PI
+	else if(*grid_space_p.input == 'p'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'i'){
+			++grid_space_p.input;
+			return M_PI;
+		}
+	}
+	//sin sqrt
+	else if(*grid_space_p.input == 's'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'i'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'n'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == '('){
+					++grid_space_p.input;
+					double temp = parseSub();
+					temp = sin(temp*M_PI/180);
+					++grid_space_p.input;
+					return temp;
+				}
+
+			}
+		}
+		else if(*grid_space_p.input == 'q'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'r'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == 't'){
+					++grid_space_p.input;
+					if(*grid_space_p.input == '('){
+						++grid_space_p.input;
+						double temp = parseSub();
+						temp = sqrt(temp);
+						++grid_space_p.input;
+						return temp;
+					}
+
+				}
+			}
+		}
+	}
+	//cos
+	else if(*grid_space_p.input == 'c'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'o'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 's'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == '('){
+					++grid_space_p.input;
+					double temp = parseSub();
+					temp = cos(temp*M_PI/180);
+					++grid_space_p.input;
+					return temp;
+				}
+
+			}
+		}
+	}
+	//tan
+	else if(*grid_space_p.input == 't'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'a'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'n'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == '('){
+					++grid_space_p.input;
+					double temp = parseSub();
+					temp = tan(temp*M_PI/180);
+					++grid_space_p.input;
+					return temp;
+				}
+
+			}
+		}
+	}
+	//asin acos atan
+	else if(*grid_space_p.input == 'a'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 's'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'i'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == 'n'){
+					++grid_space_p.input;
+					if(*grid_space_p.input == '('){
+						++grid_space_p.input;
+						double temp = parseSub();
+						temp = asin(temp*M_PI/180);
+						++grid_space_p.input;
+						return temp;
+					}
+
+				}
+			}
+		}
+		else if(*grid_space_p.input == 'c'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'o'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == 's'){
+					++grid_space_p.input;
+					if(*grid_space_p.input == '('){
+						++grid_space_p.input;
+						double temp = parseSub();
+						temp = acos(temp*M_PI/180);
+						++grid_space_p.input;
+						return temp;
+					}
+
+				}
+			}
+		}
+		else if(*grid_space_p.input == 't'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'a'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == 'n'){
+					++grid_space_p.input;
+					if(*grid_space_p.input == '('){
+						++grid_space_p.input;
+						double temp = parseSub();
+						temp = atan(temp*M_PI/180);
+						++grid_space_p.input;
+						return temp;
+					}
+
+				}
+			}
+		}
+	}
+	//exp
+	else if(*grid_space_p.input == 'e'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'x'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'p'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == '('){
+					++grid_space_p.input;
+					double temp = parseSub();
+					temp = exp(temp);
+					++grid_space_p.input;
+					return temp;
+				}
+
+			}
+		}
+	}
+	//ln log10
+	else if(*grid_space_p.input == 'l'){
+		++grid_space_p.input;
+		if(*grid_space_p.input == 'n'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == '('){
+				++grid_space_p.input;
+				double temp = parseSub();
+				temp = log(temp);
+				++grid_space_p.input;
+				return temp;
+			}
+		}
+		else if(*grid_space_p.input == 'o'){
+			++grid_space_p.input;
+			if(*grid_space_p.input == 'g'){
+				++grid_space_p.input;
+				if(*grid_space_p.input == '('){
+					++grid_space_p.input;
+					double temp = parseSub();
+					temp = log10(temp);
+					++grid_space_p.input;
+					return temp;
+				}
+
+			}
+		}
 	}
 	else{
 		printf("Syntax Error\n");
@@ -116,12 +306,8 @@ double parseNumber(){
 }
 
 int main(){
-	
-	// for(int i=0; i<strlen(*input_string); i++){
-	// 	strcat(input, input_string[i]);
-	// }
 
-	grid_space_p.input = "5+3*9-(-4)";	
+	grid_space_p.input = "cos(sqrt(4)+118+180/3)-pi+(12)";	
 	grid_space_p.result = parseFormula();	//Lowest precedent 
 	printf("Result %lf", grid_space_p.result);
 	return 0;
