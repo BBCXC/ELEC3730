@@ -247,7 +247,7 @@ void CalculatorProcess(){
 
 	// getDisplayPoint(&display, Read_Ads7846(), &matrix );
 	if (BSP_TP_GetDisplayPoint(&display) == 0){
-		if(button_debounce >= 100){
+		if(button_debounce >= 400){
 			//Given grid struct and position touched, returns area touched
 
 			button_debounce = 0;
@@ -273,6 +273,9 @@ void CalculatorProcess(){
 					else{
 						printf("Whole string deleted\n");
 					}
+
+
+					//TODO Now needs to re write equation and result string
 				}
 
 				else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
@@ -320,10 +323,18 @@ void CalculatorProcess(){
 						printf("%i String of %i stings: string %s, length %i\n", num_str + 1, grid_space_p.num_char, grid_space_p.input[num_str], strlen(grid_space_p.input[num_str]));
 					}
 					//printf("Formula Before : %s\n", grid_space_p.formula);
+//					grid_space_p.formula = grid_space_p.input[0];
+//					for(int len=1; len<(grid_space_p.num_char); len++){
+//						strcat(grid_space_p.formula, grid_space_p.input[len]);
+//					}
+
+
+					grid_space_p.formula = "";
 					grid_space_p.formula = grid_space_p.input[0];
-					for(int len=1; len<(grid_space_p.num_char); len++){
-						strcat(grid_space_p.formula, grid_space_p.input[len]);
+					if(grid_space_p.num_char > 0){
+						strcat(grid_space_p.formula, grid_space_p.input[grid_space_p.num_char]);
 					}
+
 
 					printf("Formula Expected: %s\n", grid_space_p.input[0]);
 					printf("Formula Passed: %s\n", grid_space_p.formula);
@@ -409,7 +420,7 @@ int Input_append(char *item){
   //Call function to display equation on screen
   //TODO Don't clear, just write the next character
   if(clear_equation() != 0) printf("ERROR: Could not clear equation\n");
-  //if(draw_equation() != 0) printf("ERROR: Could not draw equation\n");
+  if(draw_equation() != 0) printf("ERROR: Could not draw equation\n");
 
   grid_space_p.num_char++;
 
@@ -474,7 +485,7 @@ int draw_result(){
     int x_pos = ((x_max - x_min) / 2.0) + x_min;
     int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-    printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
+    if(debugsys == 1)printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
 
     char *result_str[10];
     snprintf(result_str, 10, "%f", grid_space_p.result);
@@ -506,7 +517,7 @@ int draw_equation(){
   int x_pos = ((x_max - x_min) / 2.0) + x_min;
   int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-  printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
+  if(debugsys == 1)printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
 
 //  //Roll around the display
 //  int LCDResultlen = 20;
@@ -521,15 +532,18 @@ int draw_equation(){
 //  for(int len=offset+1; len<(grid_space_p.num_char); len++){
 //    strcat(equation, grid_space_p.input[len]);
 //  }
-
-  grid_space_p.formula = grid_space_p.input[0];
-  for(int len=1; len<(grid_space_p.num_char); len++){
-	strcat(grid_space_p.formula, grid_space_p.input[len]);
+  grid_space_p.equation = "";
+  grid_space_p.equation = grid_space_p.input[0];
+  printf("Old Element %s\n", grid_space_p.input[0]);
+  if(grid_space_p.num_char > 0){
+	  printf("New %i Element %s\n",grid_space_p.num_char, grid_space_p.input[grid_space_p.num_char]);
+  	  strcat(grid_space_p.equation, grid_space_p.input[grid_space_p.num_char]);
   }
+  printf("Equation should be %s\n", grid_space_p.equation);
 
   BSP_LCD_SetFont(&Font16);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  BSP_LCD_DisplayStringAt(x_min + 5, y_pos, (uint8_t*)grid_space_p.formula, LEFT_MODE);
+  BSP_LCD_DisplayStringAt(x_min + 5, y_pos, (uint8_t*)grid_space_p.equation, LEFT_MODE);
 
   return 0;
 }
@@ -549,429 +563,429 @@ int clear_equation(){
 
 
 
-double parseFormula(){
- grid_space_p.result = parseSub();
- if(*grid_space_p.input == '\0'){
-   return grid_space_p.result;
- }
- // printf("Expected end of grid_space_p.input but found %c\n", *grid_space_p.input);
- printf("Syntax Error\n");
- return 0;
-}
-
-double parseSub(){
- double sub_1 = parseSum();
- while(*grid_space_p.formula == '-'){
-   ++grid_space_p.formula;
-   double sub_2 = parseSum();
-   sub_1 = sub_1 - sub_2;
- }
- return sub_1;
-}
-
-double parseSum(){
- double sum_1 = parsePro();
- while(*grid_space_p.formula == '+'){
-   ++grid_space_p.formula;
-   double sum_2 = parsePro();
-   sum_1 = sum_1 + sum_2;
- }
- return sum_1;
-}
-
-double parsePro(){
- double pro_1 = parseDiv();
- while(*grid_space_p.formula == '*'){
-   ++grid_space_p.formula;
-   double pro_2 = parseDiv();
-   pro_1 = pro_1 * pro_2;
- }
- return pro_1;
-}
-
-double parseDiv(){
- double div_1 = parsePow();
- while(*grid_space_p.formula == '/'){
-   ++grid_space_p.formula;
-   double div_2 = parsePow();
-   div_1 = div_1 / div_2;
- }
- return div_1;
-}
-
-double parsePow(){
- double pow_1 = parseFactor();
- while(*grid_space_p.formula == '^'){
-   ++grid_space_p.formula;
-   double pow_2 = parseFactor();
-   pow_1 = pow(pow_1, pow_2);
- }
- return pow_1;
-}
-
-double parseFactor(){
-
- if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-   return parseNumber();
- }
- else if(*grid_space_p.formula == '-'){
-   return parseNumber();
- }
- else if(*grid_space_p.formula == '('){
-   ++grid_space_p.formula;
-   double temp = parseSub();
-   ++grid_space_p.formula;
-   return temp;
- }
- //PI
- else if(*grid_space_p.formula == 'p'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'i'){
-     ++grid_space_p.formula;
-     return M_PI;
-   }
- }
- //sin sqrt
- else if(*grid_space_p.formula == 's'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'i'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'n'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == '('){
-           ++grid_space_p.formula;
-           double temp = parseSub();
-           temp = sin(temp*M_PI/180);
-           ++grid_space_p.formula;
-           return temp;
-       }
-
-     }
-   }
-   else if(*grid_space_p.formula == 'q'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'r'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == 't'){
-           ++grid_space_p.formula;
-           if(*grid_space_p.formula == '('){
-           ++grid_space_p.formula;
-           double temp = parseSub();
-           temp = sqrt(temp);
-           ++grid_space_p.formula;
-           return temp;
-         }
-
-       }
-     }
-   }
- }
- //cos
- else if(*grid_space_p.formula == 'c'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'o'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 's'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == '('){
-         ++grid_space_p.formula;
-         double temp = parseSub();
-         temp = cos(temp*M_PI/180);
-         ++grid_space_p.formula;
-         return temp;
-       }
-
-     }
-   }
- }
- //tan
- else if(*grid_space_p.formula == 't'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'a'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'n'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == '('){
-         ++grid_space_p.formula;
-         double temp = parseSub();
-         temp = tan(temp*M_PI/180);
-         ++grid_space_p.formula;
-         return temp;
-       }
-
-     }
-   }
- }
- //asin acos atan
- else if(*grid_space_p.formula == 'a'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 's'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'i'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == 'n'){
-         ++grid_space_p.formula;
-         if(*grid_space_p.formula == '('){
-           ++grid_space_p.formula;
-           double temp = parseSub();
-           temp = asin(temp*M_PI/180);
-           ++grid_space_p.formula;
-           return temp;
-         }
-
-       }
-     }
-   }
-   else if(*grid_space_p.formula == 'c'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'o'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == 's'){
-         ++grid_space_p.formula;
-         if(*grid_space_p.formula == '('){
-           ++grid_space_p.formula;
-           double temp = parseSub();
-           temp = acos(temp*M_PI/180);
-           ++grid_space_p.formula;
-           return temp;
-         }
-
-       }
-     }
-   }
-   else if(*grid_space_p.formula == 't'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'a'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == 'n'){
-         ++grid_space_p.formula;
-         if(*grid_space_p.formula == '('){
-           ++grid_space_p.formula;
-           double temp = parseSub();
-           temp = atan(temp*M_PI/180);
-           ++grid_space_p.formula;
-           return temp;
-         }
-
-       }
-     }
-   }
- }
- //exp
- else if(*grid_space_p.formula == 'e'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'x'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'p'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == '('){
-         ++grid_space_p.formula;
-         double temp = parseSub();
-         temp = exp(temp);
-         ++grid_space_p.formula;
-         return temp;
-       }
-
-     }
-   }
- }
- //ln log10
- else if(*grid_space_p.formula == 'l'){
-   ++grid_space_p.formula;
-   if(*grid_space_p.formula == 'n'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == '('){
-       ++grid_space_p.formula;
-       double temp = parseSub();
-       temp = log(temp);
-       ++grid_space_p.formula;
-       return temp;
-     }
-   }
-   else if(*grid_space_p.formula == 'o'){
-     ++grid_space_p.formula;
-     if(*grid_space_p.formula == 'g'){
-       ++grid_space_p.formula;
-       if(*grid_space_p.formula == '('){
-         ++grid_space_p.formula;
-         double temp = parseSub();
-         temp = log10(temp);
-         ++grid_space_p.formula;
-         return temp;
-       }
-
-     }
-   }
- }
- else{
-   printf("Syntax Error\n");
-   printf("Unknown symbol %c", *grid_space_p.formula);
- }
- return 0;
-}
-
-double parseNumber(){
-
- double number = 0;
- int neg_flag = 1;
- if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
- }
- else if(*grid_space_p.formula == '-'){
-   neg_flag = -1;
-   ++grid_space_p.formula;
- }
- else{
-   printf("Syntax Error");
- }
-
-
- while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-   number = number * 10;
-   number = number + (int)(*grid_space_p.formula - '0');
-   ++grid_space_p.formula;
- }
-
- if(*grid_space_p.formula == '.'){
-   ++grid_space_p.formula;
-
-   //Check the next character is a number, else error
-
-   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-     double weight = 1;
-     while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-       weight = weight / 10.0;
-       double scaled = (int)(*grid_space_p.formula - '0') * weight;
-       number = number + scaled;
-       ++grid_space_p.formula;
-     }
-   }
-   else{
-     printf("Syntax Error");
-   }
- }
-
- return (number * neg_flag);
-}
-
-
-// double parseFormula(){
-//   grid_space_p.result = parseSub();
-//   if(*grid_space_p.formula == '\0'){
-//     return grid_space_p.result;
+//double parseFormula(){
+// grid_space_p.result = parseSub();
+// if(*grid_space_p.input == '\0'){
+//   return grid_space_p.result;
+// }
+// // printf("Expected end of grid_space_p.input but found %c\n", *grid_space_p.input);
+// printf("Syntax Error\n");
+// return 0;
+//}
+//
+//double parseSub(){
+// double sub_1 = parseSum();
+// while(*grid_space_p.formula == '-'){
+//   ++grid_space_p.formula;
+//   double sub_2 = parseSum();
+//   sub_1 = sub_1 - sub_2;
+// }
+// return sub_1;
+//}
+//
+//double parseSum(){
+// double sum_1 = parsePro();
+// while(*grid_space_p.formula == '+'){
+//   ++grid_space_p.formula;
+//   double sum_2 = parsePro();
+//   sum_1 = sum_1 + sum_2;
+// }
+// return sum_1;
+//}
+//
+//double parsePro(){
+// double pro_1 = parseDiv();
+// while(*grid_space_p.formula == '*'){
+//   ++grid_space_p.formula;
+//   double pro_2 = parseDiv();
+//   pro_1 = pro_1 * pro_2;
+// }
+// return pro_1;
+//}
+//
+//double parseDiv(){
+// double div_1 = parsePow();
+// while(*grid_space_p.formula == '/'){
+//   ++grid_space_p.formula;
+//   double div_2 = parsePow();
+//   div_1 = div_1 / div_2;
+// }
+// return div_1;
+//}
+//
+//double parsePow(){
+// double pow_1 = parseFactor();
+// while(*grid_space_p.formula == '^'){
+//   ++grid_space_p.formula;
+//   double pow_2 = parseFactor();
+//   pow_1 = pow(pow_1, pow_2);
+// }
+// return pow_1;
+//}
+//
+//double parseFactor(){
+//
+// if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+//   return parseNumber();
+// }
+// else if(*grid_space_p.formula == '-'){
+//   return parseNumber();
+// }
+// else if(*grid_space_p.formula == '('){
+//   ++grid_space_p.formula;
+//   double temp = parseSub();
+//   ++grid_space_p.formula;
+//   return temp;
+// }
+// //PI
+// else if(*grid_space_p.formula == 'p'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'i'){
+//     ++grid_space_p.formula;
+//     return M_PI;
 //   }
-//   // printf("Expected end of grid_space_p.formula but found %c\n", *grid_space_p.formula);
+// }
+// //sin sqrt
+// else if(*grid_space_p.formula == 's'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'i'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'n'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == '('){
+//           ++grid_space_p.formula;
+//           double temp = parseSub();
+//           temp = sin(temp*M_PI/180);
+//           ++grid_space_p.formula;
+//           return temp;
+//       }
+//
+//     }
+//   }
+//   else if(*grid_space_p.formula == 'q'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'r'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == 't'){
+//           ++grid_space_p.formula;
+//           if(*grid_space_p.formula == '('){
+//           ++grid_space_p.formula;
+//           double temp = parseSub();
+//           temp = sqrt(temp);
+//           ++grid_space_p.formula;
+//           return temp;
+//         }
+//
+//       }
+//     }
+//   }
+// }
+// //cos
+// else if(*grid_space_p.formula == 'c'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'o'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 's'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == '('){
+//         ++grid_space_p.formula;
+//         double temp = parseSub();
+//         temp = cos(temp*M_PI/180);
+//         ++grid_space_p.formula;
+//         return temp;
+//       }
+//
+//     }
+//   }
+// }
+// //tan
+// else if(*grid_space_p.formula == 't'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'a'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'n'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == '('){
+//         ++grid_space_p.formula;
+//         double temp = parseSub();
+//         temp = tan(temp*M_PI/180);
+//         ++grid_space_p.formula;
+//         return temp;
+//       }
+//
+//     }
+//   }
+// }
+// //asin acos atan
+// else if(*grid_space_p.formula == 'a'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 's'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'i'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == 'n'){
+//         ++grid_space_p.formula;
+//         if(*grid_space_p.formula == '('){
+//           ++grid_space_p.formula;
+//           double temp = parseSub();
+//           temp = asin(temp*M_PI/180);
+//           ++grid_space_p.formula;
+//           return temp;
+//         }
+//
+//       }
+//     }
+//   }
+//   else if(*grid_space_p.formula == 'c'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'o'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == 's'){
+//         ++grid_space_p.formula;
+//         if(*grid_space_p.formula == '('){
+//           ++grid_space_p.formula;
+//           double temp = parseSub();
+//           temp = acos(temp*M_PI/180);
+//           ++grid_space_p.formula;
+//           return temp;
+//         }
+//
+//       }
+//     }
+//   }
+//   else if(*grid_space_p.formula == 't'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'a'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == 'n'){
+//         ++grid_space_p.formula;
+//         if(*grid_space_p.formula == '('){
+//           ++grid_space_p.formula;
+//           double temp = parseSub();
+//           temp = atan(temp*M_PI/180);
+//           ++grid_space_p.formula;
+//           return temp;
+//         }
+//
+//       }
+//     }
+//   }
+// }
+// //exp
+// else if(*grid_space_p.formula == 'e'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'x'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'p'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == '('){
+//         ++grid_space_p.formula;
+//         double temp = parseSub();
+//         temp = exp(temp);
+//         ++grid_space_p.formula;
+//         return temp;
+//       }
+//
+//     }
+//   }
+// }
+// //ln log10
+// else if(*grid_space_p.formula == 'l'){
+//   ++grid_space_p.formula;
+//   if(*grid_space_p.formula == 'n'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == '('){
+//       ++grid_space_p.formula;
+//       double temp = parseSub();
+//       temp = log(temp);
+//       ++grid_space_p.formula;
+//       return temp;
+//     }
+//   }
+//   else if(*grid_space_p.formula == 'o'){
+//     ++grid_space_p.formula;
+//     if(*grid_space_p.formula == 'g'){
+//       ++grid_space_p.formula;
+//       if(*grid_space_p.formula == '('){
+//         ++grid_space_p.formula;
+//         double temp = parseSub();
+//         temp = log10(temp);
+//         ++grid_space_p.formula;
+//         return temp;
+//       }
+//
+//     }
+//   }
+// }
+// else{
 //   printf("Syntax Error\n");
-//   return 0;
+//   printf("Unknown symbol %c", *grid_space_p.formula);
 // }
-
-// double parseSub(){
-//   double sub_1 = parseSum();
-//   while(*grid_space_p.formula == '-'){
-//     ++grid_space_p.formula;
-//     double sub_2 = parseSum();
-//     sub_1 = sub_1 - sub_2;
-//   }
-//   return sub_1;
+// return 0;
+//}
+//
+//double parseNumber(){
+//
+// double number = 0;
+// int neg_flag = 1;
+// if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
 // }
-
-// double parseSum(){
-//   double sum_1 = parsePro();
-//   while(*grid_space_p.formula == '+'){
-//     ++grid_space_p.formula;
-//     double sum_2 = parsePro();
-//     sum_1 = sum_1 + sum_2;
-//   }
-//   return sum_1;
+// else if(*grid_space_p.formula == '-'){
+//   neg_flag = -1;
+//   ++grid_space_p.formula;
 // }
-
-// double parsePro(){
-//   double pro_1 = parseDiv();
-//   while(*grid_space_p.formula == 'x'){
-//     ++grid_space_p.formula;
-//     double pro_2 = parseDiv();
-//     pro_1 = pro_1 * pro_2;
-//   }
-//   return pro_1;
+// else{
+//   printf("Syntax Error");
 // }
-
-// double parseDiv(){
-//   double div_1 = parseFactor();
-//   while(*grid_space_p.formula == '/'){
-//     ++grid_space_p.formula;
-//     double div_2 = parseFactor();
-//     div_1 = div_1 / div_2;
-//   }
-//   return div_1;
+//
+//
+// while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+//   number = number * 10;
+//   number = number + (int)(*grid_space_p.formula - '0');
+//   ++grid_space_p.formula;
 // }
-
-// double parseFactor(){
-
+//
+// if(*grid_space_p.formula == '.'){
+//   ++grid_space_p.formula;
+//
+//   //Check the next character is a number, else error
+//
 //   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//     return parseNumber();
-//   }
-//   else if(*grid_space_p.formula == '-'){
-//     return parseNumber();
-//   }
-//   else if(*grid_space_p.formula == '('){
-//     ++grid_space_p.formula;
-//     double temp = parseSub();
-//     ++grid_space_p.formula;
-//     return temp;
-//   }
-//   else{
-//     printf("Syntax Error\n");
-//     printf("Unknown symbol %c", *grid_space_p.formula);
-//   }
-//   return 0;
-// }
-
-// double parseNumber(){
-
-//   double number = 0;
-//   int neg_flag = 1;
-//   //TODO check the first character is a number or a minus
-//   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//   }
-//   else if(*grid_space_p.formula == '-'){
-//     neg_flag = -1;
-//     ++grid_space_p.formula;
+//     double weight = 1;
+//     while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+//       weight = weight / 10.0;
+//       double scaled = (int)(*grid_space_p.formula - '0') * weight;
+//       number = number + scaled;
+//       ++grid_space_p.formula;
+//     }
 //   }
 //   else{
 //     printf("Syntax Error");
 //   }
-
-
-//   while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//     number = number * 10;
-//     number = number + *grid_space_p.formula - '0';
-//     ++grid_space_p.formula;
-//   }
-
-//   if(*grid_space_p.formula == '.'){
-//     ++grid_space_p.formula;
-
-//     //Check the next character is a number, else error
-
-//     if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//       double weight = 1;
-//       while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//         weight = weight / 10.0;
-//         double scaled = (*grid_space_p.formula - '0') * weight;
-//         number = number + scaled;
-//         ++grid_space_p.formula;
-//       }
-//     }
-//     else{
-//       printf("Syntax Error");
-//     }
-//   }
-
-
-//   // else if(*grid_space_p.formula == ')'){
-//   //  return number;
-//   // }
-//   // else{
-//   //  printf("ERROR : No right bracket");
-//   // }
-//   return (number * neg_flag);
 // }
+//
+// return (number * neg_flag);
+//}
+
+
+ double parseFormula(){
+   grid_space_p.result = parseSub();
+   if(*grid_space_p.formula == '\0'){
+     return grid_space_p.result;
+   }
+   // printf("Expected end of grid_space_p.formula but found %c\n", *grid_space_p.formula);
+   printf("Syntax Error\n");
+   return 0;
+ }
+
+ double parseSub(){
+   double sub_1 = parseSum();
+   while(*grid_space_p.formula == '-'){
+     ++grid_space_p.formula;
+     double sub_2 = parseSum();
+     sub_1 = sub_1 - sub_2;
+   }
+   return sub_1;
+ }
+
+ double parseSum(){
+   double sum_1 = parsePro();
+   while(*grid_space_p.formula == '+'){
+     ++grid_space_p.formula;
+     double sum_2 = parsePro();
+     sum_1 = sum_1 + sum_2;
+   }
+   return sum_1;
+ }
+
+ double parsePro(){
+   double pro_1 = parseDiv();
+   while(*grid_space_p.formula == 'x'){
+     ++grid_space_p.formula;
+     double pro_2 = parseDiv();
+     pro_1 = pro_1 * pro_2;
+   }
+   return pro_1;
+ }
+
+ double parseDiv(){
+   double div_1 = parseFactor();
+   while(*grid_space_p.formula == '/'){
+     ++grid_space_p.formula;
+     double div_2 = parseFactor();
+     div_1 = div_1 / div_2;
+   }
+   return div_1;
+ }
+
+ double parseFactor(){
+
+   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+     return parseNumber();
+   }
+   else if(*grid_space_p.formula == '-'){
+     return parseNumber();
+   }
+   else if(*grid_space_p.formula == '('){
+     ++grid_space_p.formula;
+     double temp = parseSub();
+     ++grid_space_p.formula;
+     return temp;
+   }
+   else{
+     printf("Syntax Error\n");
+     printf("Unknown symbol %c", *grid_space_p.formula);
+   }
+   return 0;
+ }
+
+ double parseNumber(){
+
+   double number = 0;
+   int neg_flag = 1;
+   //TODO check the first character is a number or a minus
+   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+   }
+   else if(*grid_space_p.formula == '-'){
+     neg_flag = -1;
+     ++grid_space_p.formula;
+   }
+   else{
+     printf("Syntax Error");
+   }
+
+
+   while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+     number = number * 10;
+     number = number + *grid_space_p.formula - '0';
+     ++grid_space_p.formula;
+   }
+
+   if(*grid_space_p.formula == '.'){
+     ++grid_space_p.formula;
+
+     //Check the next character is a number, else error
+
+     if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+       double weight = 1;
+       while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+         weight = weight / 10.0;
+         double scaled = (*grid_space_p.formula - '0') * weight;
+         number = number + scaled;
+         ++grid_space_p.formula;
+       }
+     }
+     else{
+       printf("Syntax Error");
+     }
+   }
+
+
+   // else if(*grid_space_p.formula == ')'){
+   //  return number;
+   // }
+   // else{
+   //  printf("ERROR : No right bracket");
+   // }
+   return (number * neg_flag);
+ }

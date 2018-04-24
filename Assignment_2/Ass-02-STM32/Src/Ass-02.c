@@ -26,8 +26,8 @@ void Ass_02_Main(void)
   grid_space_p.items = item;
   grid_space_p.num_char = 0;
   grid_space_p.prev_ans = 0;
-  grid_space_p.formula = NULL;
-  grid_space_p.equation = NULL;
+  grid_space_p.formula = "";
+  grid_space_p.equation = "";
   CalculatorInit();
 #endif
 
