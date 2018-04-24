@@ -20,8 +20,8 @@ void Ass_02_Main(void)
 #ifdef STM32F407xx
   static char *item[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
    		            "<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
-                      "=", "(", "ANS", "sqrt", "^", ">", ")", "atan", "acos", "asin",
-                      "<", "pi", "tan", "cos", "sin", "AC", "", "log", "ln", "exp", "DEL"};
+                      "=", "(", "ANS", "sqrt(", "^", ">", ")", "atan(", "acos(", "asin(",
+                      "<", "pi", "tan(", "cos(", "sin(", "AC", "", "log(", "ln(", "exp(", "DEL"};
 
   grid_space_p.items = item;
   grid_space_p.num_char = 0;
