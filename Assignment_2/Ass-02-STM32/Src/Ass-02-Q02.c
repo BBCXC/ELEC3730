@@ -405,7 +405,7 @@ int Input_append(char *item){
   if(new_string == 0){
 	  printf("ERROR: Could not create memory for new_string\n");
   }
-  strncpy(&new_string[0], item, strlen(item));
+  strcpy(new_string, item);
 
   grid_space_p.input[num_char] = &new_string[0];
   printf("Item expected %s\n", item);
@@ -909,13 +909,23 @@ int clear_equation(){
  }
 
  double parseDiv(){
-   double div_1 = parseFactor();
-   while(*grid_space_p.formula == '/'){
-     ++grid_space_p.formula;
-     double div_2 = parseFactor();
-     div_1 = div_1 / div_2;
-   }
-   return div_1;
+  double div_1 = parsePow();
+  while(*grid_space_p.formula == '/'){
+    ++grid_space_p.formula;
+    double div_2 = parsePow();
+    div_1 = div_1 / div_2;
+  }
+  return div_1;
+ }
+
+ double parsePow(){
+  double pow_1 = parseFactor();
+  while(*grid_space_p.formula == '^'){
+    ++grid_space_p.formula;
+    double pow_2 = parseFactor();
+    pow_1 = pow(pow_1, pow_2);
+  }
+  return pow_1;
  }
 
  double parseFactor(){
