@@ -1,35 +1,3 @@
-//     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
-// $Revision: 1217 $
-//   $Author: Peter $
-
-/*
-LCD_COLOR_BLUE          0x001F
-LCD_COLOR_GREEN         0x07E0
-LCD_COLOR_RED           0xF800
-LCD_COLOR_CYAN          0x07FF
-LCD_COLOR_MAGENTA       0xF81F
-LCD_COLOR_YELLOW        0xFFE0
-LCD_COLOR_LIGHTBLUE     0x841F
-LCD_COLOR_LIGHTGREEN    0x87F0
-LCD_COLOR_LIGHTRED      0xFC10
-LCD_COLOR_LIGHTCYAN     0x87FF
-LCD_COLOR_LIGHTMAGENTA  0xFC1F
-LCD_COLOR_LIGHTYELLOW   0xFFF0
-LCD_COLOR_DARKBLUE      0x0010
-LCD_COLOR_DARKGREEN     0x0400
-LCD_COLOR_DARKRED       0x8000
-LCD_COLOR_DARKCYAN      0x0410
-LCD_COLOR_DARKMAGENTA   0x8010
-LCD_COLOR_DARKYELLOW    0x8400
-LCD_COLOR_WHITE         0xFFFF
-LCD_COLOR_LIGHTGRAY     0xD69A
-LCD_COLOR_GRAY          0x8410
-LCD_COLOR_DARKGRAY      0x4208
-LCD_COLOR_BLACK         0x0000
-LCD_COLOR_BROWN         0xA145
-LCD_COLOR_ORANGE        0xFD20
-*/
-
 #include "Ass-02.h"
 
 #define debugsys 0
@@ -66,19 +34,21 @@ void CalculatorInit(){
 	  printf("ERROR: Calloc input memory");
   }
 
-  printf("exiting init\n");
+  printf("SYS_INFO: Exiting Initilisation\n");
 }
 
 
 int calculator_layout(){
 
-  //Calculate grid spacing based off given width and height
+  //Calculate grid spacing based off given number of columns and rows
   int num_Vline = 5;
   int num_Hline = 5;
 
+  //Get size of LCD
   int display_height = BSP_LCD_GetYSize();
   int display_width = BSP_LCD_GetXSize();
 
+  //Divide LCD size into rows and columns 
   int cell_width = display_width / num_Vline;
   int cell_height = display_height / num_Hline;
 
@@ -91,6 +61,8 @@ int calculator_layout(){
   int curr_width = prev_width;
   int temp = 0;
 
+  //For each row and column 
+  //Calculate the min and max cell areas
   for(int i=0; i<num_Hline; i++){
   	prev_height = curr_height;
   	curr_height = curr_height - cell_height;
@@ -102,6 +74,7 @@ int calculator_layout(){
      	prev_width = curr_width;
       curr_width = prev_width - cell_width;
 
+      //Store min and max coordinates in grid_space array
       grid_space_p.Area[temp][0] = curr_width;
       grid_space_p.Area[temp][1] = prev_width;
       grid_space_p.Area[temp][2] = curr_height;
@@ -160,11 +133,10 @@ int draw_numpad(){
   //Draw numbers 0 - 9 in the relevant positions
   //Draw math symbols on first screen + - etc
   //Draw common symbols, AC del = etc
-
   for(int i=0; i<21; i++){
 		if(draw_item(i, 0) == 0){
 			grid_space_p.Area[i][4] = i - 0;
-			if(debugsys == 1) printf("DEBUGSYS numpad: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+			if(debugsys == 1) printf("DEBUGSYS numpad: item %s, cell_number %i, grid_space_p %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
 		}
   }
@@ -176,11 +148,10 @@ int draw_sym(){
 
   //Draw symbol screen (, ), % etc
   //Draw common symbols, AC del = etc
-
   for(int i=0; i<21; i++){
   	if(draw_item(i, 21) == 0){
   		grid_space_p.Area[i][4] = i+21;
-  		if(debugsys == 1) printf("DEBUGSYS: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+  		if(debugsys == 1) printf("DEBUGSYS: item %s, cell_number %i, grid_space_p %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
   	}
   }
@@ -189,7 +160,7 @@ int draw_sym(){
 
 
 int draw_item(int cell_number, int offset){
-    
+
   //Draws specific character passed into function
   int x_min = grid_space_p.Area[cell_number][0];
   int x_max = grid_space_p.Area[cell_number][1];
@@ -210,6 +181,7 @@ int draw_item(int cell_number, int offset){
 }
 
 
+//Get the position of the screen touch and return the item number that was pessed
 int get_touch_pos(int display_x, int display_y){
   for(int i=0; i<21; i++){
 	  if((display_x >= grid_space_p.Area[i][0]) &&
@@ -254,8 +226,11 @@ void CalculatorProcess(){
 
       else button_highlight = 1;
 
-			//Do something with selected item
-			if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
+      
+      //Do something with selected item
+			
+      //Selected Item DELETE
+      if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
 				//Remove previous item from string
 
 				if(num_char > 0){
@@ -267,6 +242,7 @@ void CalculatorProcess(){
 				}
 			}
 
+      //Selected Item AC
 			else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
 				//Clear All items
 
@@ -277,13 +253,14 @@ void CalculatorProcess(){
 				  free(grid_space_p.input[0]);
         }
 
-				grid_space_p.input = (char**) realloc(1, sizeof(char*));
+				grid_space_p.input = (char**) realloc(grid_space_p.input, sizeof(char*));
 				if(grid_space_p.input == 0){
 					printf("ERROR: Realloc input memory");
 				}
 				grid_space_p.num_char = 0;
 			}
 
+      //Selected Item Next screen
 			else if(strcmp(grid_space_p.items[touch_pos], "<") == 0){ //strcmp(items[touch_pos], "<") == 0 TODO
 				//Switch display mode
 				display_mode++;
@@ -305,6 +282,7 @@ void CalculatorProcess(){
 				}
 			}
 
+      //Selected Item Equals
 			else if(strcmp(grid_space_p.items[touch_pos], "=") == 0){
 				//Equate equation
 				//Call function return answer
@@ -338,7 +316,7 @@ void CalculatorProcess(){
           free(grid_space_p.input[0]);
         }
 
-				grid_space_p.input = (char**) realloc(1, sizeof(char*));
+				grid_space_p.input = (char**) realloc(grid_space_p.input, sizeof(char*));
 				if(grid_space_p.input == 0){
 					printf("ERROR: Calloc input memory");
 				}
@@ -346,6 +324,7 @@ void CalculatorProcess(){
 				grid_space_p.num_char = 0;
 			}
 
+      //Selected Item ANSWER
 			else if(strcmp(grid_space_p.items[touch_pos], "ANS") == 0){
 				//Insert previous answer into equation as number
 				//TODO somehow make the double a string
@@ -355,6 +334,7 @@ void CalculatorProcess(){
         if(Input_append(output) != 0) printf("ERROR\n");
 			}
 
+      //Selected Item must be a number or symbol
 			else{
 				//Append symbol(s) to string
 				printf("Writing String %s\n", grid_space_p.items[touch_pos]);
@@ -382,10 +362,12 @@ int Input_append(char *item){
   printf("strlen %i\n", strlen(item));
   strncpy(&new_string[0], item, strlen(item));
 
-  grid_space_p.input = (char**) realloc(num_char*sizeof(char*));
+  grid_space_p.input = (char**) realloc(grid_space_p.input, num_char*sizeof(char*));
   if(grid_space_p.input == 0){
-    printf("ERROR: Calloc input memory");
+    printf("ERROR: Calloc input memory\n");
   }
+
+  printf("SYS_INFO: Size of input pointer array %i\n", sizeof(grid_space_p.input));
 
   grid_space_p.input[num_char] = &new_string[0];
   printf("Item expected %s\n", item);
@@ -428,12 +410,16 @@ int LCD_Cell_Highlight(int status, int cell_number){
     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
     if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
 
+    printf("SYS_INFO: Cell highlighted to WHITE text BLACK\n");
+
     return 0;
   }
   else if (status == 1){
     //Set highlight to on
     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf("ERROR CLEARING CELL\n");
     if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
+
+    printf("SYS_INFO: Cell highlighted to YELLOW text BLACK\n");
 
     return 0;
   }
@@ -502,8 +488,6 @@ int clear_equation(){
 
   return 0;
 }
-
-#include "Syntax_tree.h"
 
 double parseFormula(){
   grid_space_p.result = parseSub();

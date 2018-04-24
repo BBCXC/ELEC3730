@@ -19,13 +19,13 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <string.h>
+#include <math.h>
+
+//#define debugsys 0
 
 // Assignment main
 extern void Ass_02_Main(void);
 
-//
-// REPLACE THE EXAMPLE CODE WITH YOUR CODE 
-//
 typedef struct{
   int Area[25][5];
   char **items;
@@ -48,6 +48,8 @@ extern int calculator_layout(void);
 extern int draw_numpad(void);
 extern int draw_sym(void);
 extern int draw_item(int cell_number, int offset);
+extern int draw_result(void);
+extern int clear_equation(void);
 extern int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour);
 extern void CalculatorProcess(void);
 extern int get_touch_pos(int display_x, int display_y);
@@ -71,3 +73,31 @@ extern uint8_t BSP_TP_GetDisplayPoint(Coordinate *pDisplay);
 #endif
 
 #endif /* ASS_02_H_ */
+
+/*
+LCD_COLOR_BLUE          0x001F
+LCD_COLOR_GREEN         0x07E0
+LCD_COLOR_RED           0xF800
+LCD_COLOR_CYAN          0x07FF
+LCD_COLOR_MAGENTA       0xF81F
+LCD_COLOR_YELLOW        0xFFE0
+LCD_COLOR_LIGHTBLUE     0x841F
+LCD_COLOR_LIGHTGREEN    0x87F0
+LCD_COLOR_LIGHTRED      0xFC10
+LCD_COLOR_LIGHTCYAN     0x87FF
+LCD_COLOR_LIGHTMAGENTA  0xFC1F
+LCD_COLOR_LIGHTYELLOW   0xFFF0
+LCD_COLOR_DARKBLUE      0x0010
+LCD_COLOR_DARKGREEN     0x0400
+LCD_COLOR_DARKRED       0x8000
+LCD_COLOR_DARKCYAN      0x0410
+LCD_COLOR_DARKMAGENTA   0x8010
+LCD_COLOR_DARKYELLOW    0x8400
+LCD_COLOR_WHITE         0xFFFF
+LCD_COLOR_LIGHTGRAY     0xD69A
+LCD_COLOR_GRAY          0x8410
+LCD_COLOR_DARKGRAY      0x4208
+LCD_COLOR_BLACK         0x0000
+LCD_COLOR_BROWN         0xA145
+LCD_COLOR_ORANGE        0xFD20
+*/
