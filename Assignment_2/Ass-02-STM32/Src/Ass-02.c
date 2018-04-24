@@ -23,8 +23,8 @@ void Ass_02_Main(void)
                       "=", "(", "ANS", "sqrt", "^", ">", ")", "atan", "acos", "asin",
                       "<", "pi", "tan", "cos", "sin", "AC", "", "log", "ln", "exp", "DEL"};
 
-  grid_space_p.items = item;
-  grid_space_p.num_char = 0;
+  cal_p.items = item;
+  cal_p.num_char = 0;
   CalculatorInit();
 #endif
 

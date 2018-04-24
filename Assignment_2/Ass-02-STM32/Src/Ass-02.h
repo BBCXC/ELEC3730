@@ -21,7 +21,8 @@
 #include <string.h>
 #include <math.h>
 
-//#define debugsys 0
+#define debugsys 0
+#define LCDResultlen 20
 
 // Assignment main
 extern void Ass_02_Main(void);
@@ -35,8 +36,8 @@ typedef struct{
   char *formula;
   double result;
 }
-  grid_struct;
-  grid_struct grid_space_p;
+  calculator_struct;
+  calculator_struct cal_p;
 
 // Question 1
 extern void CommandLineParserInit(void);
@@ -44,11 +45,13 @@ extern void CommandLineParserProcess(void);
 
 // Question 2
 extern void CalculatorInit(void);
+extern int title_animation(void);
 extern int calculator_layout(void);
 extern int draw_numpad(void);
 extern int draw_sym(void);
 extern int draw_item(int cell_number, int offset);
 extern int draw_result(void);
+extern int draw_equation(void);
 extern int clear_equation(void);
 extern int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour);
 extern void CalculatorProcess(void);

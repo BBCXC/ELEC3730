@@ -90,11 +90,11 @@ double parseFactor(){
       if(*cal_p.input == 'n'){
         ++cal_p.input;
         if(*cal_p.input == '('){
-          ++cal_p.input;
-          double temp = parseSub();
-          temp = sin(temp*M_PI/180);
-          ++cal_p.input;
-          return temp;
+            ++cal_p.input;
+            double temp = parseSub();
+            temp = sin(temp*M_PI/180);
+            ++cal_p.input;
+            return temp;
         }
 
       }
@@ -104,8 +104,8 @@ double parseFactor(){
       if(*cal_p.input == 'r'){
         ++cal_p.input;
         if(*cal_p.input == 't'){
-          ++cal_p.input;
-          if(*cal_p.input == '('){
+            ++cal_p.input;
+            if(*cal_p.input == '('){
             ++cal_p.input;
             double temp = parseSub();
             temp = sqrt(temp);
@@ -279,7 +279,7 @@ double parseNumber(){
 
   while(*cal_p.input >= '0' && *cal_p.input <= '9'){
     number = number * 10;
-    number = number + *cal_p.input - '0';
+    number = number + (int)(*cal_p.input - '0');
     ++cal_p.input;
   }
 
@@ -292,7 +292,7 @@ double parseNumber(){
       double weight = 1;
       while(*cal_p.input >= '0' && *cal_p.input <= '9'){
         weight = weight / 10.0;
-        double scaled = (*cal_p.input - '0') * weight;
+        double scaled = (int)(*cal_p.input - '0') * weight;
         number = number + scaled;
         ++cal_p.input;
       }
