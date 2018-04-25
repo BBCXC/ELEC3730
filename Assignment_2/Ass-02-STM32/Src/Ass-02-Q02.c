@@ -1,6 +1,5 @@
-//     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
-// $Revision: 1217 $
-//   $Author: Peter $
+//TODO Implement debug on debug off
+
 
 /*
 LCD_COLOR_BLUE          0x001F
