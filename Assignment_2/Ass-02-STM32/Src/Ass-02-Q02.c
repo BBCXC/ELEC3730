@@ -32,7 +32,12 @@ LCD_COLOR_ORANGE        0xFD20
 
 #include "Ass-02.h"
 
-#define debugsys 0
+#define debuginfo 0
+#define sysinfo 1
+#define errorinfo 1
+
+#define MemExpand 10
+
 
 /*******************************************************************************************
 **********************************Calculator Initilisation**********************************
@@ -50,35 +55,33 @@ void CalculatorInit(){
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   
   if(title_animation() != 0){
-    printf("SYSTEM ERROR : unable to draw animation");
+    printf("ERROR : Unable to draw animation");
   }
 
   //Set basic layout
   if(calculator_layout() != 0){
-	  printf("SYSTEM ERROR : unable to draw layout");
+	  printf("ERROR : Unable to draw layout");
   }
 
   //Initilise numpab loyout
   if(draw_numpad() != 0){
- 	  printf("SYSTEM ERROR : unable to draw numpad");
+ 	  printf("ERROR : Unable to draw numpad");
   }
 
   for(int tem = 0; tem < 25; tem++){
-  	  printf("DEBUG Stuff: pw %i, ph %i, cw %i, ch %i, pos %i, item %s\n", grid_space_p.Area[tem][0],
+  	  if(debuginfo == 1){
+  		  printf("DEBUG_INFO: pw %i, ph %i, cw %i, ch %i, pos %i, item %s\n", grid_space_p.Area[tem][0],
   			  	  	  	  	  	  	  	  	  	  	  	  	  	   grid_space_p.Area[tem][1],
 																   grid_space_p.Area[tem][2],
 																   grid_space_p.Area[tem][3],
 																   grid_space_p.Area[tem][4],
 																   grid_space_p.items[grid_space_p.Area[tem][4]]);
+  	  }
   }
 
-  //Calloc enough memory for the input string pointers
-  grid_space_p.input = (char**) calloc(1, sizeof(char*));
-  if(grid_space_p.input == 0){
-	  printf("ERROR: Calloc input memory");
-  }
-
-  printf("exiting init\n");
+  if(allocate_memory() != 0) printf("ERROR: Could not allocate memory for EQUATION\n");
+  if(sysinfo == 1)printf("SYS_INFO: Equation currently has %i memory free of total %i\n", equation.size - equation.pos, equation.size);
+  if(debuginfo == 1)printf("DEBUG_INFO: Exiting init\n");
 }
 
 
@@ -94,7 +97,7 @@ int calculator_layout(){
     int cell_width = display_width / num_Vline;
     int cell_height = display_height / num_Hline;
 
-    if(debugsys == 1) printf("DEBUGSYS 1: cew %i, ceh %i\n", cell_width, cell_height);
+    if(debuginfo == 1) printf("DEBUG_INFO: cew %i, ceh %i\n", cell_width, cell_height);
 
     //Populate grid_space struct
     int prev_width = display_width;
@@ -107,7 +110,7 @@ int calculator_layout(){
     	prev_height = curr_height;
     	curr_height = curr_height - cell_height;
     	curr_width = display_width;
-        if(debugsys == 1) printf("DEBUGSYS 2: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
+        if(debuginfo == 1) printf("DEBUG_INFO: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
         for(int j=0; j<num_Vline; j++){
         	prev_width = curr_width;
             curr_width = prev_width - cell_width;
@@ -117,7 +120,7 @@ int calculator_layout(){
             grid_space_p.Area[temp][2] = curr_height;
             grid_space_p.Area[temp][3] = prev_height;
 
-            if(debugsys == 1) printf("DEBUGSYS 3: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
+            if(debuginfo == 1) printf("DEBUG_INFO: pw %i, ph %i, cw %i, ch %i\n", prev_width, prev_height, curr_width, curr_height);
             temp = temp+1;
 
         }
@@ -144,7 +147,7 @@ int calculator_layout(){
     	}
         x_pos = l * cell_width;
         BSP_LCD_DrawVLine(x_pos, y_pos, len);
-        if(debugsys == 1) printf("DEBUGSYS Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+        if(debuginfo == 1) printf("DEBUG_INFO Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
     }
 
     //x_pos is fixed for horizontal lines
@@ -157,7 +160,7 @@ int calculator_layout(){
     for(int l=0; l<num_Hline; l++){
         y_pos = l * cell_height;
         BSP_LCD_DrawHLine(0, y_pos, len);
-        if(debugsys == 1) printf("DEBUGSYS Hline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+        if(debuginfo == 1) printf("DEBUG_INFO Hline: x %i, y %i, len %i\n", x_pos, y_pos, len);
     }
 
     return 0;
@@ -173,7 +176,7 @@ int draw_numpad(){
     for(int i=0; i<21; i++){
   		if(draw_item(i, 0) == 0){
   			grid_space_p.Area[i][4] = i - 0;
-  			if(debugsys == 1) printf("DEBUGSYS numpad: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+  			if(debuginfo == 1) printf("DEBUG_INFO Numpad: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
   		}
     }
@@ -189,7 +192,7 @@ int draw_sym(){
     for(int i=0; i<21; i++){
     	if(draw_item(i, 21) == 0){
     		grid_space_p.Area[i][4] = i+21;
-    		if(debugsys == 1) printf("DEBUGSYS: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
+    		if(debuginfo == 1) printf("DEBUG_INFO: item %s, cell_number %i, grid_space %i\n", grid_space_p.items[i], i, grid_space_p.Area[i][4]);
 
     	}
    }
@@ -205,7 +208,7 @@ int draw_item(int cell_number, int offset){
     int y_min = grid_space_p.Area[cell_number][2];
     int y_max = grid_space_p.Area[cell_number][3];
 
-    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
+    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR: Could not clear cell\n");
 
     //Find center of cell given
     int x_pos = ((x_max - x_min) / 2.0) + x_min;
@@ -238,57 +241,75 @@ int get_touch_pos(int display_x, int display_y){
 void CalculatorProcess(){
 
 	static int button_debounce = 0;
+	static int off_debounce = 0;
+	static int holding = 0;
+
 	static int display_mode = 0;
 
-	//int button_highlight = 0;
+	static int button_highlight = 0;
 	static int touch_pos = 0;
 
-    char output[50];
+    char output_ans[50];
+
 
 	// getDisplayPoint(&display, Read_Ads7846(), &matrix );
-	if (BSP_TP_GetDisplayPoint(&display) == 0){
-		if(button_debounce >= 400){
-			//Given grid struct and position touched, returns area touched
-
+	if (BSP_TP_GetDisplayPoint(&display) == 0 && holding == 0){
+		button_debounce++;
+		if(button_debounce >= 50){
 			button_debounce = 0;
+			off_debounce = 0;
+			holding = 1;
 
+			//Check that my char** isn't out of space
+			if(equation.pos < equation.size){
+				//Currently enough memory
+			}
+			else{
+				//Reallocate memory
+				if(reallocate_memory() != 0) printf("ERROR: Unable to reallocate enough memory\n");
+			}
+
+			//Given grid struct and position touched, returns area touched
 			touch_pos = get_touch_pos(display.x, display.y);
-			printf("touch_pos %i, position touched %i, %i\n", touch_pos, display.x, display.y);
+			if(debuginfo == 1)printf("DEBUG_INFO: touch_pos %i, position touched %i, %i\n", touch_pos, display.x, display.y);
+
 			if(touch_pos != 100){
 
-				printf("Selected %s\n", grid_space_p.items[touch_pos]);
+				if(button_highlight == 0){
+				    if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
+				    button_highlight = 1;
+			    }
 
-//	      if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");
-//
-//	      else button_highlight = 1;
-
+				if(sysinfo == 1)printf("SYS_INFO: Selected %s\n", grid_space_p.items[touch_pos]);
 				//Do something with selected item
 				if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
 					//Remove previous item from string
-
-					if(grid_space_p.num_char > 0){
-						grid_space_p.num_char--;
-						grid_space_p.input[grid_space_p.num_char] = NULL;
+					if(equation.pos > 0){
+						if(sysinfo == 1)printf("SYS_INFO: Formula Contains Before Deleting: %s, equation.pos %i\n", output.formula, equation.pos);
+						equation.pos--;
+						equation.input[equation.pos] = NULL;
+						output.formula[equation.pos] = NULL;
+						if(sysinfo == 1)printf("SYS_INFO: Formula Contains After Deleting: %s, equation.pos %i\n", output.formula, equation.pos);
+						if(draw_equation() != 0) printf("ERROR\n");
 					}
 					else{
-						printf("Whole string deleted\n");
+						if(debuginfo == 1)printf("DEBUG_INFO: Whole string deleted\n");
 					}
-
-
-					//TODO Now needs to re write equation and result string
 				}
 
 				else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
 					//Clear All items
-
 					//Clear LCD
 					if(clear_equation() != 0) printf("ERROR: Could not clear Equation\n");
 
-					while(grid_space_p.num_char > 0){
-						grid_space_p.num_char--;
-						grid_space_p.input[grid_space_p.num_char] = NULL;
+					while(equation.pos > 0){
+						equation.pos--;
+						equation.input[equation.pos] = NULL;
 					}
-					if(grid_space_p.num_char == 0) printf("Whole string deleted");
+					if(equation.pos == 0) {
+						if(debuginfo == 1)printf("DEBUG_INFO: Whole string deleted\n");
+					}
+
 				}
 
 				else if(strcmp(grid_space_p.items[touch_pos], "<") == 0){ //strcmp(items[touch_pos], "<") == 0 TODO
@@ -302,47 +323,34 @@ void CalculatorProcess(){
 					}
 					if(display_mode == 0){
 						if(draw_numpad() != 0){
-							  printf("SYSTEM ERROR : unable to draw sym");
+							  printf("ERROR : Unable to draw sym");
 						}
 					}
 					else if(display_mode == 1){
 						if(draw_sym() != 0){
-							  printf("SYSTEM ERROR : unable to draw numpad");
+							  printf("ERROR : Unable to draw numpad");
 						}
 					}
 				}
 
-				else if(strcmp(grid_space_p.items[touch_pos], "=") == 0 && grid_space_p.num_char > 0){
+				else if(strcmp(grid_space_p.items[touch_pos], "=") == 0 && equation.pos > 0){
 					//Equate equation
 					//Call function return answer
 					//prev_ans = parseFormula(input);
 					//Save answer
 
-
-					for(int num_str=0; num_str < grid_space_p.num_char; num_str++){
-						printf("%i String of %i stings: string %s, length %i\n", num_str + 1, grid_space_p.num_char, grid_space_p.input[num_str], strlen(grid_space_p.input[num_str]));
-					}
-					//printf("Formula Before : %s\n", grid_space_p.formula);
-//					grid_space_p.formula = grid_space_p.input[0];
-//					for(int len=1; len<(grid_space_p.num_char); len++){
-//						strcat(grid_space_p.formula, grid_space_p.input[len]);
-//					}
-
-
-					grid_space_p.formula = "";
-					grid_space_p.formula = grid_space_p.input[0];
-					if(grid_space_p.num_char > 0){
-						strcat(grid_space_p.formula, grid_space_p.input[grid_space_p.num_char]);
+					for(int num_str=0; num_str < equation.pos; num_str++){
+						if(sysinfo == 1)printf("SYS_INFO: %i String of %i stings: string %s, length %i\n", num_str + 1, equation.pos, equation.input[num_str], strlen(equation.input[num_str]));
 					}
 
+					if(sysinfo == 1)printf("SYS_INFO: Formula Contains Before Parsing: %s, equation.pos %i\n", output.formula, equation.pos);
 
-					printf("Formula Expected: %s\n", grid_space_p.input[0]);
-					printf("Formula Passed: %s\n", grid_space_p.formula);
-					grid_space_p.result = parseFormula(); //Lowest precedent
+					output.result = parseFormula(); //Lowest precedent
+					output.prev_ans = output.result;
+					if(sysinfo == 1)printf("SYS_INFO: Result %lf\n", output.result);
 
-					grid_space_p.prev_ans = grid_space_p.result;
+					//TODO Free output.formula here
 
-					printf("Result %lf\n", grid_space_p.result);
 
 					//Now do something here
 					//Print answer to screen etc
@@ -353,44 +361,111 @@ void CalculatorProcess(){
 					}
 					//Clear formula
 
-					for(int j=0; j<grid_space_p.num_char; j++){
-						free(grid_space_p.input[j]);
+					for(int j=0; j<equation.pos; j++){
+						free(equation.input[j]);
 					}
-					while(grid_space_p.num_char > 0){
-						grid_space_p.num_char--;
-						grid_space_p.input[grid_space_p.num_char] = NULL;
+					while(equation.pos > 0){
+						equation.pos--;
+						equation.input[equation.pos] = NULL;
 					}
-					if(grid_space_p.num_char == 0) printf("Whole string deleted\n");
+					if(equation.pos == 0){
+						if(debuginfo == 1)printf("DEBUG_INFO: Whole string deleted\n");
+					}
 
-					grid_space_p.num_char = 0;
+					equation.pos = 0;
 
-					printf("SYS_INFO: Previous answer saved as %lf\n", grid_space_p.prev_ans);
+					if(sysinfo == 1)printf("SYS_INFO: Previous answer saved as %lf\n", output.prev_ans);
 				}
 
 				else if(strcmp(grid_space_p.items[touch_pos], "ANS") == 0){
 					//Insert previous answer into equation as number
-					printf("Writing String %s\n", grid_space_p.items[touch_pos]);
-					snprintf(output, 50, "%f", grid_space_p.prev_ans);
+					if(debuginfo == 1)printf("DEBUG_INFO: Writing String %s\n", grid_space_p.items[touch_pos]);
+					snprintf(output_ans, 50, "%f", output.prev_ans);
 
 
-					if(Input_append(output) != 0) printf("ERROR\n");
+					if(Input_append(output_ans) != 0) printf("ERROR\n");
 				}
 
 				else{
 					//Append symbol(s) to string
-					printf("Writing String %s\n", grid_space_p.items[touch_pos]);
+					if(debuginfo == 1)printf("DEBUG_INFO: Writing String %s\n", grid_space_p.items[touch_pos]);
 
 					if(Input_append(grid_space_p.items[touch_pos]) != 0) printf("ERROR\n");
 				}
 
 			}
+			for(int i=0; i<equation.pos; i++){
+				if(debuginfo == 1)printf("DEBUG_INFO: Equation.Input[%i] Contains %s  length %i\n", i, equation.input[i], strlen(equation.input[i]));
+			}
+			if(debuginfo == 1)printf("DEBUG_INFO: Equation currently has %i memory free of total %i\n", equation.size - equation.pos, equation.size);
 		}
-		button_debounce++;
 	}
-  else if(BSP_TP_GetDisplayPoint(&display) == 1){// && button_highlight == 1){
-//    if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
-//    else button_highlight = 0;
+  else if(BSP_TP_GetDisplayPoint(&display) == 1){
+	  off_debounce++;
+	  if(off_debounce > 50){
+		  holding = 0;
+		  button_debounce = 0;
+		  off_debounce = 0;
+		  if(button_highlight == 1 ){
+			  if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
+			  button_highlight = 0;
+			  if(sysinfo == 1)printf("SYS_INFO: Cleared Highlight Now\n");
+		  }
+	  }
   }
+
+
+}
+
+int allocate_memory(){
+
+	  //Calloc enough memory for the input string pointers
+	  //Allocate arbituary amount of memory for initial max number of strings (10)
+
+	  equation.input = (char**) calloc(MemExpand, sizeof(char*));
+	  if(equation.input == 0){
+		  printf("ERROR: Calloc input memory");
+		  return 1;
+	  }
+	  equation.size = MemExpand;
+
+	  return 0;
+}
+
+int reallocate_memory(){
+
+	//Takes previously allocated section,
+	//Allocates new sizeof(new_chunk + old_chunk)
+	//Shifts old_chunk into new chunck
+
+	for(int i=0; i<equation.pos; i++){
+		if(debuginfo == 1)printf("DEBUG_INFO: Equation.Input[%i] Before %s length %i\n", i, equation.input[i], strlen(equation.input[i]));
+	}
+
+	equation.input = (char**) realloc(equation.input, (equation.size + MemExpand)*sizeof(char*));
+	if(equation.input == 0){
+		printf("ERROR: Calloc input memory\n");
+		return 1;
+	}
+	equation.size = equation.size + MemExpand;
+
+
+	for(int i=0; i<equation.pos; i++){
+		//strcpy(equation.input[i], temp[i]);
+		if(debuginfo == 1)printf("DEBUG_INFO: Equation.Input[%i] After %s  length %i\n", i, equation.input[i], strlen(equation.input[i]));
+	}
+
+	for(int i=equation.pos; i<equation.size; i++){
+		equation.input[i] = "\0";
+	}
+
+	for(int i=0; i<equation.size; i++){
+		//strcpy(equation.input[i], temp[i]);
+		if(debuginfo == 1)printf("DEBUG_INFO: Equation.Input[%i] After %s  length %i\n", i, equation.input[i], strlen(equation.input[i]));
+	}
+
+	return 0;
+
 
 
 }
@@ -400,29 +475,49 @@ void CalculatorProcess(){
 //Draw Equation currently disabled
 int Input_append(char *item){
 
-  int num_char = grid_space_p.num_char;
+  int num_char = equation.pos;
   char* new_string = (char*) calloc((strlen(item) + 1), sizeof(char));
   if(new_string == 0){
 	  printf("ERROR: Could not create memory for new_string\n");
   }
-  strcpy(new_string, item);
+  strncpy(&new_string[0], item, strlen(item));
 
-  grid_space_p.input[num_char] = &new_string[0];
-  printf("Item expected %s\n", item);
-  printf("String copied %s\n", new_string);
-  printf("String stored %s\n", (grid_space_p.input[num_char]));
-  printf("num_char %i\n", num_char);
+  equation.input[num_char] = &new_string[0];
+  if(debuginfo == 1){
+	  printf("DEBUG_INFO: Item expected %s\n", item);
+	  printf("DEBUG_INFO: String copied %s\n", new_string);
+	  printf("DEBUG_INFO: String stored %s\n", (equation.input[num_char]));
+	  printf("DEBUG_INFO: num_char %i\n", num_char);
+  }
 
-  if(strcmp(new_string, (grid_space_p.input[num_char])) != 0){
+  if(strcmp(new_string, (equation.input[num_char])) != 0){
 	  printf("ERROR: String copied not equal to string stored\n");
   }
 
+  if(equation.pos == 0){
+	  //TODO Change the allocate memory function to handle this aswell
+	  output.formula = (char*) calloc(MemExpand, sizeof(char));
+	  if(output.formula == 0){
+		  printf("ERROR: Calloc output memory");
+		  return 1;
+	  }
+	  //
+	  strncpy(output.formula, equation.input[0], strlen(equation.input[0]));
+  	  if(debuginfo == 1 || sysinfo == 1)printf("DEBUG_INFO: formula contains %s\n", output.formula);
+  }
+  else{
+
+	//TODO Reallocate memory if needed
+
+	strcat(output.formula, equation.input[equation.pos]);
+	if(debuginfo == 1 || sysinfo == 1)printf("DEBUG_INFO: formula contains %s\n", output.formula);
+  }
   //Call function to display equation on screen
   //TODO Don't clear, just write the next character
   if(clear_equation() != 0) printf("ERROR: Could not clear equation\n");
   if(draw_equation() != 0) printf("ERROR: Could not draw equation\n");
 
-  grid_space_p.num_char++;
+  equation.pos++;
 
   return 0;
 }
@@ -431,10 +526,8 @@ int Input_append(char *item){
 int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour){
 
 	BSP_LCD_SetTextColor(cell_colour);
-
 	/* Draw a rectangle with background color */
 	BSP_LCD_FillRect((x_min + 1), (y_min + 1), (x_max - x_min - 2), (y_max - y_min - 2));
-
 	BSP_LCD_SetTextColor(text_colour);
 
 	return 0;
@@ -443,32 +536,33 @@ int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour,
 
 //TODO Doesn't seem to work at all. Probably just remove for now to simplify
 int LCD_Cell_Highlight(int status, int cell_number){
-  return 0;
-  // //Draw coloured cell
-  // //Redraw symbol
+	return 0;
+   //Draw coloured cell
+   //Redraw symbol
+   if(sysinfo == 1)printf("SYS_INFO: Trying to highlight\n");
 
-  // int x_min = grid_space_p.Area[cell_number][0];
-  // int x_max = grid_space_p.Area[cell_number][1];
-  // int y_min = grid_space_p.Area[cell_number][2];
-  // int y_max = grid_space_p.Area[cell_number][3];
-  // int item_num = grid_space_p.Area[cell_number][4];
+   int x_min = grid_space_p.Area[cell_number][0];
+   int x_max = grid_space_p.Area[cell_number][1];
+   int y_min = grid_space_p.Area[cell_number][2];
+   int y_max = grid_space_p.Area[cell_number][3];
+   int item_num = grid_space_p.Area[cell_number][4];
 
-  // if(status == 0){
-  //   //Set highlight to off
-  //   if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
-  //   if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
+   if(status == 0){
+     //Set highlight to off
+     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
+     if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
 
-  //   return 0;
-  // }
-  // else if (status == 1){
-  //   //Set highlight to on
-  //   if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf("ERROR CLEARING CELL\n");
-  //   if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
+     return 0;
+   }
+   else if (status == 1){
+     //Set highlight to on
+     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf("ERROR CLEARING CELL\n");
+     if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
 
-  //   return 0;
-  // }
+     return 0;
+   }
 
-  // return 1;
+   return 1;
 }
 
 int draw_result(){
@@ -479,18 +573,18 @@ int draw_result(){
     int y_min = grid_space_p.Area[24][2];
     int y_max = grid_space_p.Area[24][3];
 
-    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
+    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR: Could not clear cell\n");
 
     //Find center of cell given
     int x_pos = ((x_max - x_min) / 2.0) + x_min;
     int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-    if(debugsys == 1)printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
+    if(debuginfo == 1)printf("DEBUG_INFO: x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
 
     char *result_str[10];
-    snprintf(result_str, 10, "%f", grid_space_p.result);
+    snprintf(result_str, 10, "%f", output.result);
 
-    printf("result_str %s\n", result_str);
+    if(debuginfo == 1)printf("DEBUG_INFO: result_str %s\n", result_str);
 
   	BSP_LCD_SetFont(&Font16);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
@@ -517,33 +611,36 @@ int draw_equation(){
   int x_pos = ((x_max - x_min) / 2.0) + x_min;
   int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-  if(debugsys == 1)printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
+  if(debuginfo == 1)printf("x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
 
-//  //Roll around the display
-//  int LCDResultlen = 20;
-//  if(grid_space_p.num_char > LCDResultlen){
-//    offset = LCDResultlen - grid_space_p.num_char;
-//  }
-//  else{
-//    offset = 0;
-//  }
+  //Roll around the display
+  int LCDResultlen = 20;
 
-//  char* equation = grid_space_p.input[offset];
-//  for(int len=offset+1; len<(grid_space_p.num_char); len++){
-//    strcat(equation, grid_space_p.input[len]);
-//  }
-  grid_space_p.equation = "";
-  grid_space_p.equation = grid_space_p.input[0];
-  printf("Old Element %s\n", grid_space_p.input[0]);
-  if(grid_space_p.num_char > 0){
-	  printf("New %i Element %s\n",grid_space_p.num_char, grid_space_p.input[grid_space_p.num_char]);
-  	  strcat(grid_space_p.equation, grid_space_p.input[grid_space_p.num_char]);
+  if(equation.pos > LCDResultlen){
+ 	  offset = equation.pos - LCDResultlen;
   }
-  printf("Equation should be %s\n", grid_space_p.equation);
+
+  char *temp_equation = "";
+  if(equation.pos == 0){
+	  temp_equation = (char*) calloc(LCDResultlen, sizeof(char));
+	  if(output.formula == 0){
+		  printf("ERROR: Calloc output memory");
+		  return 1;
+	  }
+	  temp_equation[0] = output.formula[0];
+  }
+  else{
+	  for(int i=offset; i<equation.pos; i++){
+		  temp_equation[i-offset] = output.formula[i];
+		  if(debuginfo == 1 || sysinfo == 1)printf("DEBUG_INFO: temp_equation contains %s\n", temp_equation);
+	  }
+  }
+
+  char *temp = &output.formula[offset];
 
   BSP_LCD_SetFont(&Font16);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  BSP_LCD_DisplayStringAt(x_min + 5, y_pos, (uint8_t*)grid_space_p.equation, LEFT_MODE);
+  BSP_LCD_DisplayStringAt(x_min + 5, y_pos, (uint8_t*)temp, LEFT_MODE);
 
   return 0;
 }
@@ -556,7 +653,7 @@ int clear_equation(){
 	int y_min = grid_space_p.Area[24][2];
 	int y_max = grid_space_p.Area[24][3];
 
-    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR CLEARING CELL\n");
+    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR: Could not clear cell\n");
 
     return 0;
 }
@@ -869,9 +966,9 @@ int clear_equation(){
 
 
  double parseFormula(){
-   grid_space_p.result = parseSub();
-   if(*grid_space_p.formula == '\0'){
-     return grid_space_p.result;
+   output.result = parseSub();
+   if(*output.formula == '\0'){
+     return output.result;
    }
    // printf("Expected end of grid_space_p.formula but found %c\n", *grid_space_p.formula);
    printf("Syntax Error\n");
@@ -880,8 +977,8 @@ int clear_equation(){
 
  double parseSub(){
    double sub_1 = parseSum();
-   while(*grid_space_p.formula == '-'){
-     ++grid_space_p.formula;
+   while(*output.formula == '-'){
+     ++output.formula;
      double sub_2 = parseSum();
      sub_1 = sub_1 - sub_2;
    }
@@ -890,8 +987,8 @@ int clear_equation(){
 
  double parseSum(){
    double sum_1 = parsePro();
-   while(*grid_space_p.formula == '+'){
-     ++grid_space_p.formula;
+   while(*output.formula == '+'){
+     ++output.formula;
      double sum_2 = parsePro();
      sum_1 = sum_1 + sum_2;
    }
@@ -900,8 +997,8 @@ int clear_equation(){
 
  double parsePro(){
    double pro_1 = parseDiv();
-   while(*grid_space_p.formula == 'x'){
-     ++grid_space_p.formula;
+   while(*output.formula == 'x'){
+     ++output.formula;
      double pro_2 = parseDiv();
      pro_1 = pro_1 * pro_2;
    }
@@ -910,8 +1007,8 @@ int clear_equation(){
 
  double parseDiv(){
   double div_1 = parsePow();
-  while(*grid_space_p.formula == '/'){
-    ++grid_space_p.formula;
+  while(*output.formula == '/'){
+    ++output.formula;
     double div_2 = parsePow();
     div_1 = div_1 / div_2;
   }
@@ -920,8 +1017,8 @@ int clear_equation(){
 
  double parsePow(){
   double pow_1 = parseFactor();
-  while(*grid_space_p.formula == '^'){
-    ++grid_space_p.formula;
+  while(*output.formula == '^'){
+    ++output.formula;
     double pow_2 = parseFactor();
     pow_1 = pow(pow_1, pow_2);
   }
@@ -930,21 +1027,21 @@ int clear_equation(){
 
  double parseFactor(){
 
-   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+   if(*output.formula >= '0' && *output.formula <= '9'){
      return parseNumber();
    }
-   else if(*grid_space_p.formula == '-'){
+   else if(*output.formula == '-'){
      return parseNumber();
    }
-   else if(*grid_space_p.formula == '('){
-     ++grid_space_p.formula;
+   else if(*output.formula == '('){
+     ++output.formula;
      double temp = parseSub();
-     ++grid_space_p.formula;
+     ++output.formula;
      return temp;
    }
    else{
      printf("Syntax Error\n");
-     printf("Unknown symbol %c", *grid_space_p.formula);
+     printf("Unknown symbol %c", *output.formula);
    }
    return 0;
  }
@@ -954,35 +1051,35 @@ int clear_equation(){
    double number = 0;
    int neg_flag = 1;
    //TODO check the first character is a number or a minus
-   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+   if(*output.formula >= '0' && *output.formula <= '9'){
    }
-   else if(*grid_space_p.formula == '-'){
+   else if(*output.formula == '-'){
      neg_flag = -1;
-     ++grid_space_p.formula;
+     ++output.formula;
    }
    else{
      printf("Syntax Error");
    }
 
 
-   while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+   while(*output.formula >= '0' && *output.formula <= '9'){
      number = number * 10;
-     number = number + *grid_space_p.formula - '0';
-     ++grid_space_p.formula;
+     number = number + *output.formula - '0';
+     ++output.formula;
    }
 
-   if(*grid_space_p.formula == '.'){
-     ++grid_space_p.formula;
+   if(*output.formula == '.'){
+     ++output.formula;
 
      //Check the next character is a number, else error
 
-     if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+     if(*output.formula >= '0' && *output.formula <= '9'){
        double weight = 1;
-       while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
+       while(*output.formula >= '0' && *output.formula <= '9'){
          weight = weight / 10.0;
-         double scaled = (*grid_space_p.formula - '0') * weight;
+         double scaled = (*output.formula - '0') * weight;
          number = number + scaled;
-         ++grid_space_p.formula;
+         ++output.formula;
        }
      }
      else{

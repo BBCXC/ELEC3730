@@ -30,16 +30,26 @@ extern void Ass_02_Main(void);
 typedef struct{
   int Area[25][5];
   char **items;
-  char **input;
-  int num_char;
-
-  char *formula;
-  char *equation;
-  double result;
-  double prev_ans;
 }
   grid_struct;
   grid_struct grid_space_p;
+
+typedef struct{
+	int size;
+	char **input;
+	int pos;
+}
+	str_mem;
+	str_mem equation;
+
+typedef struct{
+	char *formula;
+	double result;
+	double prev_ans;
+}
+	result_mem;
+	result_mem output;
+
 
 // Question 1
 extern void CommandLineParserInit(void);
@@ -47,6 +57,7 @@ extern void CommandLineParserProcess(void);
 
 // Question 2
 extern void CalculatorInit(void);
+extern int title_animation(void);
 extern int calculator_layout(void);
 extern int draw_numpad(void);
 extern int draw_sym(void);
@@ -56,6 +67,11 @@ extern void CalculatorProcess(void);
 extern int get_touch_pos(int display_x, int display_y);
 extern int Input_append(char *item);
 extern int LCD_Cell_Highlight(int status, int cell_number);
+extern int allocate_memory(void);
+extern int reallocate_memory(void);
+extern int clear_equation(void);
+extern int draw_equation(void);
+extern int draw_result(void);
 
 extern double parseFormula(void);
 extern double parseSub(void);

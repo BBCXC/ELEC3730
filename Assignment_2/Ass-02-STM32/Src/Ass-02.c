@@ -24,10 +24,8 @@ void Ass_02_Main(void)
                       "<", "pi", "tan(", "cos(", "sin(", "AC", "", "log(", "ln(", "exp(", "DEL"};
 
   grid_space_p.items = item;
-  grid_space_p.num_char = 0;
-  grid_space_p.prev_ans = 0;
-  grid_space_p.formula = "";
-  grid_space_p.equation = "";
+  output.prev_ans = 0;
+  output.result = 0;
   CalculatorInit();
 #endif
 
