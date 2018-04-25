@@ -1,7 +1,7 @@
 //TODO Implement help help
 //TODO Implement debug on debuf off
 //TODO Change print statements to closer reflect example
-
+//TODO Command line parser formula mode, allows input of 1+3-7/4 etc
 
 
 #include "Ass-02.h"
@@ -48,6 +48,9 @@ const char *HELPstr = "help";
 
 #define debugsys 0
 
+/***********************************************************************************************************************
+************************************************Command Line Parser Init************************************************
+***********************************************************************************************************************/
 void CommandLineParserInit(void){
   // Print welcome message
   printf("\014");
@@ -55,6 +58,9 @@ void CommandLineParserInit(void){
   printf("Command Line Parser Example\n");
 }
 
+/***********************************************************************************************************************
+**********************************************Command Line Parser Process***********************************************
+***********************************************************************************************************************/
 void CommandLineParserProcess(void){
 
   // Check for input and echo back
@@ -82,6 +88,7 @@ void CommandLineParserProcess(void){
   #else
 
     double result = 0;
+    static double prev_ans = 0;
     
     char c;
     int i;
@@ -110,6 +117,29 @@ void CommandLineParserProcess(void){
     if(word_count > 0){
     	if(debugsys == 1) printf("Word Count = %i\n", word_count);
 
+      char dtos[50];
+      //Check the 2 value parameters for pi
+      for(int j=1; j<word_count; j++){
+        if((strcmp("PI", array_of_words_p[j]) == 0) ||
+           (strcmp("pi", array_of_words_p[j]) == 0) ||
+           (strcmp("Pi", array_of_words_p[j]) == 0)){
+          if(debugsys == 1) printf("DEBUG_INFO: Constant PI Ffund\n");
+          snprintf(dtos, 50, "%f", M_PI);
+          array_of_words_p[j] = dtos;
+        }
+      }
+
+      //Check the 2 value parameters for ans
+      for(int j=1; j<word_count; j++){
+        if((strcmp("ANS", array_of_words_p[j]) == 0) ||
+           (strcmp("ans", array_of_words_p[j]) == 0)){
+          if(debugsys == 1) printf("DEBUG_INFO: Constant PI Ffund\n");
+          snprintf(dtos, 50, "%f", prev_ans);
+          array_of_words_p[j] = dtos;
+        }
+      }
+
+      //Check for operations
       if(strcmp(ADDstr, array_of_words_p[0]) == 0){
         if(debugsys == 1) printf("DEBUG_INFO: add_function operation selected\n");
         if(word_count == 3){
@@ -257,7 +287,10 @@ void CommandLineParserProcess(void){
       else{
         printf("ERROR: Unknown Operation\n");
       }
-      if(strcmp(HELPstr, array_of_words_p[0]) != 0) printf("The result is %lf\n", result);
+      if(strcmp(HELPstr, array_of_words_p[0]) != 0) {
+        printf("The result is %lf\n", result);
+        prev_ans = result;
+      }
 
       free(array_of_words_p[0]);
       free(array_of_words_p);
@@ -271,7 +304,9 @@ void CommandLineParserProcess(void){
   #endif
 }
 
-//TODO Error check the atof
+/***********************************************************************************************************************
+**************************************************Operation Function****************************************************
+***********************************************************************************************************************/
 double add_function(char **array_of_words_p[]){
   if(debugsys == 1) printf("DEBUG_INFO: Entered ADD function\n");
   double value_1 = atof((*array_of_words_p)[1]);
@@ -465,6 +500,9 @@ int help_function(char **array_of_words_p[], int word_count){
   return 0;
 }
 
+/***********************************************************************************************************************
+*****************************************************Help Printer*******************************************************
+***********************************************************************************************************************/
 int print_help(char **option){
   if(strcmp("NO_OPTION", *option) == 0){
     //Specify all functions
@@ -598,6 +636,9 @@ int print_help(char **option){
   return 0;
 }
 
+/***********************************************************************************************************************
+*****************************************************String Parser******************************************************
+***********************************************************************************************************************/
 int string_parser(char *inp, char **array_of_words_p[]){
     const char delim = ' ';
     char curr_char;
