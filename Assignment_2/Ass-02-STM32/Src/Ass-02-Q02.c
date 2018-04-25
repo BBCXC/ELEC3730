@@ -73,14 +73,13 @@ void CalculatorInit(){
   if(debuginfo == 1){
     //Print grid cell spacings
     for(int tem = 0; tem < 25; tem++){
-  		printf("DEBUG_INFO: pw %i, ph %i, cw %i, 
-                          ch %i, pos %i, item %s\n", 
-                          grid_space_p.Area[tem][0],
-  		           	  	  	grid_space_p.Area[tem][1],
-													grid_space_p.Area[tem][2],
-													grid_space_p.Area[tem][3],
-													grid_space_p.Area[tem][4],
-													grid_space_p.items[grid_space_p.Area[tem][4]]);
+  		printf("DEBUG_INFO: pw %i, ph %i, cw %i, ch %i, pos %i, item %s\n",
+                grid_space_p.Area[tem][0],
+  		        grid_space_p.Area[tem][1],
+				grid_space_p.Area[tem][2],
+				grid_space_p.Area[tem][3],
+				grid_space_p.Area[tem][4],
+				grid_space_p.items[grid_space_p.Area[tem][4]]);
   	}
   }
 
