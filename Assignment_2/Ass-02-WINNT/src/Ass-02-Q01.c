@@ -26,6 +26,8 @@ const char *LOGstr = "log";
 const char *EXPstr = "exp";
 const char *RADstr = "rad";
 const char *DEGstr = "deg";
+const char *PIstr = "pi";
+const char *ANSstr = "ans";
 
 const char *HELPstr = "help";
 // #define ADDstr  "add"
@@ -522,6 +524,8 @@ int print_help(char **option){
     printf("HELP_INFO: ln\n");
     printf("HELP_INFO: log\n");
     printf("HELP_INFO: exp\n");
+    printf("HELP_INFO: pi\n");
+    printf("HELP_INFO: ans\n");
   }
   else if(strcmp(ADDstr, *option) == 0){
     printf("HELP_INFO: add_function operation selected\n");
@@ -628,6 +632,14 @@ int print_help(char **option){
     printf("This function takes 3 arguements\n");
     printf("Arguement 1: exp\n");
     printf("Arguement 2: value_1\n");
+  }
+  else if(strcmp(PIstr, *option) == 0){
+    printf("HELP_INFO: pi Constant selected\n");
+    printf("Constant used in function arguements\n");
+  }
+  else if(strcmp(ANSstr, *option) == 0){
+    printf("HELP_INFO: ans operation selected\n");
+    printf("Constant used in function arguements\n");
   }
   else{
 	  printf("ERROR: Could not display help information\n");
