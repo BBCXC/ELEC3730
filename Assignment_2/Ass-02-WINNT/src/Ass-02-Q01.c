@@ -310,17 +310,19 @@ void CommandLineParserProcess(void){
 /***********************************************************************************************************************
 **************************************************Operation Function****************************************************
 ***********************************************************************************************************************/
-double add_function(char **array_of_words_p[], int word_count){
+double add_function(char **array_of_words_p[], int word_count, double *result){
   if(debugsys == 1) printf("DEBUG_INFO: Entered ADD function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  for(int i=2; i<word_count; i++){
-	  double value_2 = atof((*array_of_words_p)[i]);
-	  if(debugsys == 1) printf("DEBUG_INFO: Value %i: %lf\n", i, value_2);
-	  value_1 = value_1 + value_2;
+  double value_1 = 0;
+  double value_2 = 0;
+  for(int i=1; i<word_count; i++){
+	  if(sscanf((*array_of_words_p)[i], "%lf", &value_1) == 1){
+		  printf("ERROR: Somethig");
+		  return 1;
+	  }
+	  value_1+=value_2;
   }
-
-  return value_1;
+  result = &value_1;
+  return 0;
 }
 double sub_function(char **array_of_words_p[]){
   if(debugsys == 1) printf("DEBUG_INFO: Entered SUBTRACT function\n");

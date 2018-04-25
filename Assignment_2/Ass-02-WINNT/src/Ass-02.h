@@ -48,7 +48,7 @@ extern void Ass_02_Main(void);
 extern void CommandLineParserInit(void);
 extern void CommandLineParserProcess(void);
 extern int string_parser(char *inp, char **array_of_words_p[]);
-extern double add_function(char **array_of_words_p[], int word_count);
+extern double add_function(char **array_of_words_p[], int word_count, double *result);
 extern double sub_function(char **array_of_words_p[]);
 extern double pro_function(char **array_of_words_p[], int word_count);
 extern double div_function(char **array_of_words_p[]);
