@@ -307,7 +307,7 @@ double parseNumber(){
 
 int main(){
 
-	grid_space_p.input = "cos(sqrt(4)+118+180/3)-pi+(12)";	
+	grid_space_p.input = "cos(sqrt(-4)+118+180/3)-pi+(12)";
 	grid_space_p.result = parseFormula();	//Lowest precedent 
 	printf("Result %lf", grid_space_p.result);
 	return 0;

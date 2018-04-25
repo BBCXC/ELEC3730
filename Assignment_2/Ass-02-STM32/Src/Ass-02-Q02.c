@@ -1071,7 +1071,7 @@ int clear_equation(){
    }
    else{
      printf("Syntax Error\n");
-     printf("Unknown symbol %c", *output.formula);
+     printf("Unknown symbol %c\n", *output.formula);
    }
    return 0;
  }
@@ -1088,7 +1088,7 @@ int clear_equation(){
      ++output.formula;
    }
    else{
-     printf("Syntax Error");
+     printf("Syntax Error\n");
    }
 
 
@@ -1113,7 +1113,7 @@ int clear_equation(){
        }
      }
      else{
-       printf("Syntax Error");
+       printf("Syntax Error\n");
      }
    }
 

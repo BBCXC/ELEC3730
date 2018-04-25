@@ -2,6 +2,7 @@
 //TODO Implement debug on debuf off
 //TODO Change print statements to closer reflect example
 //TODO Command line parser formula mode, allows input of 1+3-7/4 etc
+//TODO Write atof function that returns double
 
 
 #include "Ass-02.h"
@@ -48,7 +49,7 @@ const char *HELPstr = "help";
 // #define RADstr  "rad"
 // #define DEGstr  "deg"
 
-#define debugsys 0
+#define debugsys 1
 
 /***********************************************************************************************************************
 ************************************************Command Line Parser Init************************************************
@@ -144,11 +145,11 @@ void CommandLineParserProcess(void){
       //Check for operations
       if(strcmp(ADDstr, array_of_words_p[0]) == 0){
         if(debugsys == 1) printf("DEBUG_INFO: add_function operation selected\n");
-        if(word_count == 3){
-          result = add_function(&array_of_words_p);
+        if(word_count > 2){
+          result = add_function(&array_of_words_p, word_count);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(SUBstr, array_of_words_p[0]) == 0){
@@ -157,16 +158,16 @@ void CommandLineParserProcess(void){
           result = sub_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(PROstr, array_of_words_p[0]) == 0){
         if(debugsys == 1) printf("DEBUG_INFO: pro_function operation selected\n");
-        if(word_count == 3){
-          result = pro_function(&array_of_words_p);
+        if(word_count > 2){
+          result = pro_function(&array_of_words_p, word_count);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(DIVstr, array_of_words_p[0]) == 0){
@@ -175,7 +176,7 @@ void CommandLineParserProcess(void){
           result = div_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(SINstr, array_of_words_p[0]) == 0){
@@ -184,7 +185,7 @@ void CommandLineParserProcess(void){
           result = sin_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(COSstr, array_of_words_p[0]) == 0){
@@ -193,7 +194,7 @@ void CommandLineParserProcess(void){
           result = cos_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(TANstr, array_of_words_p[0]) == 0){
@@ -202,7 +203,7 @@ void CommandLineParserProcess(void){
           result = tan_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(ASINstr, array_of_words_p[0]) == 0){
@@ -211,7 +212,7 @@ void CommandLineParserProcess(void){
           result = asin_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(ACOSstr, array_of_words_p[0]) == 0){
@@ -220,7 +221,7 @@ void CommandLineParserProcess(void){
           result = acos_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(ATANstr, array_of_words_p[0]) == 0){
@@ -229,7 +230,7 @@ void CommandLineParserProcess(void){
           result = atan_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(POWstr, array_of_words_p[0]) == 0){
@@ -238,7 +239,7 @@ void CommandLineParserProcess(void){
           result = pow_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(SQRTstr, array_of_words_p[0]) == 0){
@@ -247,7 +248,7 @@ void CommandLineParserProcess(void){
           result = sqrt_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(LNstr, array_of_words_p[0]) == 0){
@@ -256,7 +257,7 @@ void CommandLineParserProcess(void){
           result = ln_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(LOGstr, array_of_words_p[0]) == 0){
@@ -265,7 +266,7 @@ void CommandLineParserProcess(void){
           result = log_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(EXPstr, array_of_words_p[0]) == 0){
@@ -274,7 +275,7 @@ void CommandLineParserProcess(void){
           result = exp_function(&array_of_words_p);
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else if(strcmp(HELPstr, array_of_words_p[0]) == 0){
@@ -283,7 +284,7 @@ void CommandLineParserProcess(void){
           if(help_function(&array_of_words_p, word_count) != 0) printf("ERROR: Help function not available\n");
         }
         else{
-          printf("ERROR: Too few arguements for operation\n");
+          printf("ERROR: Too few Arguments for operation\n");
         }
       }
       else{
@@ -309,38 +310,43 @@ void CommandLineParserProcess(void){
 /***********************************************************************************************************************
 **************************************************Operation Function****************************************************
 ***********************************************************************************************************************/
-double add_function(char **array_of_words_p[]){
+double add_function(char **array_of_words_p[], int word_count){
   if(debugsys == 1) printf("DEBUG_INFO: Entered ADD function\n");
   double value_1 = atof((*array_of_words_p)[1]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[2]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
-  double result = value_1 + value_2;
-  return result;
+  for(int i=2; i<word_count; i++){
+	  double value_2 = atof((*array_of_words_p)[i]);
+	  if(debugsys == 1) printf("DEBUG_INFO: Value %i: %lf\n", i, value_2);
+	  value_1 = value_1 + value_2;
+  }
+
+  return value_1;
 }
 double sub_function(char **array_of_words_p[]){
   if(debugsys == 1) printf("DEBUG_INFO: Entered SUBTRACT function\n");
   double value_1 = atof((*array_of_words_p)[1]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[1]);
+  double value_2 = atof((*array_of_words_p)[2]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
   double result = value_1 - value_2;
   return result;
 }
-double pro_function(char **array_of_words_p[]){
+double pro_function(char **array_of_words_p[], int word_count){
   if(debugsys == 1) printf("DEBUG_INFO: Entered PRODUCT function\n");
   double value_1 = atof((*array_of_words_p)[1]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
-  double result = value_1 * value_2;
-  return result;
+  for(int i=2; i<word_count; i++){
+	  double value_2 = atof((*array_of_words_p)[i]);
+	  if(debugsys == 1) printf("DEBUG_INFO: Value %i: %lf\n", i, value_2);
+	  value_1 = value_1 * value_2;
+  }
+  return value_1;
 }
 double div_function(char **array_of_words_p[]){
   if(debugsys == 1) printf("DEBUG_INFO: Entered DIVIDE function\n");
   double value_1 = atof((*array_of_words_p)[1]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[1]);
+  double value_2 = atof((*array_of_words_p)[2]);
   if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
   double result = value_1 / value_2;
   return result;
@@ -492,7 +498,7 @@ int help_function(char **array_of_words_p[], int word_count){
     if(print_help(&option) != 0) printf("ERROR: Could not print help option(s)\n");
   }
   else if(word_count > 2){
-    printf("ERROR: Too many arguements for help\n");
+    printf("ERROR: Too many Arguments for help\n");
     return 1;
   }
   else{
@@ -529,117 +535,117 @@ int print_help(char **option){
   }
   else if(strcmp(ADDstr, *option) == 0){
     printf("HELP_INFO: add_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: add\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: value_2\n");
-    printf("Result = value_1 + value_2\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: add\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: value_2\n");
+    printf("Result = value_1 + value_2 ... + value_N\n");
   }
   else if(strcmp(SUBstr, *option) == 0){
     printf("HELP_INFO: sub_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: sub\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: value_2\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: sub\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: value_2\n");
     printf("Result = value_1 - value_2\n");
   }
   else if(strcmp(PROstr, *option) == 0){
     printf("HELP_INFO: pro_function operation selected\n");
-    printf("This function pro 3 arguements\n");
-    printf("Arguement 1: ADD\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: value_2\n");
-    printf("Result = value_1 x value_2\n");
+    printf("This function pro 3 Arguments\n");
+    printf("Argument 1: ADD\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: value_2\n");
+    printf("Result = value_1 x value_2 ... * value_N\n");
   }
   else if(strcmp(DIVstr, *option) == 0){
     printf("HELP_INFO: div_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: div\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: value_2\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: div\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: value_2\n");
     printf("Result = value_1 / value_2\n");
   }
   else if(strcmp(SINstr, *option) == 0){
     printf("HELP_INFO: sin_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: sin\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: sin\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(COSstr, *option) == 0){
     printf("HELP_INFO: cos_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: cos\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: cos\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(TANstr, *option) == 0){
     printf("HELP_INFO: tan_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: tan\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: tan\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(ASINstr, *option) == 0){
     printf("HELP_INFO: asin_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: asin\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: asin\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(ACOSstr, *option) == 0){
     printf("HELP_INFO: acos_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: acos\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: acos\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(ATANstr, *option) == 0){
     printf("HELP_INFO: atan_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: atan\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: type (rad, deg)\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: atan\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: type (rad, deg)\n");
   }
   else if(strcmp(POWstr, *option) == 0){
     printf("HELP_INFO: pow_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: pow\n");
-    printf("Arguement 2: value_1\n");
-    printf("Arguement 3: value_2\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: pow\n");
+    printf("Argument 2: value_1\n");
+    printf("Argument 3: value_2\n");
     printf("Result = value_1 ^ value_2\n");
   }
   else if(strcmp(SQRTstr, *option) == 0){
     printf("HELP_INFO: sqrt_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: sqrt\n");
-    printf("Arguement 2: value_1\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: sqrt\n");
+    printf("Argument 2: value_1\n");
   }
   else if(strcmp(LNstr, *option) == 0){
     printf("HELP_INFO: ln_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: ln\n");
-    printf("Arguement 2: value_1\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: ln\n");
+    printf("Argument 2: value_1\n");
   }
   else if(strcmp(LOGstr, *option) == 0){
     printf("HELP_INFO: log_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: log\n");
-    printf("Arguement 2: value_1\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: log\n");
+    printf("Argument 2: value_1\n");
   }
   else if(strcmp(EXPstr, *option) == 0){
     printf("HELP_INFO: exp_function operation selected\n");
-    printf("This function takes 3 arguements\n");
-    printf("Arguement 1: exp\n");
-    printf("Arguement 2: value_1\n");
+    printf("This function takes 3 Arguments\n");
+    printf("Argument 1: exp\n");
+    printf("Argument 2: value_1\n");
   }
   else if(strcmp(PIstr, *option) == 0){
     printf("HELP_INFO: pi Constant selected\n");
-    printf("Constant used in function arguements\n");
+    printf("Constant used in function Arguments\n");
   }
   else if(strcmp(ANSstr, *option) == 0){
     printf("HELP_INFO: ans operation selected\n");
-    printf("Constant used in function arguements\n");
+    printf("Constant used in function Arguments\n");
   }
   else{
 	  printf("ERROR: Could not display help information\n");
