@@ -129,8 +129,8 @@ void CommandLineParserProcess(void){
     	  printf("ERROR: Unknown Operation\n");
       }
       else if(mode == 0){
-    	  printf("The result is %lf\n", parser.result);
-    	  parser.result = prev_ans;
+    	  printf("The result is %lf\n", output.result);
+    	  output.result = prev_ans;
     	  printf("Ans %lf\n", prev_ans);
       }
       else{
@@ -149,11 +149,11 @@ void CommandLineParserProcess(void){
       if(command_parser(&array_of_words_p, word_count, debugsys, &prev_ans) == 1){
 	  }
       else{
-		  parser.formula = array_of_words_p[0];
-		  parser.result = 0;
-		  parser.prev_ans = parseFormula();
-		  printf("The result is %lf\n", parser.result);
-		  printf("Answer stored is %lf\n", parser.prev_ans);
+		  output.formula = array_of_words_p[0];
+		  output.result = 0;
+		  output.prev_ans = parseFormula();
+		  printf("The result is %lf\n", output.result);
+		  printf("Answer stored is %lf\n", output.prev_ans);
       }
       free(array_of_words_p[0]);
 	  free(array_of_words_p);
@@ -493,7 +493,7 @@ int debug_function(char **array_of_words_p[], int word_count, double *result){
 //TODO else call command list print all
 int help_function(char **array_of_words_p[], int word_count, double *result){
   if(debugsys == 1) printf("DEBUG_INFO: Entered HELP function\n");
-  if(help_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans) != 0){
+  if(help_parser(array_of_words_p, word_count, debugsys) != 0){
     printf("ERROR: Help Funtion\n");
   }
   return 0;

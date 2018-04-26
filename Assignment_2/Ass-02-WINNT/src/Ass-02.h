@@ -45,6 +45,10 @@ typedef struct{
 extern void CommandLineParserInit(void);
 extern void CommandLineParserProcess(void);
 extern int string_parser(char *inp, char **array_of_words_p[]);
+int help_parser(char **array_of_words_p[], int word_count, int debugsys);
+int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
+
+
 extern int add_function(char **array_of_words_p[], int word_count, double *result);
 extern int sub_function(char **array_of_words_p[], int word_count, double *result);
 extern int mul_function(char **array_of_words_p[], int word_count, double *result);

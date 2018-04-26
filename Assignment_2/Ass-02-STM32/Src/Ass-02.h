@@ -24,9 +24,45 @@
 // Assignment main
 extern void Ass_02_Main(void);
 
-//
-// REPLACE THE EXAMPLE CODE WITH YOUR CODE
-//
+//Question 1
+typedef struct{
+	char *NameString; 								//Operation string
+	int (*Function_p)(char **array_of_words_p[],	//Array pointer
+					  int word_count, 			//Function pointer
+	   				  double *result); 			//Result Pointer
+	char *HelpString; 								//Help information
+	char *DescriptionString;						//Description
+} command_s;
+
+// Question 1
+extern void CommandLineParserInit(void);
+extern void CommandLineParserProcess(void);
+extern int string_parser(char *inp, char **array_of_words_p[]);
+int help_parser(char **array_of_words_p[], int word_count, int debugsys);
+int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
+
+
+extern int add_function(char **array_of_words_p[], int word_count, double *result);
+extern int sub_function(char **array_of_words_p[], int word_count, double *result);
+extern int mul_function(char **array_of_words_p[], int word_count, double *result);
+extern int div_function(char **array_of_words_p[], int word_count, double *result);
+extern int sin_function(char **array_of_words_p[], int word_count, double *result);
+extern int cos_function(char **array_of_words_p[], int word_count, double *result);
+extern int tan_function(char **array_of_words_p[], int word_count, double *result);
+extern int asin_function(char **array_of_words_p[], int word_count, double *result);
+extern int acos_function(char **array_of_words_p[], int word_count, double *result);
+extern int atan_function(char **array_of_words_p[], int word_count, double *result);
+extern int pow_function(char **array_of_words_p[], int word_count, double *result);
+extern int sqrt_function(char **array_of_words_p[], int word_count, double *result);
+extern int ln_function(char **array_of_words_p[], int word_count, double *result);
+extern int log_function(char **array_of_words_p[], int word_count, double *result);
+extern int exp_function(char **array_of_words_p[], int word_count, double *result);
+extern int formula_function(char **array_of_words_p[], int word_count, double *result);
+extern int debug_function(char **array_of_words_p[], int word_count, double *result);
+extern int help_function(char **array_of_words_p[], int word_count, double *result);
+
+
+//Question 2
 typedef struct{
   int Area[25][5];
   char **items;
@@ -49,11 +85,6 @@ typedef struct{
 }
 	result_mem;
 	result_mem output;
-
-
-// Question 1
-extern void CommandLineParserInit(void);
-extern void CommandLineParserProcess(void);
 
 // Question 2
 extern void CalculatorInit(void);
