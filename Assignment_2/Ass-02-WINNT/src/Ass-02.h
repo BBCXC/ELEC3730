@@ -38,8 +38,8 @@ typedef struct{
 	double result;
 	double prev_ans;
 }
-	result_t;
-	result_t parser;
+	result_mem;
+	result_mem output;
 
 // Question 1
 extern void CommandLineParserInit(void);

@@ -33,7 +33,7 @@ int command_parser(char **array_of_words_p[], int word_count,int debugsys, doubl
 	if(strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0){
 	  if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
 	  if(Command_list[i].Function_p(array_of_words_p, word_count, &result) == 0){
-		parser.result = result;
+		output.result = result;
 		*prev_ans = result;
 		if(i <= 14)return 0;
 		else return 1;
@@ -50,21 +50,21 @@ int command_parser(char **array_of_words_p[], int word_count,int debugsys, doubl
 ************************************************Recursive Decent Parser*************************************************
 ***********************************************************************************************************************/
 double parseFormula(){
-	printf("Formula Parsed: %s\n", parser.formula);
-	parser.result = parseSub();
-	if(*parser.formula == '\0'){
-	  return parser.result;
+	printf("Formula Parsed: %s\n", output.formula);
+	output.result = parseSub();
+	if(*output.formula == '\0'){
+	  return output.result;
 	}
-	// printf("Expected end of parser.input but found %c\n", *parser.input);
+	// printf("Expected end of output.input but found %c\n", *output.input);
 	printf("Syntax Error\n");
-  return parser.result;
+  return output.result;
 	return 0;
 }
 
 double parseSub(){
 	double sub_1 = parseSum();
-	while(*parser.formula == '-'){
-	  ++parser.formula;
+	while(*output.formula == '-'){
+	  ++output.formula;
 	  double sub_2 = parseSum();
 	  sub_1 = sub_1 - sub_2;
 	}
@@ -73,8 +73,8 @@ return sub_1;
 
 double parseSum(){
 	double sum_1 = parsePro();
-	while(*parser.formula == '+'){
-	  ++parser.formula;
+	while(*output.formula == '+'){
+	  ++output.formula;
 	  double sum_2 = parsePro();
 	  sum_1 = sum_1 + sum_2;
 	}
@@ -83,8 +83,8 @@ double parseSum(){
 
 double parsePro(){
 	double pro_1 = parseDiv();
-	while(*parser.formula == '*'){
-	  ++parser.formula;
+	while(*output.formula == '*'){
+	  ++output.formula;
 	  double pro_2 = parseDiv();
 	  pro_1 = pro_1 * pro_2;
 	}
@@ -93,8 +93,8 @@ double parsePro(){
 
 double parseDiv(){
 	double div_1 = parsePow();
-	while(*parser.formula == '/'){
-	  ++parser.formula;
+	while(*output.formula == '/'){
+	  ++output.formula;
 	  double div_2 = parsePow();
 	  div_1 = div_1 / div_2;
 	}
@@ -103,8 +103,8 @@ double parseDiv(){
 
 double parsePow(){
 	double pow_1 = parseFactor();
-	while(*parser.formula == '^'){
-	  ++parser.formula;
+	while(*output.formula == '^'){
+	  ++output.formula;
 	  double pow_2 = parseFactor();
 	  pow_1 = pow(pow_1, pow_2);
 	}
@@ -113,54 +113,54 @@ double parsePow(){
 
 double parseFactor(){
 
-	if(*parser.formula >= '0' && *parser.formula <= '9'){
+	if(*output.formula >= '0' && *output.formula <= '9'){
 	  return parseNumber();
 	}
-	else if(*parser.formula == '-'){
+	else if(*output.formula == '-'){
 	  return parseNumber();
 	}
-	else if(*parser.formula == '('){
-	  ++parser.formula;
+	else if(*output.formula == '('){
+	  ++output.formula;
 	  double temp = parseSub();
-	  ++parser.formula;
+	  ++output.formula;
 	  return temp;
 	}
 	//PI
-	else if(*parser.formula == 'p'){
-	  ++parser.formula;
-	  if(*parser.formula == 'i'){
-		++parser.formula;
+	else if(*output.formula == 'p'){
+	  ++output.formula;
+	  if(*output.formula == 'i'){
+		++output.formula;
 		return M_PI;
 	  }
 	}
 	//sin sqrt
-	else if(*parser.formula == 's'){
-	  ++parser.formula;
-	  if(*parser.formula == 'i'){
-		++parser.formula;
-		if(*parser.formula == 'n'){
-		  ++parser.formula;
-		  if(*parser.formula == '('){
-			  ++parser.formula;
+	else if(*output.formula == 's'){
+	  ++output.formula;
+	  if(*output.formula == 'i'){
+		++output.formula;
+		if(*output.formula == 'n'){
+		  ++output.formula;
+		  if(*output.formula == '('){
+			  ++output.formula;
 			  double temp = parseSub();
 			  temp = sin(temp*M_PI/180);
-			  ++parser.formula;
+			  ++output.formula;
 			  return temp;
 		  }
 
 		}
 	  }
-	  else if(*parser.formula == 'q'){
-		++parser.formula;
-		if(*parser.formula == 'r'){
-		  ++parser.formula;
-		  if(*parser.formula == 't'){
-			  ++parser.formula;
-			  if(*parser.formula == '('){
-			  ++parser.formula;
+	  else if(*output.formula == 'q'){
+		++output.formula;
+		if(*output.formula == 'r'){
+		  ++output.formula;
+		  if(*output.formula == 't'){
+			  ++output.formula;
+			  if(*output.formula == '('){
+			  ++output.formula;
 			  double temp = parseSub();
 			  temp = sqrt(temp);
-			  ++parser.formula;
+			  ++output.formula;
 			  return temp;
 			}
 
@@ -169,138 +169,138 @@ double parseFactor(){
 	  }
 	}
 	//cos
-	else if(*parser.formula == 'c'){
-	  ++parser.formula;
-	  if(*parser.formula == 'o'){
-  		++parser.formula;
-  		if(*parser.formula == 's'){
-  		  ++parser.formula;
-  		  if(*parser.formula == '('){
-    			++parser.formula;
+	else if(*output.formula == 'c'){
+	  ++output.formula;
+	  if(*output.formula == 'o'){
+  		++output.formula;
+  		if(*output.formula == 's'){
+  		  ++output.formula;
+  		  if(*output.formula == '('){
+    			++output.formula;
     			double temp = parseSub();
     			temp = cos(temp*M_PI/180);
-    			++parser.formula;
+    			++output.formula;
     			return temp;
   		  }
   		}
 	  }
 	}
 	//tan
-	else if(*parser.formula == 't'){
-	  ++parser.formula;
-	  if(*parser.formula == 'a'){
-  		++parser.formula;
-  		if(*parser.formula == 'n'){
-  		  ++parser.formula;
-  		  if(*parser.formula == '('){
-    			++parser.formula;
+	else if(*output.formula == 't'){
+	  ++output.formula;
+	  if(*output.formula == 'a'){
+  		++output.formula;
+  		if(*output.formula == 'n'){
+  		  ++output.formula;
+  		  if(*output.formula == '('){
+    			++output.formula;
     			double temp = parseSub();
     			temp = tan(temp*M_PI/180);
-    			++parser.formula;
+    			++output.formula;
     			return temp;
   		  }
   		}
 	  }
 	}
 	//asin acos atan
-	else if(*parser.formula == 'a'){
-	  ++parser.formula;
-	  if(*parser.formula == 's'){
-  		++parser.formula;
-  		if(*parser.formula == 'i'){
-  		  ++parser.formula;
-  		  if(*parser.formula == 'n'){
-    			++parser.formula;
-    			if(*parser.formula == '('){
-    			  ++parser.formula;
+	else if(*output.formula == 'a'){
+	  ++output.formula;
+	  if(*output.formula == 's'){
+  		++output.formula;
+  		if(*output.formula == 'i'){
+  		  ++output.formula;
+  		  if(*output.formula == 'n'){
+    			++output.formula;
+    			if(*output.formula == '('){
+    			  ++output.formula;
     			  double temp = parseSub();
     			  temp = asin(temp*M_PI/180);
-    			  ++parser.formula;
+    			  ++output.formula;
     			  return temp;
     			}
   		  }
   		}
 	  }
-	  else if(*parser.formula == 'c'){
-  		++parser.formula;
-  		if(*parser.formula == 'o'){
-  		  ++parser.formula;
-  		  if(*parser.formula == 's'){
-    			++parser.formula;
-    			if(*parser.formula == '('){
-    			  ++parser.formula;
+	  else if(*output.formula == 'c'){
+  		++output.formula;
+  		if(*output.formula == 'o'){
+  		  ++output.formula;
+  		  if(*output.formula == 's'){
+    			++output.formula;
+    			if(*output.formula == '('){
+    			  ++output.formula;
     			  double temp = parseSub();
     			  temp = acos(temp*M_PI/180);
-    			  ++parser.formula;
+    			  ++output.formula;
     			  return temp;
     			}
   		  }
   		}
 	  }
-	  else if(*parser.formula == 't'){
-  		++parser.formula;
-  		if(*parser.formula == 'a'){
-  		  ++parser.formula;
-  		  if(*parser.formula == 'n'){
-    			++parser.formula;
-    			if(*parser.formula == '('){
-    			  ++parser.formula;
+	  else if(*output.formula == 't'){
+  		++output.formula;
+  		if(*output.formula == 'a'){
+  		  ++output.formula;
+  		  if(*output.formula == 'n'){
+    			++output.formula;
+    			if(*output.formula == '('){
+    			  ++output.formula;
     			  double temp = parseSub();
     			  temp = atan(temp*M_PI/180);
-    			  ++parser.formula;
+    			  ++output.formula;
     			  return temp;
     			}
   		  }
   		}
 	  }
-	  else if(*parser.formula == 'n'){
-		  ++parser.formula;
-  		if(*parser.formula == 's'){
-  		  ++parser.formula;
-  		  double temp = parser.prev_ans;
+	  else if(*output.formula == 'n'){
+		  ++output.formula;
+  		if(*output.formula == 's'){
+  		  ++output.formula;
+  		  double temp = output.prev_ans;
   		  return temp;
   		}
 	  }
 	}
 	//exp
-	else if(*parser.formula == 'e'){
-	  ++parser.formula;
-	  if(*parser.formula == 'x'){
-  		++parser.formula;
-  		if(*parser.formula == 'p'){
-  		  ++parser.formula;
-  		  if(*parser.formula == '('){
-    			++parser.formula;
+	else if(*output.formula == 'e'){
+	  ++output.formula;
+	  if(*output.formula == 'x'){
+  		++output.formula;
+  		if(*output.formula == 'p'){
+  		  ++output.formula;
+  		  if(*output.formula == '('){
+    			++output.formula;
     			double temp = parseSub();
     			temp = exp(temp);
-    			++parser.formula;
+    			++output.formula;
     			return temp;
   		  }
   		}
 	  }
 	}
 	//ln log10
-	else if(*parser.formula == 'l'){
-	  ++parser.formula;
-	  if(*parser.formula == 'n'){
-  		++parser.formula;
-  		if(*parser.formula == '('){
-  		  ++parser.formula;
+	else if(*output.formula == 'l'){
+	  ++output.formula;
+	  if(*output.formula == 'n'){
+  		++output.formula;
+  		if(*output.formula == '('){
+  		  ++output.formula;
   		  double temp = parseSub();
   		  temp = log(temp);
-  		  ++parser.formula;
+  		  ++output.formula;
   		  return temp;
   		}
 	  }
-	  else if(*parser.formula == 'o'){
-  		++parser.formula;
-  		if(*parser.formula == 'g'){
-  		  ++parser.formula;
-  		  if(*parser.formula == '('){
-    			++parser.formula;
+	  else if(*output.formula == 'o'){
+  		++output.formula;
+  		if(*output.formula == 'g'){
+  		  ++output.formula;
+  		  if(*output.formula == '('){
+    			++output.formula;
     			double temp = parseSub();
     			temp = log10(temp);
-    			++parser.formula;
+    			++output.formula;
     			return temp;
   		  }
   		}
@@ -308,7 +308,7 @@ double parseFactor(){
 	}
 	else{
 	  printf("Syntax Error\n");
-	  printf("Unknown symbol %c", *parser.formula);
+	  printf("Unknown symbol %c", *output.formula);
 	}
 	return 0;
 }
@@ -317,35 +317,35 @@ double parseNumber(){
 
 	double number = 0;
 	int neg_flag = 1;
-	if(*parser.formula >= '0' && *parser.formula <= '9'){
+	if(*output.formula >= '0' && *output.formula <= '9'){
 	}
-	else if(*parser.formula == '-'){
+	else if(*output.formula == '-'){
 	  neg_flag = -1;
-	  ++parser.formula;
+	  ++output.formula;
 	}
 	else{
 	  printf("Syntax Error\n");
 	}
 
 
-	while(*parser.formula >= '0' && *parser.formula <= '9'){
+	while(*output.formula >= '0' && *output.formula <= '9'){
 	  number = number * 10;
-	  number = number + (int)(*parser.formula - '0');
-	  ++parser.formula;
+	  number = number + (int)(*output.formula - '0');
+	  ++output.formula;
 	}
 
-	if(*parser.formula == '.'){
-	  ++parser.formula;
+	if(*output.formula == '.'){
+	  ++output.formula;
 
 	  //Check the next character is a number, else error
 
-	  if(*parser.formula >= '0' && *parser.formula <= '9'){
+	  if(*output.formula >= '0' && *output.formula <= '9'){
 		double weight = 1;
-		while(*parser.formula >= '0' && *parser.formula <= '9'){
+		while(*output.formula >= '0' && *output.formula <= '9'){
 		  weight = weight / 10.0;
-		  double scaled = (int)(*parser.formula - '0') * weight;
+		  double scaled = (int)(*output.formula - '0') * weight;
 		  number = number + scaled;
-		  ++parser.formula;
+		  ++output.formula;
 		}
 	  }
 	  else{
