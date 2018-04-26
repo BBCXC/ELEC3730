@@ -29,21 +29,42 @@ const command_s Command_list[] = {
 int command_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans){
   double result = 0;
 
-  for(int i=0; i<18; i++){
-	if(strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0){
-	  if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
-	  if(Command_list[i].Function_p(array_of_words_p, word_count, &result) == 0){
-		output.result = result;
-		*prev_ans = result;
-		if(i <= 14)return 0;
-		else return 1;
-	  }
-	  else{
-		  return -1;
-	  }
-	}
+  while(Command_list[i].NameString != NULL){
+  	if(strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0){
+  	  if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
+  	  if(Command_list[i].Function_p(array_of_words_p, word_count, &result) == 0){
+    		output.result = result;
+    		*prev_ans = result;
+    		if(i <= 14)return 0;
+    		else return 1;
+  	  }
+  	  else{
+  		  return -1;
+  	  }
+  	}
+    i++;
   }
   return -1;
+}
+
+int help_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans){
+  double result = 0;
+
+  while(Command_list[i].NameString != NULL){
+    if(strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0){
+      if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
+      //Print Specific command list thing
+      printf("%s\t%s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+      return 0;
+    }
+  }
+  if(debugsys == 1) printf("No Operation selected\n");
+  //Loop through all command list and print
+  while(Command_list[i].NameString != NULL){
+    printf("%s\t%s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+    i++;
+  }
+  return 0;
 }
 
 /***********************************************************************************************************************

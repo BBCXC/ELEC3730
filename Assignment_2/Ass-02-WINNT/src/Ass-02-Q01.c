@@ -1,10 +1,5 @@
 //TODO Implement help help
 //TODO Fix help Function
-//Compress sin cos tan asin acos atan to single function
-//Compress add mul to single function
-//Compress sub div pow to single function
-//Compress ln log exp sqrt to single function
-
 
 #include "Ass-02.h"
 #ifdef STM32F407xx
@@ -37,25 +32,6 @@ const char *RADstr = "rad";
 const char *DEGstr = "deg";
 const char *PIstr = "pi";
 const char *ANSstr = "ans";
-
-
-// #define ADDstr  "add"
-// #define SUBstr  "sub"
-// #define PROstr  "pro"
-// #define DIVstr  "div"
-// #define SINstr  "sin"
-// #define COSstr  "cos"
-// #define TANstr  "tan"
-// #define ASINstr  "asin"
-// #define ACOSstr  "acos"
-// #define ATANstr  "atan"
-// #define POWstr  "pow"
-// #define SQRTstr  "sqrt"
-// #define LNstr  "ln"
-// #define LOGstr  "log"
-// #define EXPstr  "exp"
-// #define RADstr  "rad"
-// #define DEGstr  "deg"
 
 /***********************************************************************************************************************
 ************************************************Command Line Parser Init************************************************
@@ -517,14 +493,8 @@ int debug_function(char **array_of_words_p[], int word_count, double *result){
 //TODO else call command list print all
 int help_function(char **array_of_words_p[], int word_count, double *result){
   if(debugsys == 1) printf("DEBUG_INFO: Entered HELP function\n");
-  if(word_count > 1){
-    else{
-      printf("ERROR: Unknown debug command\n");
-      return 1;
-    }
-  }
-  else{
-
+  if(help_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans) != 0){
+    printf("ERROR: Help Funtion\n");
   }
   return 0;
 }
