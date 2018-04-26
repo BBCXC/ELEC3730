@@ -1,8 +1,9 @@
 //TODO Implement help help
-//TODO Implement debug on debuf off
-//TODO Change print statements to closer reflect example
-//TODO Command line parser formula mode, allows input of 1+3-7/4 etc
-//TODO Write atof function that returns double
+//TODO Fix help Function
+//Compress sin cos tan asin acos atan to single function
+//Compress add mul to single function
+//Compress sub div pow to single function
+//Compress ln log exp sqrt to single function
 
 
 #include "Ass-02.h"
@@ -10,9 +11,12 @@
 #include "usart.h"
 #endif
 
+static int debugsys = 1;
+static int formula_mode = 0;
+
 const char *ADDstr = "add";
 const char *SUBstr = "sub";
-const char *PROstr = "pro";
+const char *MULstr = "mul";
 const char *DIVstr = "div";
 const char *SINstr = "sin";
 const char *COSstr = "cos";
@@ -25,12 +29,16 @@ const char *SQRTstr = "sqrt";
 const char *LNstr = "ln";
 const char *LOGstr = "log";
 const char *EXPstr = "exp";
+const char *FORMULAstr = "formula";
+const char *DEBUGstr = "debug";
+const char *HELPstr = "help";
+
 const char *RADstr = "rad";
 const char *DEGstr = "deg";
 const char *PIstr = "pi";
 const char *ANSstr = "ans";
 
-const char *HELPstr = "help";
+
 // #define ADDstr  "add"
 // #define SUBstr  "sub"
 // #define PROstr  "pro"
@@ -48,8 +56,6 @@ const char *HELPstr = "help";
 // #define EXPstr  "exp"
 // #define RADstr  "rad"
 // #define DEGstr  "deg"
-
-#define debugsys 1
 
 /***********************************************************************************************************************
 ************************************************Command Line Parser Init************************************************
@@ -90,9 +96,7 @@ void CommandLineParserProcess(void){
 
   #else
 
-    double result = 0;
     static double prev_ans = 0;
-    
     char c;
     int i;
     char command_line[101];
@@ -111,13 +115,14 @@ void CommandLineParserProcess(void){
 
     int word_count = string_parser(command_line, &array_of_words_p);
 
-    if(debugsys == 1){
-    	for(int i=0; i<word_count; i++){
-    		printf("Word %i: %s\n", i, array_of_words_p[i]);
-    	}
-    }
+      if(debugsys == 1){
+        for(int i=0; i<word_count; i++){
+          printf("Word %i: %s\n", i, array_of_words_p[i]);
+        }
+      }
 
-    if(word_count > 0){
+    if(word_count > 0 && formula_mode == 0){
+
     	if(debugsys == 1) printf("Word Count = %i\n", word_count);
 
       char dtos[50];
@@ -126,8 +131,8 @@ void CommandLineParserProcess(void){
         if((strcmp("PI", array_of_words_p[j]) == 0) ||
            (strcmp("pi", array_of_words_p[j]) == 0) ||
            (strcmp("Pi", array_of_words_p[j]) == 0)){
-          if(debugsys == 1) printf("DEBUG_INFO: Constant PI Ffund\n");
-          snprintf(dtos, 50, "%f", M_PI);
+          if(debugsys == 1) printf("DEBUG_INFO: Constant PI found\n");
+          snprintf(dtos, 50, "%lf", M_PI);
           array_of_words_p[j] = dtos;
         }
       }
@@ -136,169 +141,49 @@ void CommandLineParserProcess(void){
       for(int j=1; j<word_count; j++){
         if((strcmp("ANS", array_of_words_p[j]) == 0) ||
            (strcmp("ans", array_of_words_p[j]) == 0)){
-          if(debugsys == 1) printf("DEBUG_INFO: Constant PI Ffund\n");
-          snprintf(dtos, 50, "%f", prev_ans);
+          if(debugsys == 1) printf("DEBUG_INFO: Constant ANS found\n");
+          snprintf(dtos, 50, "%lf", prev_ans);
           array_of_words_p[j] = dtos;
         }
       }
 
-      //Check for operations
-      if(strcmp(ADDstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: add_function operation selected\n");
-        if(word_count > 2){
-          result = add_function(&array_of_words_p, word_count);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
+      int mode = -1;
+      mode = command_parser(&array_of_words_p, word_count, debugsys, &prev_ans);
+      if(mode == -1){
+    	  printf("ERROR: Unknown Operation\n");
       }
-      else if(strcmp(SUBstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: sub_function operation selected\n");
-        if(word_count == 3){
-          result = sub_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(PROstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: pro_function operation selected\n");
-        if(word_count > 2){
-          result = pro_function(&array_of_words_p, word_count);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(DIVstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: div_function operation selected\n");
-        if(word_count == 3){
-          result = div_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(SINstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: sin_function operation selected\n");
-        if(word_count == 3){
-          result = sin_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(COSstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: cos_function operation selected\n");
-        if(word_count == 3){
-          result = cos_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(TANstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: tan_function operation selected\n");
-        if(word_count == 3){
-          result = tan_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(ASINstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: asin_function operation selected\n");
-        if(word_count == 3){
-          result = asin_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(ACOSstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: acos_function operation selected\n");
-        if(word_count == 3){
-          result = acos_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(ATANstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: atan_function operation selected\n");
-        if(word_count == 3){
-          result = atan_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(POWstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: pow_function operation selected\n");
-        if(word_count == 3){
-          result = pow_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(SQRTstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: sqrt_function operation selected\n");
-        if(word_count == 2){
-          result = sqrt_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(LNstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: ln_function operation selected\n");
-        if(word_count == 2){
-          result = ln_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(LOGstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: log_function operation selected\n");
-        if(word_count == 2){
-          result = log_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(EXPstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: exp_function operation selected\n");
-        if(word_count == 2){
-          result = exp_function(&array_of_words_p);
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
-      }
-      else if(strcmp(HELPstr, array_of_words_p[0]) == 0){
-        if(debugsys == 1) printf("DEBUG_INFO: help_function selected\n");
-        if(word_count > 0){
-          if(help_function(&array_of_words_p, word_count) != 0) printf("ERROR: Help function not available\n");
-        }
-        else{
-          printf("ERROR: Too few Arguments for operation\n");
-        }
+      else if(mode == 0){
+    	  printf("The result is %lf\n", parser.result);
+    	  parser.result = prev_ans;
+    	  printf("Ans %lf\n", prev_ans);
       }
       else{
-        printf("ERROR: Unknown Operation\n");
+    	  //Must have changed debug, formula or help
       }
-      if(strcmp(HELPstr, array_of_words_p[0]) != 0) {
-        printf("The result is %lf\n", result);
-        prev_ans = result;
-      }
+
+
+      // printf("ERROR: Unknown Operation\n");
 
       free(array_of_words_p[0]);
       free(array_of_words_p);
 
       if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
+    }
+    else if(formula_mode == 1){
+      if(command_parser(&array_of_words_p, word_count, debugsys, &prev_ans) == 1){
+	  }
+      else{
+		  parser.formula = array_of_words_p[0];
+		  parser.result = 0;
+		  parser.prev_ans = parseFormula();
+		  printf("The result is %lf\n", parser.result);
+		  printf("Answer stored is %lf\n", parser.prev_ans);
+      }
+      free(array_of_words_p[0]);
+	  free(array_of_words_p);
+
+	  if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
+
     }
     else{
       printf("ERROR: No strings detected\n");
@@ -310,348 +195,336 @@ void CommandLineParserProcess(void){
 /***********************************************************************************************************************
 **************************************************Operation Function****************************************************
 ***********************************************************************************************************************/
-double add_function(char **array_of_words_p[], int word_count, double *result){
+int add_function(char **array_of_words_p[], int word_count, double *result){
   if(debugsys == 1) printf("DEBUG_INFO: Entered ADD function\n");
   double value_1 = 0;
   double value_2 = 0;
   for(int i=1; i<word_count; i++){
-	  if(sscanf((*array_of_words_p)[i], "%lf", &value_1) == 1){
-		  printf("ERROR: Somethig");
+	  if(sscanf((*array_of_words_p)[i], "%lf", &value_2) != 1){
+		  printf("ERROR: Found unknown argument %s\n", (*array_of_words_p)[i]);
 		  return 1;
 	  }
 	  value_1+=value_2;
   }
-  result = &value_1;
+  *result = value_1;
   return 0;
 }
-double sub_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered SUBTRACT function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[2]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
-  double result = value_1 - value_2;
-  return result;
-}
-double pro_function(char **array_of_words_p[], int word_count){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered PRODUCT function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  for(int i=2; i<word_count; i++){
-	  double value_2 = atof((*array_of_words_p)[i]);
-	  if(debugsys == 1) printf("DEBUG_INFO: Value %i: %lf\n", i, value_2);
-	  value_1 = value_1 * value_2;
-  }
-  return value_1;
-}
-double div_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered DIVIDE function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[2]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
-  double result = value_1 / value_2;
-  return result;
-}
-double sin_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered SIN function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = sin(value_1);
-  return result;
-}
-double cos_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered COS function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = cos(value_1);
-  return result;
-}
-double tan_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered TAN function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = tan(value_1);
-  return result;
-}
-double asin_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCSIN function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = asin(value_1);
-  return result;
-}
-double acos_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCCOS function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = acos(value_1);
-  return result;
-}
-double atan_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCTAN function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-  }
-  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-    value_1 = value_1 * M_PI / 180;
-  }
-  else{
-    printf("ERROR: Unknown Operation\n");
-    return 0;
-  }
-  if(debugsys == 1) printf("DEBUG_INFO: TYPE %s\n", (*array_of_words_p)[2]);
-  double result = atan(value_1);
-  return result;
-}
-double pow_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered POWER function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double value_2 = atof((*array_of_words_p)[2]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 2: %lf\n", value_2);
-  double result = pow(value_1, value_2);
-  return result;
-}
-double sqrt_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered SQUARE ROOT function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double result = sqrt(value_1);
-  return result;
-}
-double ln_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered NATURAL LOG function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double result = log(value_1);
-  return result;
-}
-double log_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered LOG 10 function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double result = log10(value_1);
-  return result;
-}
-double exp_function(char **array_of_words_p[]){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered EXPONENTIAL function\n");
-  double value_1 = atof((*array_of_words_p)[1]);
-  if(debugsys == 1) printf("DEBUG_INFO: Value 1: %lf\n", value_1);
-  double result = exp(value_1);
-  return result;
-}
-
-int help_function(char **array_of_words_p[], int word_count){
-  if(debugsys == 1) printf("DEBUG_INFO: Entered HELP function\n");
-  if(word_count == 2){
-    char *option = (*array_of_words_p)[1];
-    if(print_help(&option) != 0) printf("ERROR: Could not print help option(s)\n");
-  }
-  else if(word_count > 2){
-    printf("ERROR: Too many Arguments for help\n");
+int sub_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered SUB function\n");
+  double value_1 = 0;
+  double value_2 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
     return 1;
   }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+   if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = value_1 - value_2;
+  return 0;
+}
+int mul_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered MUL function\n");
+  double value_1 = 1;
+  double value_2 = 0;
+  for(int i=1; i<word_count; i++){
+    if(sscanf((*array_of_words_p)[i], "%lf", &value_2) != 1){
+      printf("ERROR: Found unknown argument");
+      return 1;
+    }
+    value_1 = value_1 * value_2;
+  }
+  *result = value_1;
+  return 0;
+}
+int div_function(char **array_of_words_p[], int word_count, double *result){
+ if(debugsys == 1) printf("DEBUG_INFO: Entered DIV function\n");
+  double value_1 = 0;
+  double value_2 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+   if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = value_1 / value_2;
+  return 0;
+}
+int sin_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered SIN function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
   else{
-    char *option = "NO_OPTION";
-    if(print_help(&option) != 0) printf("ERROR: Could not print help option(s)\n");
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int cos_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered COS function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
+  else{
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int tan_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered TAN function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
+  else{
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int asin_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCSIN function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
+  else{
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int acos_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCCOS function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
+  else{
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int atan_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered ARCTAN function\n");
+  double value_1 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+  }
+  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+  }
+  else{
+    printf("ERROR: Unknown Operation\n");
+    return 1;
+  }
+  *result = sin(value_1);
+  return 0;
+}
+int pow_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered POWER function\n");
+  double value_1 = 0;
+  double value_2 = 0;
+  if(word_count > 3){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+   if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = pow(value_1, value_2);
+  return 0;
+}
+int sqrt_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered SQUARE ROOT function\n");
+  double value_1 = 0;
+  if(word_count > 2){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = sqrt(value_1);
+  return 0;
+}
+int ln_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered NATURAL LOG function\n");
+  double value_1 = 0;
+  if(word_count > 2){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = log(value_1);
+  return 0;
+}
+int log_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered LOG 10 function\n");
+  double value_1 = 0;
+  if(word_count > 2){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = log10(value_1);
+  return 0;
+}
+int exp_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered EXPONENTIAL function\n");
+  double value_1 = 0;
+  if(word_count > 2){
+    printf("ERROR: Too many arguments\n");
+    return 1;
+  }
+  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("ERROR: Found unknown argument");
+    return 1;
+  }
+  *result = exp(value_1);
+  return 0;
+}
+int formula_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered Formula Mode\n");
+  if(word_count > 1){
+    if(strcmp("on", (*array_of_words_p)[1]) == 0){
+      formula_mode = 1;
+      printf("Formula Mode ON\n");
+    }
+    else if(strcmp("off", (*array_of_words_p)[1]) == 0){
+      formula_mode = 0;
+      printf("Formula Mode OFF\n");
+    }
+    else{
+      printf("ERROR: Unknown debug command\n");
+      return 1;
+    }
   }
   return 0;
 }
+int debug_function(char **array_of_words_p[], int word_count, double *result){
+	if(debugsys == 1) printf("DEBUG_INFO: Entered Debug Mode\n");
+  if(word_count > 1){
+    if(strcmp("on", (*array_of_words_p)[1]) == 0){
+      debugsys = 1;
+      printf("Debug ON\n");
+    }
+    else if(strcmp("off", (*array_of_words_p)[1]) == 0){
+      debugsys = 0;
+      printf("Debug OFF\n");
+    }
+    else{
+      printf("ERROR: Unknown debug command\n");
+      return 1;
+    }
+  }
+	return 0;
+}
 
-/***********************************************************************************************************************
-*****************************************************Help Printer*******************************************************
-***********************************************************************************************************************/
-int print_help(char **option){
-  if(strcmp("NO_OPTION", *option) == 0){
-    //Specify all functions
-    printf("please select an operation\n");
-    printf("HELP_INFO: add\n");
-    printf("HELP_INFO: sub\n");
-    printf("HELP_INFO: pro\n");
-    printf("HELP_INFO: div\n");
-    printf("HELP_INFO: sin\n");
-    printf("HELP_INFO: cos\n");
-    printf("HELP_INFO: tan\n");
-    printf("HELP_INFO: asin\n");
-    printf("HELP_INFO: acos\n");
-    printf("HELP_INFO: atan\n");
-    printf("HELP_INFO: pow\n");
-    printf("HELP_INFO: sqrt\n");
-    printf("HELP_INFO: ln\n");
-    printf("HELP_INFO: log\n");
-    printf("HELP_INFO: exp\n");
-    printf("HELP_INFO: pi\n");
-    printf("HELP_INFO: ans\n");
-  }
-  else if(strcmp(ADDstr, *option) == 0){
-    printf("HELP_INFO: add_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: add\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: value_2\n");
-    printf("Result = value_1 + value_2 ... + value_N\n");
-  }
-  else if(strcmp(SUBstr, *option) == 0){
-    printf("HELP_INFO: sub_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: sub\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: value_2\n");
-    printf("Result = value_1 - value_2\n");
-  }
-  else if(strcmp(PROstr, *option) == 0){
-    printf("HELP_INFO: pro_function operation selected\n");
-    printf("This function pro 3 Arguments\n");
-    printf("Argument 1: ADD\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: value_2\n");
-    printf("Result = value_1 x value_2 ... * value_N\n");
-  }
-  else if(strcmp(DIVstr, *option) == 0){
-    printf("HELP_INFO: div_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: div\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: value_2\n");
-    printf("Result = value_1 / value_2\n");
-  }
-  else if(strcmp(SINstr, *option) == 0){
-    printf("HELP_INFO: sin_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: sin\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(COSstr, *option) == 0){
-    printf("HELP_INFO: cos_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: cos\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(TANstr, *option) == 0){
-    printf("HELP_INFO: tan_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: tan\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(ASINstr, *option) == 0){
-    printf("HELP_INFO: asin_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: asin\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(ACOSstr, *option) == 0){
-    printf("HELP_INFO: acos_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: acos\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(ATANstr, *option) == 0){
-    printf("HELP_INFO: atan_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: atan\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: type (rad, deg)\n");
-  }
-  else if(strcmp(POWstr, *option) == 0){
-    printf("HELP_INFO: pow_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: pow\n");
-    printf("Argument 2: value_1\n");
-    printf("Argument 3: value_2\n");
-    printf("Result = value_1 ^ value_2\n");
-  }
-  else if(strcmp(SQRTstr, *option) == 0){
-    printf("HELP_INFO: sqrt_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: sqrt\n");
-    printf("Argument 2: value_1\n");
-  }
-  else if(strcmp(LNstr, *option) == 0){
-    printf("HELP_INFO: ln_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: ln\n");
-    printf("Argument 2: value_1\n");
-  }
-  else if(strcmp(LOGstr, *option) == 0){
-    printf("HELP_INFO: log_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: log\n");
-    printf("Argument 2: value_1\n");
-  }
-  else if(strcmp(EXPstr, *option) == 0){
-    printf("HELP_INFO: exp_function operation selected\n");
-    printf("This function takes 3 Arguments\n");
-    printf("Argument 1: exp\n");
-    printf("Argument 2: value_1\n");
-  }
-  else if(strcmp(PIstr, *option) == 0){
-    printf("HELP_INFO: pi Constant selected\n");
-    printf("Constant used in function Arguments\n");
-  }
-  else if(strcmp(ANSstr, *option) == 0){
-    printf("HELP_INFO: ans operation selected\n");
-    printf("Constant used in function Arguments\n");
+//TODO If help called
+//TODO if words > 1
+//TODO command list print statement
+//TODO else call command list print all
+int help_function(char **array_of_words_p[], int word_count, double *result){
+  if(debugsys == 1) printf("DEBUG_INFO: Entered HELP function\n");
+  if(word_count > 1){
+    else{
+      printf("ERROR: Unknown debug command\n");
+      return 1;
+    }
   }
   else{
-	  printf("ERROR: Could not display help information\n");
-	  return 1;
+
   }
   return 0;
 }
