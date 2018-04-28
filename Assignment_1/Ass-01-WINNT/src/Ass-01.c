@@ -84,7 +84,7 @@ int Ass_01_Main(void)
     {
 	  printf("--> File name %4s = %s: \n", " ", filename_filter[i]);
       snprintf(filename_output,100,"%s-%s",filename_filter[i],filename_audio[0]);
-	  if (filter2(filename_filter[i], filename_audio[0], filename_output)==0)
+	  if (filter(filename_filter[i], filename_audio[0], filename_output)==0)
 	  {
 	    printf("--> Written %s.\n", filename_output);
 	  }

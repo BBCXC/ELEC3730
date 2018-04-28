@@ -1,4 +1,5 @@
-//TODO Implement debug on debug off
+//TODO Implement debug on debug off globally
+//TODO Print syntax error on screen not ans if there is a syntax error
 
 
 /*
@@ -32,7 +33,7 @@ LCD_COLOR_ORANGE        0xFD20
 #include "Ass-02.h"
 
 #define debuginfo 0
-#define sysinfo 1
+#define sysinfo 0
 #define errorinfo 1
 
 #define MemExpand 10
@@ -186,7 +187,7 @@ int draw_numpad(){
     //Draw common symbols, AC del = etc
 
     for(int i=0; i<21; i++){
-  		if(draw_item(i, 0) == 0){
+  		if(draw_item(i, 0, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
   			grid_space_p.Area[i][4] = i - 0;
   			if(debuginfo == 1) printf("DEBUG_INFO Numpad: item %s, cell_number %i, grid_space %i\n", 
                                    grid_space_p.items[i], i, grid_space_p.Area[i][4]);
@@ -201,9 +202,9 @@ int draw_sym(){
     //Draw common symbols, AC del = etc
 
     for(int i=0; i<21; i++){
-    	if(draw_item(i, 21) == 0){
+    	if(draw_item(i, 21, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
     		grid_space_p.Area[i][4] = i+21;
-    		if(debuginfo == 1) printf("DEBUG_INFO: item %s, cell_number %i, grid_space %i\n", 
+    		if(debuginfo == 1)printf("DEBUG_INFO DRAW_SYM: item %s, cell_number %i, item %i\n",
                                    grid_space_p.items[i], i, grid_space_p.Area[i][4]);
     	}
    }
@@ -211,7 +212,9 @@ int draw_sym(){
 }
 
 
-int draw_item(int cell_number, int offset){
+int draw_item(int cell_number, int offset, int text_colour, int cell_colour){
+	//Cell_number : 0 to 21
+	//Offset : 0 or 21, depending on symbol or number screen
 
     //Draws specific character passed into function
     int x_min = grid_space_p.Area[cell_number][0];
@@ -219,7 +222,7 @@ int draw_item(int cell_number, int offset){
     int y_min = grid_space_p.Area[cell_number][2];
     int y_max = grid_space_p.Area[cell_number][3];
 
-    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
+    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, text_colour, cell_colour) != 0){
       printf("ERROR: Could not clear cell\n");
     }
     //Find center of cell given
@@ -262,9 +265,10 @@ void CalculatorProcess(){
   char output_ans[50];
 
 	// getDisplayPoint(&display, Read_Ads7846(), &matrix );
-	if (BSP_TP_GetDisplayPoint(&display) == 0 && holding == 0){
+	if (BSP_TP_GetDisplayPoint(&display) == 0){
 		button_debounce++;
-		if(button_debounce >= 50){
+
+		if(button_debounce >= 50 && holding == 0){
 			button_debounce = 0;
 			off_debounce = 0;
 			holding = 1;
@@ -281,13 +285,6 @@ void CalculatorProcess(){
                                 touch_pos, display.x, display.y);
 
 			if(touch_pos != 100){
-
-				if(button_highlight == 0){
-				    if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0){
-              printf("ERROR: Could not highlight cell\n");	//TODO Fix
-            }
-				    button_highlight = 1;
-			    }
 
 				if(sysinfo == 1)printf("SYS_INFO: Selected %s\n", grid_space_p.items[touch_pos]);
 				//Do something with selected item
@@ -323,8 +320,7 @@ void CalculatorProcess(){
 
 				}
 
-				else if((strcmp(grid_space_p.items[touch_pos], "<") == 0) || 
-                (strcmp(grid_space_p.items[touch_pos], ">") == 0)){
+				else if((strcmp(grid_space_p.items[touch_pos], ">") == 0)){
 					//Switch display mode
 					display_mode++;
 					if(display_mode > 1){
@@ -350,11 +346,12 @@ void CalculatorProcess(){
 					//Call function return answer
 					//prev_ans = parseFormula(input);
 					//Save answer
-
-					for(int num_str=0; num_str < equation.pos; num_str++){
-						if(sysinfo == 1)printf("SYS_INFO: %i String of %i stings: string %s, length %i\n", 
-                                    num_str + 1, equation.pos, equation.input[num_str], 
-                                    strlen(equation.input[num_str]));
+					if(sysinfo == 1){
+						for(int num_str=0; num_str < equation.pos; num_str++){
+							printf("SYS_INFO: %i String of %i stings: string %s, length %i\n",
+										num_str + 1, equation.pos, equation.input[num_str],
+										strlen(equation.input[num_str]));
+						}
 					}
 
 					if(sysinfo == 1)printf("SYS_INFO: Formula Contains Before Parsing: %s, equation.pos %i\n", 
@@ -409,23 +406,36 @@ void CalculatorProcess(){
 					if(Input_append(grid_space_p.items[touch_pos]) != 0) printf("ERROR\n");
 				}
 
+				if(button_highlight == 0){
+					if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0){
+					  printf("ERROR: Could not highlight cell\n");	//TODO Fix
+					}
+					button_highlight = 1;
+				}
+
 			}
-			for(int i=0; i<equation.pos; i++){
-				if(debuginfo == 1)printf("DEBUG_INFO: Equation.Input[%i] Contains %s  length %i\n", 
-                                  i, equation.input[i], strlen(equation.input[i]));
+			if(debuginfo == 1){
+				for(int i=0; i<equation.pos; i++){
+					printf("DEBUG_INFO: Equation.Input[%i] Contains %s  length %i\n",
+									  i, equation.input[i], strlen(equation.input[i]));
+				}
 			}
 			if(debuginfo == 1)printf("DEBUG_INFO: Equation currently has %i memory free of total %i\n", 
                                 equation.size - equation.pos, equation.size);
 		}
+		else if(button_debounce >= 50 && holding == 1){
+			button_debounce = 0;
+		    off_debounce = 0;
+		}
 	}
-  else if(BSP_TP_GetDisplayPoint(&display) == 1){
+  else{
 	  off_debounce++;
-	  if(off_debounce > 50){
+	  if(off_debounce > 100){
 		  holding = 0;
 		  button_debounce = 0;
 		  off_debounce = 0;
 		  if(button_highlight == 1 ){
-			  if(LCD_Cell_Highlight(button_highlight, touch_pos) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
+			  if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
 			  button_highlight = 0;
 			  if(sysinfo == 1)printf("SYS_INFO: Cleared Highlight Now\n");
 		  }
@@ -538,7 +548,6 @@ int Input_append(char *item){
 
 
 int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour){
-
 	BSP_LCD_SetTextColor(cell_colour);
 	/* Draw a rectangle with background color */
 	BSP_LCD_FillRect((x_min + 1), (y_min + 1), (x_max - x_min - 2), (y_max - y_min - 2));
@@ -549,35 +558,46 @@ int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour,
 
 
 //TODO Doesn't seem to work at all. Probably just remove for now to simplify
-int LCD_Cell_Highlight(int status, int cell_number){
-  return 0;
+int LCD_Cell_Highlight(int status, int item_number, int display_mode){
+	return 0;
+
+//Status : on|off
+//Item_number : 0 to 42
+//display_mode : symbol|number
+
+
   //Draw coloured cell
   //Redraw symbol
-  if(sysinfo == 1)printf("SYS_INFO: Trying to highlight\n");
+
+  int cell_number = item_number < 21 ? item_number : (item_number - (display_mode == 0 ? 0 : 21));
 
   int x_min = grid_space_p.Area[cell_number][0];
   int x_max = grid_space_p.Area[cell_number][1];
   int y_min = grid_space_p.Area[cell_number][2];
   int y_max = grid_space_p.Area[cell_number][3];
-  int item_num = grid_space_p.Area[cell_number][4];
 
-  if(status == 0){
+  printf("DEBUG_INFO LCD_HIGHLIGHT: cell_number %i, offset %i\n", cell_number, (display_mode == 0 ? 0 : 21));
+  printf("DEBUG_INFO LCD_HIGHLIGHT: x_min %i, x_max %i, y_min %i, y_max %i\n", x_min, x_max, y_min, y_max);
+
+  if(status == 1){
     //Set highlight to off
     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, 
                        LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
       printf("ERROR CLEARING CELL\n");
     }
-    if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
+    if(draw_item(cell_number, display_mode == 0 ? 0 : 21,
+    			 LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("ERROR: Could not redraw symbol\n");
 
     return 0;
   }
-  else if (status == 1){
+  else if (status == 0){
     //Set highlight to on
     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, 
                        LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0){
       printf("ERROR CLEARING CELL\n");
     }
-    if(draw_item(item_num, 0) != 0) printf("ERROR: Could not redraw symbol\n");
+    if(draw_item(cell_number, display_mode == 0 ? 0 : 21,
+    			 LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf("ERROR: Could not redraw symbol\n");
 
     return 0;
   }
@@ -601,10 +621,10 @@ int draw_result(){
   int x_pos = ((x_max - x_min) / 2.0) + x_min;
   int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-  if(debuginfo == 1)printf("DEBUG_INFO: x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", 
+  if(debuginfo == 1)printf("DEBUG_INFO 6: x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n",
                             x_min, x_max, y_min, y_max, x_pos, y_pos);
 
-  char *result_str[10];
+  char result_str[10];
   snprintf(result_str, 10, "%f", output.result);
 
   if(debuginfo == 1)printf("DEBUG_INFO: result_str %s\n", result_str);
@@ -658,7 +678,6 @@ int draw_equation(){
   else{
 	  for(int i=offset; i<equation.pos; i++){
 		  temp_equation[i-offset] = output.formula[i];
-		  if(debuginfo == 1 || sysinfo == 1)printf("DEBUG_INFO: temp_equation contains %s\n", temp_equation);
 	  }
   }
 
@@ -685,311 +704,3 @@ int clear_equation(){
 
   return 0;
 }
-
-
-/***********************************************************************************************************************
-************************************************Recursive Decent Parser*************************************************
-***********************************************************************************************************************/
-//double parseFormula(){
-// grid_space_p.result = parseSub();
-// if(*grid_space_p.input == '\0'){
-//   return grid_space_p.result;
-// }
-// // printf("Expected end of grid_space_p.input but found %c\n", *grid_space_p.input);
-// printf("Syntax Error\n");
-// return 0;
-//}
-//
-//double parseSub(){
-// double sub_1 = parseSum();
-// while(*grid_space_p.formula == '-'){
-//   ++grid_space_p.formula;
-//   double sub_2 = parseSum();
-//   sub_1 = sub_1 - sub_2;
-// }
-// return sub_1;
-//}
-//
-//double parseSum(){
-// double sum_1 = parsePro();
-// while(*grid_space_p.formula == '+'){
-//   ++grid_space_p.formula;
-//   double sum_2 = parsePro();
-//   sum_1 = sum_1 + sum_2;
-// }
-// return sum_1;
-//}
-//
-//double parsePro(){
-// double pro_1 = parseDiv();
-// while(*grid_space_p.formula == '*'){
-//   ++grid_space_p.formula;
-//   double pro_2 = parseDiv();
-//   pro_1 = pro_1 * pro_2;
-// }
-// return pro_1;
-//}
-//
-//double parseDiv(){
-// double div_1 = parsePow();
-// while(*grid_space_p.formula == '/'){
-//   ++grid_space_p.formula;
-//   double div_2 = parsePow();
-//   div_1 = div_1 / div_2;
-// }
-// return div_1;
-//}
-//
-//double parsePow(){
-// double pow_1 = parseFactor();
-// while(*grid_space_p.formula == '^'){
-//   ++grid_space_p.formula;
-//   double pow_2 = parseFactor();
-//   pow_1 = pow(pow_1, pow_2);
-// }
-// return pow_1;
-//}
-//
-//double parseFactor(){
-//
-// if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//   return parseNumber();
-// }
-// else if(*grid_space_p.formula == '-'){
-//   return parseNumber();
-// }
-// else if(*grid_space_p.formula == '('){
-//   ++grid_space_p.formula;
-//   double temp = parseSub();
-//   ++grid_space_p.formula;
-//   return temp;
-// }
-// //PI
-// else if(*grid_space_p.formula == 'p'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'i'){
-//     ++grid_space_p.formula;
-//     return M_PI;
-//   }
-// }
-// //sin sqrt
-// else if(*grid_space_p.formula == 's'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'i'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'n'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == '('){
-//           ++grid_space_p.formula;
-//           double temp = parseSub();
-//           temp = sin(temp*M_PI/180);
-//           ++grid_space_p.formula;
-//           return temp;
-//       }
-//
-//     }
-//   }
-//   else if(*grid_space_p.formula == 'q'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'r'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == 't'){
-//           ++grid_space_p.formula;
-//           if(*grid_space_p.formula == '('){
-//           ++grid_space_p.formula;
-//           double temp = parseSub();
-//           temp = sqrt(temp);
-//           ++grid_space_p.formula;
-//           return temp;
-//         }
-//
-//       }
-//     }
-//   }
-// }
-// //cos
-// else if(*grid_space_p.formula == 'c'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'o'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 's'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == '('){
-//         ++grid_space_p.formula;
-//         double temp = parseSub();
-//         temp = cos(temp*M_PI/180);
-//         ++grid_space_p.formula;
-//         return temp;
-//       }
-//
-//     }
-//   }
-// }
-// //tan
-// else if(*grid_space_p.formula == 't'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'a'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'n'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == '('){
-//         ++grid_space_p.formula;
-//         double temp = parseSub();
-//         temp = tan(temp*M_PI/180);
-//         ++grid_space_p.formula;
-//         return temp;
-//       }
-//
-//     }
-//   }
-// }
-// //asin acos atan
-// else if(*grid_space_p.formula == 'a'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 's'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'i'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == 'n'){
-//         ++grid_space_p.formula;
-//         if(*grid_space_p.formula == '('){
-//           ++grid_space_p.formula;
-//           double temp = parseSub();
-//           temp = asin(temp*M_PI/180);
-//           ++grid_space_p.formula;
-//           return temp;
-//         }
-//
-//       }
-//     }
-//   }
-//   else if(*grid_space_p.formula == 'c'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'o'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == 's'){
-//         ++grid_space_p.formula;
-//         if(*grid_space_p.formula == '('){
-//           ++grid_space_p.formula;
-//           double temp = parseSub();
-//           temp = acos(temp*M_PI/180);
-//           ++grid_space_p.formula;
-//           return temp;
-//         }
-//
-//       }
-//     }
-//   }
-//   else if(*grid_space_p.formula == 't'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'a'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == 'n'){
-//         ++grid_space_p.formula;
-//         if(*grid_space_p.formula == '('){
-//           ++grid_space_p.formula;
-//           double temp = parseSub();
-//           temp = atan(temp*M_PI/180);
-//           ++grid_space_p.formula;
-//           return temp;
-//         }
-//
-//       }
-//     }
-//   }
-// }
-// //exp
-// else if(*grid_space_p.formula == 'e'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'x'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'p'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == '('){
-//         ++grid_space_p.formula;
-//         double temp = parseSub();
-//         temp = exp(temp);
-//         ++grid_space_p.formula;
-//         return temp;
-//       }
-//
-//     }
-//   }
-// }
-// //ln log10
-// else if(*grid_space_p.formula == 'l'){
-//   ++grid_space_p.formula;
-//   if(*grid_space_p.formula == 'n'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == '('){
-//       ++grid_space_p.formula;
-//       double temp = parseSub();
-//       temp = log(temp);
-//       ++grid_space_p.formula;
-//       return temp;
-//     }
-//   }
-//   else if(*grid_space_p.formula == 'o'){
-//     ++grid_space_p.formula;
-//     if(*grid_space_p.formula == 'g'){
-//       ++grid_space_p.formula;
-//       if(*grid_space_p.formula == '('){
-//         ++grid_space_p.formula;
-//         double temp = parseSub();
-//         temp = log10(temp);
-//         ++grid_space_p.formula;
-//         return temp;
-//       }
-//
-//     }
-//   }
-// }
-// else{
-//   printf("Syntax Error\n");
-//   printf("Unknown symbol %c", *grid_space_p.formula);
-// }
-// return 0;
-//}
-//
-//double parseNumber(){
-//
-// double number = 0;
-// int neg_flag = 1;
-// if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-// }
-// else if(*grid_space_p.formula == '-'){
-//   neg_flag = -1;
-//   ++grid_space_p.formula;
-// }
-// else{
-//   printf("Syntax Error");
-// }
-//
-//
-// while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//   number = number * 10;
-//   number = number + (int)(*grid_space_p.formula - '0');
-//   ++grid_space_p.formula;
-// }
-//
-// if(*grid_space_p.formula == '.'){
-//   ++grid_space_p.formula;
-//
-//   //Check the next character is a number, else error
-//
-//   if(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//     double weight = 1;
-//     while(*grid_space_p.formula >= '0' && *grid_space_p.formula <= '9'){
-//       weight = weight / 10.0;
-//       double scaled = (int)(*grid_space_p.formula - '0') * weight;
-//       number = number + scaled;
-//       ++grid_space_p.formula;
-//     }
-//   }
-//   else{
-//     printf("Syntax Error");
-//   }
-// }
-//
-// return (number * neg_flag);
-//}

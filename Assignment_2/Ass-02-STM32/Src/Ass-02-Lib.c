@@ -109,7 +109,7 @@ double parseSum(){
 
 double parsePro(){
   double pro_1 = parseDiv();
-  while(*output.formula == '*'){
+  while(*output.formula == 'x' || *output.formula == '*'){
     ++output.formula;
     double pro_2 = parseDiv();
     pro_1 = pro_1 * pro_2;

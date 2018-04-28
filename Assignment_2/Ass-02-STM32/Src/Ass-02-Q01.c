@@ -1,5 +1,6 @@
-//TODO Implement help help
-//TODO Fix help Function
+//TODO Globalise Debug/sysinfo etc and formula vaibles
+//TODO if formula on and formula on is called it breaks
+//TODO if syntax error/ other error set global variable or something and don't print reult. then print error and clear variable.
 
 #include "Ass-02.h"
 #ifdef STM32F407xx
@@ -47,33 +48,30 @@ void CommandLineParserInit(void){
 **********************************************Command Line Parser Process***********************************************
 ***********************************************************************************************************************/
 void CommandLineParserProcess(void){
-
-	static double prev_ans = 0;
   char c;
-  int i;
-  char command_line[101];
-  char **array_of_words_p;
+  static int i = 0;
+  static char command_line[101];
 
   // Check for input and echo back
   #ifdef STM32F407xx
+    static int First_time = 1;
+    if(First_time == 1){
+    	First_time = 0;
+    	printf("--> Enter text:\n");
+    }
     if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK){
-      printf("SERIAL: Got '%c'\n", c);
+      printf("%c", c);
       HAL_GPIO_TogglePin(GPIOD, LD4_Pin); // Toggle LED4
 
-      int c;
-      char si[]="1234";
-      int i=111;
-      char sf[]="r5b6c7d8";
-      float f=2.22;
-
-      printf("TEST: Float printf() test: %f\n", 1.234);
-      sscanf(si, "%d", &i);
-      c=sscanf(sf, "%f", &f);
-      printf("TEST: Input string : '%s'\n", si);
-      printf("TEST: Input int    : %d\n", i);
-      printf("TEST: Input string : '%s'\n", sf);
-      printf("TEST: Input float  : %f\n", f);
-      printf("TEST: c=%d\n",c);
+	  command_line[i]=c;
+	  i++;
+	  if(c == '\r'){
+		  printf("\n");
+		  command_line[i-1] = 0;
+		  if(StringProcess(&command_line, i) != 0) printf("ERROR: Could not process string\n");
+		  i = 0;
+		  First_time = 1;
+	  }
     }
 
   #else
@@ -89,83 +87,94 @@ void CommandLineParserProcess(void){
     }
     command_line[i]=0;
 
+    if(StringProcess(&command_line, i) != 0) printf("ERROR: Could not process string");
+    i = 0;
+
   #endif
+}
 
-  int word_count = string_parser(command_line, &array_of_words_p);
+int StringProcess(char *command_line, int i){
 
-    if(debugsys == 1){
-      for(int i=0; i<word_count; i++){
-        printf("Word %i: %s\n", i, array_of_words_p[i]);
-      }
-    }
+	static double prev_ans = 0;
+	char **array_of_words_p;
 
-  if(word_count > 0 && formula_mode == 0){
+	int word_count = string_parser(command_line, &array_of_words_p);
 
-    if(debugsys == 1) printf("Word Count = %i\n", word_count);
+	    if(debugsys == 1){
+	      for(int i=0; i<word_count; i++){
+	        printf("Word %i: %s\n", i, array_of_words_p[i]);
+	      }
+	    }
 
-    char dtos[50];
-    //Check the 2 value parameters for pi
-    for(int j=1; j<word_count; j++){
-      if((strcmp("PI", array_of_words_p[j]) == 0) ||
-         (strcmp("pi", array_of_words_p[j]) == 0) ||
-         (strcmp("Pi", array_of_words_p[j]) == 0)){
-        if(debugsys == 1) printf("DEBUG_INFO: Constant PI found\n");
-        snprintf(dtos, 50, "%lf", M_PI);
-        array_of_words_p[j] = dtos;
-      }
-    }
+	  if(word_count > 0 && formula_mode == 0){
 
-    //Check the 2 value parameters for ans
-    for(int j=1; j<word_count; j++){
-      if((strcmp("ANS", array_of_words_p[j]) == 0) ||
-         (strcmp("ans", array_of_words_p[j]) == 0)){
-        if(debugsys == 1) printf("DEBUG_INFO: Constant ANS found\n");
-        snprintf(dtos, 50, "%lf", prev_ans);
-        array_of_words_p[j] = dtos;
-      }
-    }
+	    if(debugsys == 1) printf("Word Count = %i\n", word_count);
 
-    int mode = -1;
-    mode = command_parser(&array_of_words_p, word_count, debugsys, &prev_ans);
-    if(mode == -1){
-      printf("ERROR: Unknown Operation\n");
-    }
-    else if(mode == 0){
-      printf("The result is %lf\n", output.result);
-      output.result = prev_ans;
-      printf("Ans %lf\n", prev_ans);
-    }
-    else{
-      //Must have changed debug, formula or help
-    }
+	    char dtos[50];
+	    //Check the 2 value parameters for pi
+	    for(int j=1; j<word_count; j++){
+	      if((strcmp("PI", array_of_words_p[j]) == 0) ||
+	         (strcmp("pi", array_of_words_p[j]) == 0) ||
+	         (strcmp("Pi", array_of_words_p[j]) == 0)){
+	        if(debugsys == 1) printf("DEBUG_INFO: Constant PI found\n");
+	        snprintf(dtos, 50, "%lf", M_PI);
+	        array_of_words_p[j] = dtos;
+	      }
+	    }
+
+	    //Check the 2 value parameters for ans
+	    for(int j=1; j<word_count; j++){
+	      if((strcmp("ANS", array_of_words_p[j]) == 0) ||
+	         (strcmp("ans", array_of_words_p[j]) == 0)){
+	        if(debugsys == 1) printf("DEBUG_INFO: Constant ANS found\n");
+	        snprintf(dtos, 50, "%lf", prev_ans);
+	        array_of_words_p[j] = dtos;
+	      }
+	    }
+
+	    int mode = -1;
+	    mode = command_parser(&array_of_words_p, word_count, debugsys, &prev_ans);
+	    if(mode == -1){
+	      printf("ERROR: Unknown Operation\n");
+	    }
+	    else if(mode == 0){
+	      printf("The result is %lf\n", output.result);
+	      output.result = prev_ans;
+	      printf("Ans %lf\n", prev_ans);
+	    }
+	    else{
+	      //Must have changed debug, formula or help
+	    }
 
 
-    // printf("ERROR: Unknown Operation\n");
+	    // printf("ERROR: Unknown Operation\n");
 
-    free(array_of_words_p[0]);
-    free(array_of_words_p);
+	    free(array_of_words_p[0]);
+	    free(array_of_words_p);
 
-    if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
-  }
-  else if(formula_mode == 1){
-    if(command_parser(&array_of_words_p, word_count, debugsys, &prev_ans) == 1){
-  }
-    else{
-    output.formula = array_of_words_p[0];
-    output.result = 0;
-    output.prev_ans = parseFormula();
-    printf("The result is %lf\n", output.result);
-    printf("Answer stored is %lf\n", output.prev_ans);
-    }
-    free(array_of_words_p[0]);
-  free(array_of_words_p);
+	    if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
+	  }
+	  else if(formula_mode == 1){
+	    if(command_parser(&array_of_words_p, word_count, debugsys, &prev_ans) == 1){
+	  }
+	    else{
+	    output.formula = array_of_words_p[0];
+	    output.result = 0;
+	    output.prev_ans = parseFormula();
+	    printf("The result is %lf\n", output.result);
+	    printf("Answer stored is %lf\n", output.prev_ans);
+	    }
+	    free(array_of_words_p[0]);
+	  free(array_of_words_p);
 
-  if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
+	  if(debugsys == 1) printf("DEBUG_INFO: Arrays have been freed\n");
 
-  }
-  else{
-    printf("ERROR: No strings detected\n");
-  }
+	  }
+	  else{
+	    printf("ERROR: No strings detected\n");
+	    return 1;
+	  }
+	  return 0;
 }
 
 /***********************************************************************************************************************
