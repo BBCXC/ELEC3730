@@ -1,8 +1,9 @@
-//     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
-// $Revision: 1217 $
-//   $Author: Peter $
-
-// Assignment 2 include file
+/*
+ * Author 	   : Mitchell Marotta C3258958
+ * 				 Taylor Young C3206230
+ * Date	  	   : 4 May 2018
+ * Description : Assignment 2 header file
+*/
 
 #ifndef ASS_02_H_
 #define ASS_02_H_
@@ -24,23 +25,32 @@
 // Assignment main
 extern void Ass_02_Main(void);
 
+typedef struct{
+	int debug;
+	int system;
+	int formula_mode;
+} 
+	sys_t;
+	sys_t info;
+
 //Question 1
 typedef struct{
 	char *NameString; 								//Operation string
 	int (*Function_p)(char **array_of_words_p[],	//Array pointer
-					  int word_count, 			//Function pointer
-	   				  double *result); 			//Result Pointer
+					  int word_count, 				//Function pointer
+	   				  double *result); 				//Result Pointer
 	char *HelpString; 								//Help information
 	char *DescriptionString;						//Description
-} command_s;
+} 
+	command_s;
 
 // Question 1
 extern void CommandLineParserInit(void);
 extern void CommandLineParserProcess(void);
-extern int string_parser(char *inp, char **array_of_words_p[]);
-int help_parser(char **array_of_words_p[], int word_count, int debugsys);
-int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
 
+extern int string_parser(char *inp, char **array_of_words_p[]);
+extern int help_parser(char **array_of_words_p[], int word_count, int debugsys);
+extern int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
 
 extern int add_function(char **array_of_words_p[], int word_count, double *result);
 extern int sub_function(char **array_of_words_p[], int word_count, double *result);
@@ -64,11 +74,11 @@ extern int help_function(char **array_of_words_p[], int word_count, double *resu
 
 //Question 2
 typedef struct{
-  int Area[25][5];
-  char **items;
-}
-  grid_struct;
-  grid_struct grid_space_p;
+	int Area[25][5];
+	char **items;
+}	
+	grid_struct;
+	grid_struct grid_space_p;
 
 typedef struct{
 	int size;

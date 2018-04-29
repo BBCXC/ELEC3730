@@ -1,6 +1,10 @@
-//     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
-// $Revision: 1217 $
-//   $Author: Peter $
+/*
+ * Author      : Mitchell Marotta C3258958
+ *               Taylor Young C3206230
+ * Date        : 4 May 2018
+ * Description : Assignment 2
+ *               Code common to Q1 and Q2
+*/
 
 #include "Ass-02.h"
 
@@ -79,12 +83,12 @@ double parseFormula(){
   printf("Formula Parsed: %s\n", output.formula);
   output.result = parseSub();
   if(*output.formula == '\0'){
-    return output.result;
+    //return output.result;
+    return 0;
   }
-  // printf("Expected end of output.input but found %c\n", *output.input);
+  printf("Expected end of output.input but found %c\n", *output.formula);
   printf("Syntax Error\n");
-  return output.result;
-  return 0;
+  return 1;
 }
 
 double parseSub(){
@@ -382,12 +386,20 @@ double parseNumber(){
   return (number * neg_flag);
 }
 
+
+int title_animation(){
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
+  return 0;
+}
+
 // STEPIEN: Added two touch panel functions to make the interface more
 //          consistent with the LCD BSP.
 
 #ifdef STM32F407xx
-uint8_t BSP_TP_Init(void)
-{
+uint8_t BSP_TP_Init(void){
   // Initialise the interface and calibrate
   TP_Init(); // This is an empty function since done by STM32CubeMX
   TouchPanel_Calibrate();
@@ -395,17 +407,14 @@ uint8_t BSP_TP_Init(void)
   return 0;
 }
 
-uint8_t BSP_TP_GetDisplayPoint(Coordinate *pDisplay)
-{
+uint8_t BSP_TP_GetDisplayPoint(Coordinate *pDisplay){
   Coordinate *pScreen;
 
   pScreen = Read_Ads7846();
-  if (pScreen == NULL)
-  {
+  if (pScreen == NULL){
     return 1; // Error reading the touch panel
   }
-  if (getDisplayPoint(pDisplay, pScreen, &matrix ) == DISABLE)
-  {
+  if (getDisplayPoint(pDisplay, pScreen, &matrix ) == DISABLE){
     return 1; // Error in LCD
   }
   return 0;
