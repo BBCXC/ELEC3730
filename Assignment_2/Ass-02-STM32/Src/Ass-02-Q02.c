@@ -528,7 +528,6 @@ int Input_append(char *item){
 	}
 
 	if(equation.pos == 0){
-		//TODO Change the allocate memory function to handle this aswell
 		output.formula = (char*) calloc(MemExpand, sizeof(char));
 		if(output.formula == 0){
 			printf("ERROR: Calloc output memory");
