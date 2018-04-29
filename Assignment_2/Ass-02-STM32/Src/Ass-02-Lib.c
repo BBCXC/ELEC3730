@@ -30,6 +30,7 @@ const command_s Command_list[] = {
   {NULL,      NULL,              NULL,                        NULL}
 };
 
+//If a command is called function decides which function pointer to return
 int command_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans){
   double result = 0;
   int i = 0;
@@ -51,25 +52,27 @@ int command_parser(char **array_of_words_p[], int word_count,int debugsys, doubl
   return -1;
 }
 
+//If help is called
+//Function decides if specific help is to be diplayed or all
 int help_parser(char **array_of_words_p[], int word_count,int debugsys){
   int i = 0;
   if(word_count > 1){
     while(Command_list[i].NameString != NULL){
-    if(strcmp((*array_of_words_p)[1], Command_list[i].NameString) == 0){
-      if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
-      //Print Specific command list thing
-      printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
-      return 0;
-    }
-    i++;
+      if(strcmp((*array_of_words_p)[1], Command_list[i].NameString) == 0){
+        if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
+        //Print Specific command list thing
+        printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+        return 0;
+      }
+      i++;
     }
   }
   else if(word_count == 1){
     if(debugsys == 1) printf("No Operation selected\n");
     //Loop through all command list and print
     while(Command_list[i].NameString != NULL){
-    printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
-    i++;
+      printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+      i++;
     }
     return 0;
   }
@@ -79,6 +82,9 @@ int help_parser(char **array_of_words_p[], int word_count,int debugsys){
 /***********************************************************************************************************************
 ************************************************Recursive Decent Parser*************************************************
 ***********************************************************************************************************************/
+//Takes formula string 
+//Calls next precedent
+//Returns answer at end
 double parseFormula(){
   printf("Formula Parsed: %s\n", output.formula);
   output.result = parseSub();
@@ -91,6 +97,9 @@ double parseFormula(){
   return 1;
 }
 
+//Calls next precedent
+//Calculates relative function
+//Returns answer at end
 double parseSub(){
   double sub_1 = parseSum();
   while(*output.formula == '-'){
@@ -101,6 +110,9 @@ double parseSub(){
 return sub_1;
 }
 
+//Calls next precedent
+//Calculates relative function
+//Returns answer at end
 double parseSum(){
   double sum_1 = parsePro();
   while(*output.formula == '+'){
@@ -111,6 +123,9 @@ double parseSum(){
   return sum_1;
 }
 
+//Calls next precedent
+//Calculates relative function
+//Returns answer at end
 double parsePro(){
   double pro_1 = parseDiv();
   while(*output.formula == 'x' || *output.formula == '*'){
@@ -121,6 +136,9 @@ double parsePro(){
   return pro_1;
 }
 
+//Calls next precedent
+//Calculates relative function
+//Returns answer at end
 double parseDiv(){
   double div_1 = parsePow();
   while(*output.formula == '/'){
@@ -131,6 +149,9 @@ double parseDiv(){
   return div_1;
 }
 
+//Calls next precedent
+//Calculates relative function
+//Returns answer at end
 double parsePow(){
   double pow_1 = parseFactor();
   while(*output.formula == '^'){
@@ -141,12 +162,18 @@ double parsePow(){
   return pow_1;
 }
 
+//Decides whether next factor is a 
+//Number
+//Word operation
+//Bracket
 double parseFactor(){
-
   if(*output.formula >= '0' && *output.formula <= '9'){
     return parseNumber();
   }
   else if(*output.formula == '-'){
+    return parseNumber();
+  }
+  else if(*output.formula == '+'){
     return parseNumber();
   }
   else if(*output.formula == '('){
@@ -168,34 +195,32 @@ double parseFactor(){
     ++output.formula;
     if(*output.formula == 'i'){
     ++output.formula;
-    if(*output.formula == 'n'){
-      ++output.formula;
-      if(*output.formula == '('){
-        ++output.formula;
-        double temp = parseSub();
-        temp = sin(temp*M_PI/180);
-        ++output.formula;
-        return temp;
-      }
-
-    }
-    }
-    else if(*output.formula == 'q'){
-    ++output.formula;
-    if(*output.formula == 'r'){
-      ++output.formula;
-      if(*output.formula == 't'){
+      if(*output.formula == 'n'){
         ++output.formula;
         if(*output.formula == '('){
-        ++output.formula;
-        double temp = parseSub();
-        temp = sqrt(temp);
-        ++output.formula;
-        return temp;
-      }
-
+          ++output.formula;
+          double temp = parseSub();
+          temp = sin(temp*M_PI/180);
+          ++output.formula;
+          return temp;
+        }
       }
     }
+    else if(*output.formula == 'q'){
+      ++output.formula;
+      if(*output.formula == 'r'){
+        ++output.formula;
+        if(*output.formula == 't'){
+          ++output.formula;
+          if(*output.formula == '('){
+            ++output.formula;
+            double temp = parseSub();
+            temp = sqrt(temp);
+            ++output.formula;
+            return temp;
+          }
+        }
+      }
     }
   }
   //cos
@@ -343,14 +368,21 @@ double parseFactor(){
   return 0;
 }
 
+//If the current factor is a number
+//Decide if it is nugative or positive
+//Find any decimals
+//Return number as double
 double parseNumber(){
-
   double number = 0;
   int neg_flag = 1;
   if(*output.formula >= '0' && *output.formula <= '9'){
   }
   else if(*output.formula == '-'){
     neg_flag = -1;
+    ++output.formula;
+  }
+  else if(*output.formula == '+'){
+    neg_flag = 1;
     ++output.formula;
   }
   else{
@@ -370,13 +402,13 @@ double parseNumber(){
     //Check the next character is a number, else error
 
     if(*output.formula >= '0' && *output.formula <= '9'){
-    double weight = 1;
-    while(*output.formula >= '0' && *output.formula <= '9'){
-      weight = weight / 10.0;
-      double scaled = (int)(*output.formula - '0') * weight;
-      number = number + scaled;
-      ++output.formula;
-    }
+      double weight = 1;
+      while(*output.formula >= '0' && *output.formula <= '9'){
+        weight = weight / 10.0;
+        double scaled = (int)(*output.formula - '0') * weight;
+        number = number + scaled;
+        ++output.formula;
+      }
     }
     else{
     printf("Syntax Error\n");
@@ -386,7 +418,9 @@ double parseNumber(){
   return (number * neg_flag);
 }
 
-
+/***********************************************************************************************************************
+****************************************************Title Animation*****************************************************
+***********************************************************************************************************************/
 int title_animation(){
   BSP_LCD_Clear(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
@@ -394,6 +428,10 @@ int title_animation(){
 
   return 0;
 }
+
+/***********************************************************************************************************************
+*********************************************************Other**********************************************************
+***********************************************************************************************************************/
 
 // STEPIEN: Added two touch panel functions to make the interface more
 //          consistent with the LCD BSP.

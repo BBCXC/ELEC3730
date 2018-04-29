@@ -162,6 +162,7 @@ int StringProcess(char *command_line, int i){
     output.formula = array_of_words_p[0];
     output.result = 0;
 
+    //Call the recursive decent parser
     if(parseFormula() == 0){
       output.prev_ans = output.result;
 	    printf("The result is %lf\n", output.result);

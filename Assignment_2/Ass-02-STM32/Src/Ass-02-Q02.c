@@ -147,7 +147,7 @@ int calculator_layout(){
 
 	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
-	/***************************************************Vertical Grid****************************************************/
+	/**************************************************Vertical Grid***************************************************/
 	//y_pos is fixed for vertical lines
 	y_pos = cell_height;
 	//Length is the cell spacing for the horizontal lines * the number of horizontal lines
@@ -164,7 +164,7 @@ int calculator_layout(){
 		if(info.debug == 1) printf("DEBUG_INFO Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
 	}
 
-	/**************************************************Horizontal Grid***************************************************/
+	/*************************************************Horizontal Grid**************************************************/
 	//x_pos is fixed for horizontal lines
 	x_pos = display_width;
 	//Length is the cell spacing for the vertical lines * the number of vertical lines
@@ -444,7 +444,9 @@ void CalculatorProcess(){
 		  	button_debounce = 0;
 		  	off_debounce = 0;
 		  	if(button_highlight == 1 ){
-				if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0) printf("ERROR: Could not highlight cell\n");	//TODO Fix
+				if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0){
+					printf("ERROR: Could not highlight cell\n");	//TODO Fix
+			  	}
 			  	button_highlight = 0;
 			  	if(info.system == 1)printf("SYS_INFO: Cleared Highlight Now\n");
 			}
@@ -486,7 +488,6 @@ int reallocate_memory(){
 	equation.size = equation.size + MemExpand;
 
 	for(int i=0; i<equation.pos; i++){
-		//strcpy(equation.input[i], temp[i]);
 		if(info.debug == 1)printf("DEBUG_INFO: Equation.Input[%i] After %s  length %i\n", 
 								   i, equation.input[i], strlen(equation.input[i]));
 	}
@@ -496,7 +497,6 @@ int reallocate_memory(){
 	}
 
 	for(int i=0; i<equation.size; i++){
-		//strcpy(equation.input[i], temp[i]);
 		if(info.debug == 1)printf("DEBUG_INFO: Equation.Input[%i] After %s  length %i\n", 
 								   i, equation.input[i], strlen(equation.input[i]));
 	}

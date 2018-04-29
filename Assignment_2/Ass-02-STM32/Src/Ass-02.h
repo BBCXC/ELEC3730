@@ -104,6 +104,7 @@ extern int draw_numpad(void);
 extern int draw_sym(void);
 extern int draw_item(int cell_number, int offset, int text_colour, int cell_colour);
 extern int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour);
+
 extern void CalculatorProcess(void);
 extern int get_touch_pos(int display_x, int display_y);
 extern int Input_append(char *item);
@@ -114,6 +115,7 @@ extern int clear_equation(void);
 extern int draw_equation(void);
 extern int draw_result(void);
 
+//Recursive decent parser
 extern double parseFormula(void);
 extern double parseSub(void);
 extern double parseSum(void);
