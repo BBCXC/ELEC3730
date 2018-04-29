@@ -128,6 +128,7 @@ int calculator_layout(){
 			prev_width = curr_width;
 		  	curr_width = prev_width - cell_width;
 
+		  	//Store parameter calculated in correct position
 			grid_space_p.Area[temp][0] = curr_width;
 			grid_space_p.Area[temp][1] = prev_width;
 			grid_space_p.Area[temp][2] = curr_height;
@@ -186,6 +187,7 @@ int draw_numpad(){
     //Draw math symbols on first screen + - etc
     //Draw common symbols, AC del = etc
 
+	//Loop through each item and draw it in the correct cell, record the item number drawn
     for(int i=0; i<21; i++){
   		if(draw_item(i, 0, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
   			grid_space_p.Area[i][4] = i - 0;
@@ -201,6 +203,7 @@ int draw_sym(){
     //Draw symbol screen (, ), % etc
     //Draw common symbols, AC del = etc
 
+	//Loop through each item and draw it in the correct cell, record the item number drawn
     for(int i=0; i<21; i++){
     	if(draw_item(i, 21, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
     		grid_space_p.Area[i][4] = i+21;
@@ -236,7 +239,7 @@ int draw_item(int cell_number, int offset, int text_colour, int cell_colour){
     return 0;
 }
 
-//Return the cell touched on the screen
+//Return the item touched on the screen
 int get_touch_pos(int display_x, int display_y){
 	for(int i=0; i<21; i++){
 		if((display_x >= grid_space_p.Area[i][0]) &&
@@ -269,6 +272,7 @@ void CalculatorProcess(){
 	if (BSP_TP_GetDisplayPoint(&display) == 0){
 		button_debounce++;
 
+		//If the button has successfully debounced and the user isn't holding the button
 		if(button_debounce >= 50 && holding == 0){
 			button_debounce = 0;
 			off_debounce = 0;
@@ -290,7 +294,8 @@ void CalculatorProcess(){
 				if(info.system == 1)printf("SYS_INFO: Selected %s\n", grid_space_p.items[touch_pos]);
 
 				//Do something with selected item
-				
+				//If the selected item was delete
+				//Delete the previous entry and redraw the equation
 				if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
 					//Remove previous item from string
 					if(equation.pos > 0){
@@ -310,6 +315,9 @@ void CalculatorProcess(){
 					}
 				}
 
+				//If AC was selected
+				//Clear the entire equation
+				//Clear the screen
 				else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
 					//Clear All items
 					//Clear LCD
@@ -325,7 +333,11 @@ void CalculatorProcess(){
 
 				}
 
-				else if((strcmp(grid_space_p.items[touch_pos], ">") == 0)){
+				//If symbol screen selected
+				//Note that the display mode has changed
+				//Redraw the items to be numpad|symbols
+				else if((strcmp(grid_space_p.items[touch_pos], ">") == 0) ||
+						(strcmp(grid_space_p.items[touch_pos], "<") == 0)){
 					//Switch display mode
 					display_mode++;
 					if(display_mode > 1){
@@ -346,6 +358,7 @@ void CalculatorProcess(){
 					}
 				}
 
+				//If the equals was selected
 				else if(strcmp(grid_space_p.items[touch_pos], "=") == 0 && equation.pos > 0){
 					//Equate equation
 					//Call function return answer
@@ -399,6 +412,7 @@ void CalculatorProcess(){
 					if(info.system == 1)printf("SYS_INFO: Previous answer saved as %lf\n", output.prev_ans);
 				}
 
+				//If previous answer selected, append the previous answer to the current equation
 				else if(strcmp(grid_space_p.items[touch_pos], "ANS") == 0){
 					//Insert previous answer into equation as number
 					if(info.debug == 1)printf("DEBUG_INFO: Writing String %s\n", grid_space_p.items[touch_pos]);
@@ -408,6 +422,7 @@ void CalculatorProcess(){
 					if(Input_append(output_ans) != 0) printf("ERROR: Could not append string\n");
 				}
 
+				//Else the calculation solver should be able to handle the input, jsut append it to the string
 				else{
 					//Append symbol(s) to string
 					if(info.debug == 1)printf("DEBUG_INFO: Writing String %s\n", grid_space_p.items[touch_pos]);
@@ -415,6 +430,7 @@ void CalculatorProcess(){
 					if(Input_append(grid_space_p.items[touch_pos]) != 0) printf("ERROR: Could not append string\n");
 				}
 
+				//A button was pressed, highlight the cell of the button
 				if(button_highlight == 0){
 					if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0){
 						printf("ERROR: Could not highlight cell\n");	//TODO Fix
@@ -432,13 +448,17 @@ void CalculatorProcess(){
 			if(info.debug == 1)printf("DEBUG_INFO: Equation currently has %i memory free of total %i\n", 
 									   equation.size - equation.pos, equation.size);
 		}
+		//If the user is holding the button down, don't perform the action
 		else if(button_debounce >= 50 && holding == 1){
 			button_debounce = 0;
 		    off_debounce = 0;
 		}
 	}
+
+	//No button pressed, debounce this
 	else{
 	 	off_debounce++;
+	 	//User is definately not pressing a button, reset the holding flag
 		if(off_debounce > 100){
 			holding = 0;
 		  	button_debounce = 0;
@@ -527,6 +547,7 @@ int Input_append(char *item){
 		printf("ERROR: String copied not equal to string stored\n");
 	}
 
+	//Check that memory has been allocated
 	if(equation.pos == 0){
 		output.formula = (char*) calloc(MemExpand, sizeof(char));
 		if(output.formula == 0){
@@ -536,6 +557,7 @@ int Input_append(char *item){
 		strncpy(output.formula, equation.input[0], strlen(equation.input[0]));
 		if(info.debug == 1 || info.system == 1)printf("DEBUG_INFO: formula contains %s\n", output.formula);
 	}
+
 	else{
 		//Reallocate memory if needed
 		strcat(output.formula, equation.input[equation.pos]);
@@ -586,6 +608,7 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 		printf("DEBUG_INFO LCD_HIGHLIGHT: cell_number %i, offset %i\n", cell_number, (display_mode == 0 ? 0 : 21));
 		printf("DEBUG_INFO LCD_HIGHLIGHT: x_min %i, x_max %i, y_min %i, y_max %i\n", x_min, x_max, y_min, y_max);
 
+		//Highlight is currently on
 		if(status == 1){
 			//Set highlight to off
 			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);
@@ -599,6 +622,8 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 
 			return 0;
 		}
+
+		//Highlight is currently off
 		else if (status == 0){
 			//Set highlight to on
 			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);

@@ -21,11 +21,12 @@ void Ass_02_Main(void)
 
   CommandLineParserInit();
 #ifdef STM32F407xx
+  //Initilise array of strings for the buttons in Q2
   static char *item[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
    		                     "<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
                            "=", "(", "ANS", "sqrt(", "^", ">", ")", "atan(", "acos(", "asin(",
                            "<", "pi", "tan(", "cos(", "sin(", "AC", "", "log(", "ln(", "exp(", "DEL"};
-
+  //Store that array of strings in the struct
   grid_space_p.items = item;
   output.prev_ans = 0;
   output.result = 0;

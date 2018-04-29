@@ -8,6 +8,7 @@
 
 #include "Ass-02.h"
 
+//List of function names, pointers to that function, method of use, description of function
 const command_s Command_list[] = {
   {"add",     &add_function,     "add <num 1> . + . <num N>", "Description: Add one or more numbers"},
   {"sub",     &sub_function,     "sub <num 1> - <num 2>",     "Description: Subtract two numbers"},
@@ -34,9 +35,13 @@ const command_s Command_list[] = {
 int command_parser(char **array_of_words_p[], int word_count,int debugsys, double *prev_ans){
   double result = 0;
   int i = 0;
+
+  //While we haven't checked the whole list
   while(Command_list[i].NameString != NULL){
+    //If we find the function we want, call it
     if(strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0){
       if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
+      //If the function we wanted returned success
       if(Command_list[i].Function_p(array_of_words_p, word_count, &result) == 0){
         output.result = result;
         *prev_ans = result;
@@ -57,7 +62,10 @@ int command_parser(char **array_of_words_p[], int word_count,int debugsys, doubl
 int help_parser(char **array_of_words_p[], int word_count,int debugsys){
   int i = 0;
   if(word_count > 1){
+
+    //While we haven't checked the whole list
     while(Command_list[i].NameString != NULL){
+      //If we find the function we wanted, display the help message
       if(strcmp((*array_of_words_p)[1], Command_list[i].NameString) == 0){
         if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
         //Print Specific command list thing

@@ -12,6 +12,7 @@
 #include "usart.h"
 #endif
 
+//Constant strings used for identifying the function requested
 const char *ADDstr = "add";
 const char *SUBstr = "sub";
 const char *MULstr = "mul";
@@ -67,6 +68,8 @@ void CommandLineParserProcess(void){
 
   	  command_line[i]=c;
   	  i++;
+
+      //If we get a return character then process the string
   	  if(c == '\r'){
   		  printf("\n");
   		  command_line[i-1] = 0;
@@ -82,6 +85,8 @@ void CommandLineParserProcess(void){
     printf("--> Enter text: ");
     i=0;
     c=getchar();
+
+    //If we get a new line character then process the string
     while (c != '\n'){
       command_line[i]=c;
       i++;
@@ -108,6 +113,7 @@ int StringProcess(char *command_line, int i){
     }
   }
 
+  //If words were detected, and we are using the normal mode
   if(word_count > 0 && info.formula_mode == 0){
 
     printf("Word Count = %i\n", word_count);
@@ -134,6 +140,7 @@ int StringProcess(char *command_line, int i){
       }
     }
 
+    //Check if command parser returned a valid function
     int mode = -1;
     mode = command_parser(&array_of_words_p, word_count, info.debug, &prev_ans);
     if(mode == -1){
