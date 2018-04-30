@@ -1,6 +1,7 @@
 //TODO putty colours
 //TODO MACRO header and MACRO body for printing help
 //TODO declare string process
+//TODO Implement putty clear and reset
 
 /*
  * Author      : Mitchell Marotta C3258958
