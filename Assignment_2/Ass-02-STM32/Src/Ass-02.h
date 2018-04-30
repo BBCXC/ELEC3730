@@ -29,6 +29,7 @@ typedef struct{
 	int debug;
 	int system;
 	int formula_mode;
+	int first_time;
 } 
 	sys_t;
 	sys_t info;
@@ -113,7 +114,7 @@ extern int allocate_memory(void);
 extern int reallocate_memory(void);
 extern int clear_equation(void);
 extern int draw_equation(void);
-extern int draw_result(void);
+extern int draw_result(int status);
 
 //Recursive decent parser
 extern double parseFormula(void);

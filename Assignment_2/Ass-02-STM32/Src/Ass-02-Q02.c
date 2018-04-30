@@ -299,14 +299,12 @@ void CalculatorProcess(){
 				if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
 					//Remove previous item from string
 					if(equation.pos > 0){
-						if(info.system == 1)printf("SYS_INFO: Formula Contains Before Deleting: %s, 
-													equation.pos %i\n", 
+						if(info.system == 1)printf("SYS_INFO: Formula Contains Before Deleting: %s, equation.pos %i\n",
 													output.formula, equation.pos);
 						equation.pos--;
 						equation.input[equation.pos] = NULL;
 						output.formula[equation.pos] = NULL;
-						if(info.system == 1)printf("SYS_INFO: Formula Contains After Deleting: %s, 
-													equation.pos %i\n", 
+						if(info.system == 1)printf("SYS_INFO: Formula Contains After Deleting: %s, equation.pos %i\n",
 													output.formula, equation.pos);
 						if(draw_equation() != 0) printf("ERROR: Could not draw equation\n");
 					}
@@ -372,8 +370,7 @@ void CalculatorProcess(){
 						}
 					}
 
-					if(info.system == 1) printf("SYS_INFO: Formula Contains Before Parsing: %s, 
-												 equation.pos %i\n", 
+					if(info.system == 1) printf("SYS_INFO: Formula Contains Before Parsing: %s, equation.pos %i\n",
 												 output.formula, equation.pos);
 
 					if(parseFormula() == 0){
@@ -393,7 +390,7 @@ void CalculatorProcess(){
 
 					//Clear formula
 					//Free output.formula here
-					free(output.formula);
+//					free(output.formula);
 
 					for(int j=0; j<equation.pos; j++){
 						free(equation.input[j]);
@@ -410,6 +407,8 @@ void CalculatorProcess(){
 					equation.pos = 0;
 
 					if(info.system == 1)printf("SYS_INFO: Previous answer saved as %lf\n", output.prev_ans);
+
+					info.first_time = 1;
 				}
 
 				//If previous answer selected, append the previous answer to the current equation
@@ -667,7 +666,7 @@ int draw_result(int status){
 
 	char result_str[13];
 	if(status == 0)snprintf(result_str, 10, "%f", output.result);
-	else result_str = "Syntax Error"
+	else strcpy(result_str, "Syntax Error");
 
 	if(info.debug == 1)printf("DEBUG_INFO: result_str %s\n", result_str);
 

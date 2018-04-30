@@ -18,6 +18,7 @@ void Ass_02_Main(void)
   info.debug = 1;
   info.system = 1;
   info.formula_mode = 0;
+  info.first_time = 1;
 
   CommandLineParserInit();
 #ifdef STM32F407xx

@@ -57,9 +57,8 @@ void CommandLineParserProcess(void){
 
   // Check for input and echo back
   #ifdef STM32F407xx
-    static int First_time = 1;
-    if(First_time == 1){
-    	First_time = 0;
+    if(info.first_time == 1){
+    	info.first_time = 0;
     	printf("--> Enter text: ");
     }
     if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK){
@@ -75,7 +74,7 @@ void CommandLineParserProcess(void){
   		  command_line[i-1] = 0;
   		  if(StringProcess(&command_line, i) != 0) printf("ERROR: Could not process string\n");
   		  i = 0;
-  		  First_time = 1;
+  		  info.first_time = 1;
   	  }
     }
 
@@ -659,14 +658,13 @@ int string_parser(char *inp, char **array_of_words_p[]){
 
     //Allocate enough memory to store a pointer to each word
     *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
-    if(*array_of_words_p == 0){  //If malloc fails returns NULL ptr
+    if(array_of_words_p == 0){  //If malloc fails returns NULL ptr
       printf("ERROR: Memory allocation failed\n");  //Log Error
-      free(coeff_values);
       return -1;  //Return Failed
     }
     //Set pointer to first word
     char* word_array = (char*) calloc((characters + num_words), sizeof(char));
-    if(*word_array == 0){  //If malloc fails returns NULL ptr
+    if(word_array == 0){  //If malloc fails returns NULL ptr
       printf("ERROR: Memory allocation failed\n");  //Log Error
       free(*array_of_words_p);
       return -1;  //Return Failed
