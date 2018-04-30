@@ -1,3 +1,7 @@
+//TODO putty colours
+//TODO MACRO header and MACRO body for printing help
+//TODO declare string process
+
 /*
  * Author      : Mitchell Marotta C3258958
  *               Taylor Young C3206230
@@ -146,9 +150,9 @@ int StringProcess(char *command_line, int i){
       printf("ERROR: Unknown Operation\n");
     }
     else if(mode == 0){
-      printf("The result is %lf\n", output.result);
+      printf("The result is %g\n", output.result);
       output.result = prev_ans;
-      printf("Ans %lf\n", prev_ans);
+      if(info.debug == 1)printf("Ans %g\n", prev_ans);
     }
     else{
       //Must have changed debug, formula or help
@@ -171,7 +175,7 @@ int StringProcess(char *command_line, int i){
     //Call the recursive decent parser
     if(parseFormula() == 0){
       output.prev_ans = output.result;
-	    printf("The result is %lf\n", output.result);
+	    printf("The result is %g\n", output.result);
 	    if(info.debug == 1) printf("Answer stored is %lf\n", output.prev_ans);
 	    }
     }

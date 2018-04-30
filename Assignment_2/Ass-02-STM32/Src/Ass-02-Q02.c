@@ -584,7 +584,7 @@ int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour,
 //TODO Doesn't seem to work at all. Probably just remove for now to simplify
 //Highlight a specific cell and redraw the symbol
 int LCD_Cell_Highlight(int status, int item_number, int display_mode){
-	return 0;
+
 	//Status : on|off
 	//Item_number : 0 to 41
 	//display_mode : number|symbol
@@ -665,7 +665,7 @@ int draw_result(int status){
 							   x_min, x_max, y_min, y_max, x_pos, y_pos);
 
 	char result_str[13];
-	if(status == 0)snprintf(result_str, 10, "%f", output.result);
+	if(status == 0)snprintf(result_str, 10, "%g", output.result);
 	else strcpy(result_str, "Syntax Error");
 
 	if(info.debug == 1)printf("DEBUG_INFO: result_str %s\n", result_str);
