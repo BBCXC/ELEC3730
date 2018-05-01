@@ -9,6 +9,35 @@
 #include "Ass-02.h"
 
 //List of function names, pointers to that function, method of use, description of function
+const animation_s Title_Animation[] = {
+  {LCD_COLOR_BLUE},
+  {LCD_COLOR_GREEN},
+  {LCD_COLOR_RED},
+  {LCD_COLOR_CYAN},
+  {LCD_COLOR_MAGENTA},
+  {LCD_COLOR_YELLOW},
+  {LCD_COLOR_LIGHTBLUE},
+  {LCD_COLOR_LIGHTGREEN},
+  {LCD_COLOR_LIGHTRED},
+  {LCD_COLOR_LIGHTCYAN},
+  {LCD_COLOR_LIGHTMAGENTA},
+  {LCD_COLOR_LIGHTYELLOW},
+  {LCD_COLOR_DARKBLUE},
+  {LCD_COLOR_DARKGREEN},
+  {LCD_COLOR_DARKRED},
+  {LCD_COLOR_DARKCYAN},
+  {LCD_COLOR_DARKMAGENTA},
+  {LCD_COLOR_DARKYELLOW},
+  {LCD_COLOR_WHITE},
+  {LCD_COLOR_LIGHTGRAY},
+  {LCD_COLOR_GRAY},
+  {LCD_COLOR_DARKGRAY},
+  {LCD_COLOR_BLACK},
+  {LCD_COLOR_BROWN},
+  {LCD_COLOR_ORANGE},
+  {NULL}
+};
+
 const command_s Command_list[] = {
   {"add",     &add_function,     "add <num 1> . + . <num N>", "Add one or more numbers"},
   {"sub",     &sub_function,     "sub <num 1> - <num 2>",     "Subtract two numbers"},
@@ -92,7 +121,7 @@ int help_parser(char **array_of_words_p[], int word_count,int debugsys){
 }
 
 /***********************************************************************************************************************
-************************************************Recursive Decent Parser*************************************************
+************************************************Recursive Desent Parser*************************************************
 ***********************************************************************************************************************/
 //Takes formula string 
 //Calls next precedent
@@ -437,6 +466,36 @@ int title_animation(){
   BSP_LCD_Clear(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
+  int j=0;
+  static int button_debounce = 0;
+  static int off_debounce = 0;
+
+  //Increment through the lst of colours
+  while(Title_Animation[j].BGColour != NULL){
+    BSP_LCD_Clear(Title_Animation[j].BGColour);
+    for(int i=0; i<800; i++){
+      //Break if the user touches the screen
+      if (BSP_TP_GetDisplayPoint(&display) == 0){
+        button_debounce++;
+        if(button_debounce >= 50){
+           BSP_LCD_Clear(LCD_COLOR_WHITE);
+           return 0;
+        }
+      }
+      else{
+        off_debounce++;
+        //User is definately not pressing a button, reset the holding flag
+        if(off_debounce > 100){
+          button_debounce = 0;
+          off_debounce = 0;
+        }
+      }
+    }
+    j++;
+  }
+  
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
 
   return 0;
 }

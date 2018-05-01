@@ -53,6 +53,11 @@ typedef struct{
 	sys_t;
 	sys_t info;
 
+typedef struct{
+	int BGColour;
+} 
+	animation_s;
+
 //Question 1
 typedef struct{
 	char *NameString; 								//Operation string
