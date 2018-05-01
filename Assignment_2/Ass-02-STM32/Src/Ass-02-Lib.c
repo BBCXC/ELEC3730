@@ -474,7 +474,7 @@ int title_animation(){
   //Increment through the lst of colours
   while(Title_Animation[j].BGColour != NULL){
     BSP_LCD_Clear(Title_Animation[j].BGColour);
-    for(int i=0; i<800; i++){
+    for(int i=0; i<1500; i++){
       //Break if the user touches the screen
       if (BSP_TP_GetDisplayPoint(&display) == 0){
         button_debounce++;

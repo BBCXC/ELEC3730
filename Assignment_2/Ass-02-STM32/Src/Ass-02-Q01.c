@@ -1,7 +1,4 @@
-//TODO putty colours
-//TODO MACRO header and MACRO body for printing help
-//TODO declare string process
-//TODO Implement putty clear and reset
+//TODO Implement backspace handler
 
 /*
  * Author      : Mitchell Marotta C3258958
@@ -47,7 +44,9 @@ const char *ANSstr = "ans";
 ***********************************************************************************************************************/
 void CommandLineParserInit(void){
   // Print welcome message
+  printf(RESET_M);
   printf(CLEAR_M);
+  printf(KNRM);
   printf("ELEC3730 Assignment 2\n");
   printf("Command Line Parser\n");
 }
@@ -151,7 +150,7 @@ int StringProcess(char *command_line, int i){
       printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     else if(mode == 0){
-      printf("The result is %g\n", output.result);
+      printf("The result is %s%g%s\n", KGRN, output.result, KNRM);
       output.result = prev_ans;
       if(info.debug == 1)printf("Ans %g\n", prev_ans);
     }
@@ -278,7 +277,7 @@ int div_function(char **array_of_words_p[], int word_count, double *result){
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M, ERROR_M, DEFAULT_COLOUR_M);
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
