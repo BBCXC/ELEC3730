@@ -1,12 +1,12 @@
-//     $Date: 2018-03-26 08:32:18 +1100 (Mon, 26 Mar 2018) $
-// $Revision: 1217 $
-//   $Author: Peter $
+/*
+ * Author      : Mitchell Marotta C3258958
+ *               Taylor Young C3206230
+ * Date        : 4 May 2018
+ * Description : Initilise some variables
+ *               Initilise some arrays
+*/
 
 #include "Ass-02.h"
-
-//
-// REPLACE THE EXAMPLE CODE WITH YOUR CODE 
-//
 
 void Ass_02_Main(void)
 {
@@ -15,8 +15,22 @@ void Ass_02_Main(void)
 #endif
 
   // Initialise
+  info.debug = 0;
+  info.system = 1;
+  info.formula_mode = 0;
+  info.first_time = 1;
+
   CommandLineParserInit();
 #ifdef STM32F407xx
+  //Initilise array of strings for the buttons in Q2
+  static char *item[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
+                           "<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
+                           "=", "(", "ANS", "sqrt(", "^", ">", ")", "atan(", "acos(", "asin(",
+                           "<", "pi", "tan(", "cos(", "sin(", "AC", "", "log(", "ln(", "exp(", "DEL"};
+  //Store that array of strings in the struct
+  grid_space_p.items = item;
+  output.prev_ans = 0;
+  output.result = 0;
   CalculatorInit();
 #endif
 

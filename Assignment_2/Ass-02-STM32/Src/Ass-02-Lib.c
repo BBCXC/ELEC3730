@@ -10,24 +10,27 @@
 
 //List of function names, pointers to that function, method of use, description of function
 const command_s Command_list[] = {
-  {"add",     &add_function,     "add <num 1> . + . <num N>", "Description: Add one or more numbers"},
-  {"sub",     &sub_function,     "sub <num 1> - <num 2>",     "Description: Subtract two numbers"},
-  {"mul",     &mul_function,     "mul <num 1> . * . <num N>", "Description: Multiply one or more numbers"},
-  {"div",     &div_function,     "div <num 1> / <num 2>",     "Description: Divide two numbers"},
-  {"sin",     &sin_function,     "sin <num 1> <rad|deg>",     "Description: sin number in radians or degrees"},
-  {"cos",     &cos_function,     "cos <num 1> <rad|deg>",     "Description: cos number in radians or degrees"},
-  {"tan",     &tan_function,     "tan <num 1> <rad|deg>",     "Description: tan number in radians or degrees"},
-  {"asin",    &asin_function,    "asin <num 1> <rad|deg>",    "Description: asin number in radians or degrees"},
-  {"acos",    &acos_function,    "acos <num 1> <rad|deg>",    "Description: acos number in radians or degrees"},
-  {"atan",    &atan_function,    "atan <num 1> <rad|deg>",    "Description: atan number in radians or degrees"},
-  {"pow",     &pow_function,     "pow <num 1> ^ <num 2>",     "Description: Power base, exponent"},
-  {"sqrt",    &sqrt_function,    "sqrt <num 1>",              "Description: Add one or more numbers"},
-  {"ln",      &ln_function,      "ln <num 1>",                "Description: Add one or more numbers"},
-  {"log",     &log_function,     "log <num 1>",               "Description: Add one or more numbers"},
-  {"exp",     &exp_function,     "exp <num 1>",               "Description: Add one or more numbers"},
-  {"formula", &formula_function, "formula <on|off>",          "Description: Display help messages"},
-  {"debug",   &debug_function,   "debug <on|off>",            "Description: Display help messages"},
-  {"help",    &help_function,    "help [command]",            "Description: Display help messages"},
+  {"add",     &add_function,     "add <num 1> . + . <num N>", "Add one or more numbers"},
+  {"sub",     &sub_function,     "sub <num 1> - <num 2>",     "Subtract two numbers"},
+  {"mul",     &mul_function,     "mul <num 1> . * . <num N>", "Multiply one or more numbers"},
+  {"div",     &div_function,     "div <num 1> / <num 2>",     "Divide two numbers"},
+  {"sin",     &sin_function,     "sin <num 1> <rad|deg>",     "sin number in radians or degrees"},
+  {"cos",     &cos_function,     "cos <num 1> <rad|deg>",     "cos number in radians or degrees"},
+  {"tan",     &tan_function,     "tan <num 1> <rad|deg>",     "tan number in radians or degrees"},
+  {"asin",    &asin_function,    "asin <num 1> <rad|deg>",    "asin number in radians or degrees"},
+  {"acos",    &acos_function,    "acos <num 1> <rad|deg>",    "acos number in radians or degrees"},
+  {"atan",    &atan_function,    "atan <num 1> <rad|deg>",    "atan number in radians or degrees"},
+  {"pow",     &pow_function,     "pow <num 1> ^ <num 2>",     "Power base, exponent"},
+  {"sqrt",    &sqrt_function,    "sqrt <num 1>",              "Add one or more numbers"},
+  {"ln",      &ln_function,      "ln <num 1>",                "Add one or more numbers"},
+  {"log",     &log_function,     "log <num 1>",               "Add one or more numbers"},
+  {"exp",     &exp_function,     "exp <num 1>",               "Add one or more numbers"},
+  {"formula", &formula_function, "formula <on|off>",          "Display help messages"},
+  {"debug",   &debug_function,   "debug <on|off>",            "Display debug messages"},
+  {"system",  &system_function,  "system <on|off>",           "Display system messages"},
+  {"clear",   &clear_function,   "reset",                     "Clear terminal screen"},
+  {"reset",   &reset_function,   "clear",                     "Reset terminal scrollback"},
+  {"help",    &help_function,    "help [command]",            "Display help messages"},
   {NULL,      NULL,              NULL,                        NULL}
 };
 
@@ -61,25 +64,26 @@ int command_parser(char **array_of_words_p[], int word_count,int debugsys, doubl
 //Function decides if specific help is to be diplayed or all
 int help_parser(char **array_of_words_p[], int word_count,int debugsys){
   int i = 0;
-  if(word_count > 1){
 
+  printf(HELP_M"\n", "Format", "Description");
+  if(word_count > 1){
     //While we haven't checked the whole list
     while(Command_list[i].NameString != NULL){
       //If we find the function we wanted, display the help message
       if(strcmp((*array_of_words_p)[1], Command_list[i].NameString) == 0){
         if(debugsys == 1) printf("Operation: %s\n", Command_list[i].NameString);
         //Print Specific command list thing
-        printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+        printf(HELP_M"\n", Command_list[i].HelpString, Command_list[i].DescriptionString);
         return 0;
       }
       i++;
     }
   }
   else if(word_count == 1){
-    if(debugsys == 1) printf("No Operation selected\n");
+    if(debugsys == 1) printf(DEBUG_M": No Operation selected\n");
     //Loop through all command list and print
     while(Command_list[i].NameString != NULL){
-      printf("%s %s\n",Command_list[i].HelpString, Command_list[i].DescriptionString);
+      printf(HELP_M"\n", Command_list[i].HelpString, Command_list[i].DescriptionString);
       i++;
     }
     return 0;
@@ -94,7 +98,7 @@ int help_parser(char **array_of_words_p[], int word_count,int debugsys){
 //Calls next precedent
 //Returns answer at end
 double parseFormula(){
-  printf("Formula Parsed: %s\n", output.formula);
+  if(info.system == 1) printf(SYS_M"Formula Parsed: %s\n", output.formula);
   output.result = parseSub();
   if(*output.formula == '\0'){
     //return output.result;
@@ -371,7 +375,7 @@ double parseFactor(){
   }
   else{
     printf("Syntax Error\n");
-    printf("Unknown symbol %c", *output.formula);
+    printf("Unknown symbol %c\n", *output.formula);
   }
   return 0;
 }
@@ -422,20 +426,20 @@ double parseNumber(){
     printf("Syntax Error\n");
     }
   }
-  printf("Number Found: %lf\n", (number * neg_flag));
+  if(info.system == 1) printf(SYS_M"Number Found: %lf\n", (number * neg_flag));
   return (number * neg_flag);
 }
 
 /***********************************************************************************************************************
 ****************************************************Title Animation*****************************************************
 ***********************************************************************************************************************/
-int title_animation(){
-  BSP_LCD_Clear(LCD_COLOR_WHITE);
-  BSP_LCD_SetFont(&Font12);
-  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-
-  return 0;
-}
+//int title_animation(){
+//  BSP_LCD_Clear(LCD_COLOR_WHITE);
+//  BSP_LCD_SetFont(&Font12);
+//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+//
+//  return 0;
+//}
 
 /***********************************************************************************************************************
 *********************************************************Other**********************************************************

@@ -22,6 +22,23 @@
 #include <string.h>
 #include <math.h>
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+#define CLEAR_M "\014"
+#define RESET_M "\014"
+#define DEBUG_M KYEL"DEBUG_INFO"
+#define SYS_M KMAG
+#define ERROR_M KRED "ERROR"
+
+#define HELP_M "%-25.25s\t%-35.35s"
+
 // Assignment main
 extern void Ass_02_Main(void);
 
@@ -49,6 +66,7 @@ typedef struct{
 extern void CommandLineParserInit(void);
 extern void CommandLineParserProcess(void);
 
+extern int StringProcess(char *command_line, int i);
 extern int string_parser(char *inp, char **array_of_words_p[]);
 extern int help_parser(char **array_of_words_p[], int word_count, int debugsys);
 extern int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
@@ -70,6 +88,9 @@ extern int log_function(char **array_of_words_p[], int word_count, double *resul
 extern int exp_function(char **array_of_words_p[], int word_count, double *result);
 extern int formula_function(char **array_of_words_p[], int word_count, double *result);
 extern int debug_function(char **array_of_words_p[], int word_count, double *result);
+extern int system_function(char **array_of_words_p[], int word_count, double *result);
+extern int clear_function(char **array_of_words_p[], int word_count, double *result);
+extern int reset_function(char **array_of_words_p[], int word_count, double *result);
 extern int help_function(char **array_of_words_p[], int word_count, double *result);
 
 
