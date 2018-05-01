@@ -33,9 +33,11 @@
 
 #define CLEAR_M "\014"
 #define RESET_M "\014"
-#define DEBUG_M KYEL"DEBUG_INFO"
+
+#define DEFAULT_COLOUR_M KNRM
+#define DEBUG_M KYEL
 #define SYS_M KMAG
-#define ERROR_M KRED "ERROR"
+#define ERROR_M KRED
 
 #define HELP_M "%-25.25s\t%-35.35s"
 

@@ -56,24 +56,24 @@ void CalculatorInit(){
 
 	//Display title animation
 	if(title_animation() != 0){
-	printf(ERROR_M" : Unable to draw animation");
+	printf("%sERROR:%s Unable to draw animation", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//Set basic layout of calculator grid
 	if(calculator_layout() != 0){
-	  printf(ERROR_M" : Unable to draw layout");
+	  printf("%sERROR:%s Unable to draw layout", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//Initilise numpad symbol layout
 	if(draw_numpad() != 0){
-		  printf(ERROR_M" : Unable to draw numpad");
+		  printf("%sERROR:%s Unable to draw numpad", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//If debug information is ON
 	if(info.debug == 1){
 	//Print grid cell spacings
 	for(int tem = 0; tem < 25; tem++){
-		printf(DEBUG_M": pw %i, ph %i, cw %i, ch %i, pos %i, item %s\n",
+		printf("%sDEBUG_INFO:%s pw %i, ph %i, cw %i, ch %i, pos %i, item %s\n", DEBUG_M, DEFAULT_COLOUR_M,
 				grid_space_p.Area[tem][0],
 				grid_space_p.Area[tem][1],
 				grid_space_p.Area[tem][2],
@@ -84,12 +84,12 @@ void CalculatorInit(){
 	}
 
 	//Allocate memory for the input
-	if(allocate_memory() != 0) printf(ERROR_M": Could not allocate memory for EQUATION\n");
+	if(allocate_memory() != 0) printf("%sERROR:%s Could not allocate memory for EQUATION\n", ERROR_M, DEFAULT_COLOUR_M);
 
 	//System information, memory for input
-	if(info.system == 1) printf(SYS_M": Equation currently has %i memory free of total %i\n", 
+	if(info.system == 1) printf("%sSYSTEM_INFO:%s Equation currently has %i memory free of total %i\n", SYS_M, DEFAULT_COLOUR_M, 
 								 equation.size - equation.pos, equation.size);
-	if(info.debug == 1) printf(DEBUG_M": Exiting init\n");
+	if(info.debug == 1) printf("%sDEBUG_INFO:%s Exiting init\n", DEBUG_M, DEFAULT_COLOUR_M);
 }
 
 
@@ -107,7 +107,7 @@ int calculator_layout(){
 	int cell_width = display_width / num_Vline;
 	int cell_height = display_height / num_Hline;
 
-	if(info.debug == 1) printf(DEBUG_M": cew %i, ceh %i\n", cell_width, cell_height);
+	if(info.debug == 1) printf("%sDEBUG_INFO:%s cew %i, ceh %i\n", DEBUG_M, DEFAULT_COLOUR_M, cell_width, cell_height);
 
 	//Populate grid_space struct
 	int prev_width = display_width;
@@ -121,7 +121,7 @@ int calculator_layout(){
 		prev_height = curr_height;
 		curr_height = curr_height - cell_height;
 		curr_width = display_width;
-		if(info.debug == 1) printf(DEBUG_M": pw %i, ph %i, cw %i, ch %i\n", 
+		if(info.debug == 1) printf("%sDEBUG_INFO:%s pw %i, ph %i, cw %i, ch %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 									prev_width, prev_height, curr_width, curr_height);
 
 		for(int j=0; j<num_Vline; j++){
@@ -134,7 +134,7 @@ int calculator_layout(){
 			grid_space_p.Area[temp][2] = curr_height;
 			grid_space_p.Area[temp][3] = prev_height;
 
-			if(info.debug == 1) printf(DEBUG_M": pw %i, ph %i, cw %i, ch %i\n", 
+			if(info.debug == 1) printf("%sDEBUG_INFO:%s pw %i, ph %i, cw %i, ch %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 										prev_width, prev_height, curr_width, curr_height);
 
 			temp = temp + 1;
@@ -162,7 +162,7 @@ int calculator_layout(){
 		}
 		x_pos = l * cell_width;
 		BSP_LCD_DrawVLine(x_pos, y_pos, len);
-		if(info.debug == 1) printf(DEBUG_M" Vline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+		if(info.debug == 1) printf("%sDEBUG_INFO Vline:%s x %i, y %i, len %i\n", DEBUG_M, DEFAULT_COLOUR_M, x_pos, y_pos, len);
 	}
 
 	/*************************************************Horizontal Grid**************************************************/
@@ -175,7 +175,7 @@ int calculator_layout(){
 	for(int l=0; l<num_Hline; l++){
 		y_pos = l * cell_height;
 		BSP_LCD_DrawHLine(0, y_pos, len);
-		if(info.debug == 1) printf(DEBUG_M" Hline: x %i, y %i, len %i\n", x_pos, y_pos, len);
+		if(info.debug == 1) printf("%sDEBUG_INFO Hline:%s x %i, y %i, len %i\n", DEBUG_M, DEFAULT_COLOUR_M, x_pos, y_pos, len);
 	}
 
 	return 0;
@@ -191,7 +191,7 @@ int draw_numpad(){
     for(int i=0; i<21; i++){
   		if(draw_item(i, 0, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
   			grid_space_p.Area[i][4] = i - 0;
-  			if(info.debug == 1) printf(DEBUG_M" Numpad: item %s, cell_number %i, grid_space %i\n", 
+  			if(info.debug == 1) printf("%sDEBUG_INFO Numpad:%s item %s, cell_number %i, grid_space %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 										grid_space_p.items[i], i, grid_space_p.Area[i][4]);
   		}
     }
@@ -207,7 +207,7 @@ int draw_sym(){
     for(int i=0; i<21; i++){
     	if(draw_item(i, 21, LCD_COLOR_BLACK, LCD_COLOR_WHITE) == 0){
     		grid_space_p.Area[i][4] = i+21;
-    		if(info.debug == 1)printf(DEBUG_M" DRAW_SYM: item %s, cell_number %i, item %i\n",
+    		if(info.debug == 1)printf("%sDEBUG_INFO DRAW_SYM:%s item %s, cell_number %i, item %i\n", DEBUG_M, DEFAULT_COLOUR_M,
 									   grid_space_p.items[i], i, grid_space_p.Area[i][4]);
     	}
    }
@@ -226,7 +226,7 @@ int draw_item(int cell_number, int offset, int text_colour, int cell_colour){
     int y_max = grid_space_p.Area[cell_number][3];
 
     if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, text_colour, cell_colour) != 0){
-		printf(ERROR_M": Could not clear cell\n");
+		printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     //Find center of cell given
     int x_pos = ((x_max - x_min) / 2.0) + x_min;
@@ -281,17 +281,17 @@ void CalculatorProcess(){
 			//Check that my char** isn't out of space
 			if(equation.pos >= equation.size){
 				//Reallocate memory
-				if(reallocate_memory() != 0) printf(ERROR_M": Unable to reallocate enough memory\n");
+				if(reallocate_memory() != 0) printf("%sERROR:%s Unable to reallocate enough memory\n", ERROR_M, DEFAULT_COLOUR_M);
 			}
 
 			//Given grid struct and position touched, returns area touched
 			touch_pos = get_touch_pos(display.x, display.y);
-			if(info.debug == 1)printf(DEBUG_M": touch_pos %i, position touched %i, %i\n", 
+			if(info.debug == 1)printf("%sDEBUG_INFO:%s touch_pos %i, position touched %i, %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 									   touch_pos, display.x, display.y);
 
 			if(touch_pos != 100){
 
-				if(info.system == 1)printf(SYS_M": Selected %s\n", grid_space_p.items[touch_pos]);
+				if(info.system == 1)printf("%sSYSTEM_INFO:%s Selected %s\n", SYS_M, DEFAULT_COLOUR_M, grid_space_p.items[touch_pos]);
 
 				//Do something with selected item
 				//If the selected item was delete
@@ -299,17 +299,17 @@ void CalculatorProcess(){
 				if(strcmp(grid_space_p.items[touch_pos], "DEL") == 0){
 					//Remove previous item from string
 					if(equation.pos > 0){
-						if(info.system == 1)printf(SYS_M": Formula Contains Before Deleting: %s, equation.pos %i\n",
+						if(info.system == 1)printf("%sSYSTEM_INFO:%s Formula Contains Before Deleting: %s, equation.pos %i\n", SYS_M, DEFAULT_COLOUR_M,
 													output.formula, equation.pos);
 						equation.pos--;
 						equation.input[equation.pos] = NULL;
 						output.formula[equation.pos] = NULL;
-						if(info.system == 1)printf(SYS_M": Formula Contains After Deleting: %s, equation.pos %i\n",
+						if(info.system == 1)printf("%sSYSTEM_INFO:%s Formula Contains After Deleting: %s, equation.pos %i\n", SYS_M, DEFAULT_COLOUR_M,
 													output.formula, equation.pos);
-						if(draw_equation() != 0) printf(ERROR_M": Could not draw equation\n");
+						if(draw_equation() != 0) printf("%sERROR:%s Could not draw equation\n", ERROR_M, DEFAULT_COLOUR_M);
 					}
 					else{
-						if(info.debug == 1)printf(DEBUG_M": Whole string deleted\n");
+						if(info.debug == 1)printf("%sDEBUG_INFO:%s Whole string deleted\n", DEBUG_M, DEFAULT_COLOUR_M);
 					}
 				}
 
@@ -319,14 +319,14 @@ void CalculatorProcess(){
 				else if(strcmp(grid_space_p.items[touch_pos], "AC") == 0){
 					//Clear All items
 					//Clear LCD
-					if(clear_equation() != 0) printf(ERROR_M": Could not clear Equation\n");
+					if(clear_equation() != 0) printf("%sERROR:%s Could not clear Equation\n", ERROR_M, DEFAULT_COLOUR_M);
 
 					while(equation.pos > 0){
 						equation.pos--;
 						equation.input[equation.pos] = NULL;
 					}
 					if(equation.pos == 0) {
-						if(info.debug == 1)printf(DEBUG_M": Whole string deleted\n");
+						if(info.debug == 1)printf("%sDEBUG_INFO:%s Whole string deleted\n", DEBUG_M, DEFAULT_COLOUR_M);
 					}
 
 				}
@@ -346,12 +346,12 @@ void CalculatorProcess(){
 					}
 					if(display_mode == 0){
 						if(draw_numpad() != 0){
-							printf(ERROR_M": Unable to draw sym");
+							printf("%sERROR:%s Unable to draw sym", ERROR_M, DEFAULT_COLOUR_M);
 						}
 					}
 					else if(display_mode == 1){
 						if(draw_sym() != 0){
-							printf(ERROR_M": Unable to draw numpad");
+							printf("%sERROR:%s Unable to draw numpad", ERROR_M, DEFAULT_COLOUR_M);
 						}
 					}
 				}
@@ -364,28 +364,28 @@ void CalculatorProcess(){
 					//Save answer
 					if(info.system == 1){
 						for(int num_str=0; num_str < equation.pos; num_str++){
-							printf(SYS_M": %i String of %i stings: string %s, length %i\n",
+							printf("%sSYSTEM_INFO:%s %i String of %i stings: string %s, length %i\n", SYS_M, DEFAULT_COLOUR_M,
 									num_str + 1, equation.pos, equation.input[num_str],
 									strlen(equation.input[num_str]));
 						}
 					}
 
-					if(info.system == 1) printf(SYS_M": Formula Contains Before Parsing: %s, equation.pos %i\n",
+					if(info.system == 1) printf("%sSYSTEM_INFO:%s Formula Contains Before Parsing: %s, equation.pos %i\n", SYS_M, DEFAULT_COLOUR_M,
 												 output.formula, equation.pos);
 
 					if(parseFormula() == 0){
 						output.prev_ans = output.result;
-						if(info.system == 1) printf(SYS_M": Result %lf\n", output.result);				
+						if(info.system == 1) printf("%sSYSTEM_INFO:%s Result %lf\n", SYS_M, DEFAULT_COLOUR_M, output.result);				
 
 						//Print answer to screen
-						if(clear_equation() != 0) printf(ERROR_M": Could not clear Equation\n");
-						if(draw_result(0) != 0) printf(ERROR_M": Could not print result\n");
+						if(clear_equation() != 0) printf("%sERROR:%s Could not clear Equation\n", ERROR_M, DEFAULT_COLOUR_M);
+						if(draw_result(0) != 0) printf("%sERROR:%s Could not print result\n", ERROR_M, DEFAULT_COLOUR_M);
 					}
 					else{
 						output.prev_ans = 0;
 						//Print answer to screen
-						if(clear_equation() != 0) printf(ERROR_M": Could not clear Equation\n");
-						if(draw_result(1) != 0)	printf(ERROR_M": Could not print result\n");
+						if(clear_equation() != 0) printf("%sERROR:%s Could not clear Equation\n", ERROR_M, DEFAULT_COLOUR_M);
+						if(draw_result(1) != 0)	printf("%sERROR:%s Could not print result\n", ERROR_M, DEFAULT_COLOUR_M);
 					}
 
 					//Clear formula
@@ -401,12 +401,12 @@ void CalculatorProcess(){
 						equation.input[equation.pos] = NULL;
 					}
 					if(equation.pos == 0){
-						if(info.debug == 1)printf(DEBUG_M": Whole string deleted\n");
+						if(info.debug == 1)printf("%sDEBUG_INFO:%s Whole string deleted\n", DEBUG_M, DEFAULT_COLOUR_M);
 					}
 
 					equation.pos = 0;
 
-					if(info.system == 1)printf(SYS_M": Previous answer saved as %lf\n", output.prev_ans);
+					if(info.system == 1)printf("%sSYSTEM_INFO:%s Previous answer saved as %lf\n", SYS_M, DEFAULT_COLOUR_M, output.prev_ans);
 
 					info.first_time = 1;
 				}
@@ -414,25 +414,25 @@ void CalculatorProcess(){
 				//If previous answer selected, append the previous answer to the current equation
 				else if(strcmp(grid_space_p.items[touch_pos], "ANS") == 0){
 					//Insert previous answer into equation as number
-					if(info.debug == 1)printf(DEBUG_M": Writing String %s\n", grid_space_p.items[touch_pos]);
+					if(info.debug == 1)printf("%sDEBUG_INFO:%s Writing String %s\n", DEBUG_M, DEFAULT_COLOUR_M, grid_space_p.items[touch_pos]);
 					snprintf(output_ans, 50, "%f", output.prev_ans);
 
 
-					if(Input_append(output_ans) != 0) printf(ERROR_M": Could not append string\n");
+					if(Input_append(output_ans) != 0) printf("%sERROR:%s Could not append string\n", ERROR_M, DEFAULT_COLOUR_M);
 				}
 
 				//Else the calculation solver should be able to handle the input, jsut append it to the string
 				else{
 					//Append symbol(s) to string
-					if(info.debug == 1)printf(DEBUG_M": Writing String %s\n", grid_space_p.items[touch_pos]);
+					if(info.debug == 1)printf("%sDEBUG_INFO:%s Writing String %s\n", DEBUG_M, DEFAULT_COLOUR_M, grid_space_p.items[touch_pos]);
 
-					if(Input_append(grid_space_p.items[touch_pos]) != 0) printf(ERROR_M": Could not append string\n");
+					if(Input_append(grid_space_p.items[touch_pos]) != 0) printf("%sERROR:%s Could not append string\n", ERROR_M, DEFAULT_COLOUR_M);
 				}
 
 				//A button was pressed, highlight the cell of the button
 				if(button_highlight == 0){
 					if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0){
-						printf(ERROR_M": Could not highlight cell\n");	//TODO Fix
+						printf("%sERROR:%s Could not highlight cell\n", ERROR_M, DEFAULT_COLOUR_M);
 					}
 					button_highlight = 1;
 				}
@@ -440,11 +440,11 @@ void CalculatorProcess(){
 			}
 			if(info.debug == 1){
 				for(int i=0; i<equation.pos; i++){
-					printf(DEBUG_M": Equation.Input[%i] Contains %s  length %i\n",
+					printf("%sDEBUG_INFO:%s Equation.Input[%i] Contains %s  length %i\n", DEBUG_M, DEFAULT_COLOUR_M,
 							i, equation.input[i], strlen(equation.input[i]));
 				}
 			}
-			if(info.debug == 1)printf(DEBUG_M": Equation currently has %i memory free of total %i\n", 
+			if(info.debug == 1)printf("%sDEBUG_INFO:%s Equation currently has %i memory free of total %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 									   equation.size - equation.pos, equation.size);
 		}
 		//If the user is holding the button down, don't perform the action
@@ -464,10 +464,10 @@ void CalculatorProcess(){
 		  	off_debounce = 0;
 		  	if(button_highlight == 1 ){
 				if(LCD_Cell_Highlight(button_highlight, touch_pos, display_mode) != 0){
-					printf(ERROR_M": Could not highlight cell\n");	//TODO Fix
+					printf("%sERROR:%s Could not highlight cell\n", ERROR_M, DEFAULT_COLOUR_M);
 			  	}
 			  	button_highlight = 0;
-			  	if(info.system == 1)printf(SYS_M": Cleared Highlight Now\n");
+			  	if(info.system == 1)printf("%sSYSTEM_INFO:%s Cleared Highlight Now\n", SYS_M, DEFAULT_COLOUR_M);
 			}
 	  	}
 	}
@@ -480,7 +480,7 @@ int allocate_memory(){
 
 	equation.input = (char**) calloc(MemExpand, sizeof(char*));
 	if(equation.input == 0){
-		printf(ERROR_M": Calloc input memory");
+		printf("%sERROR:%s Calloc input memory\n", ERROR_M, DEFAULT_COLOUR_M);
 		return 1;
 	}
 	equation.size = MemExpand;
@@ -495,19 +495,19 @@ int reallocate_memory(){
 	//Shifts old_chunk into new chunck
 
 	for(int i=0; i<equation.pos; i++){
-		if(info.debug == 1)printf(DEBUG_M": Equation.Input[%i] Before %s length %i\n", 
+		if(info.debug == 1)printf("%sDEBUG_INFO:%s Equation.Input[%i] Before %s length %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 								   i, equation.input[i], strlen(equation.input[i]));
 	}
 
 	equation.input = (char**) realloc(equation.input, (equation.size + MemExpand)*sizeof(char*));
 	if(equation.input == 0){
-		printf(ERROR_M": Calloc input memory\n");
+		printf("%sERROR:%s Calloc input memory\n", ERROR_M, DEFAULT_COLOUR_M);
 		return 1;
 	}
 	equation.size = equation.size + MemExpand;
 
 	for(int i=0; i<equation.pos; i++){
-		if(info.debug == 1)printf(DEBUG_M": Equation.Input[%i] After %s  length %i\n", 
+		if(info.debug == 1)printf("%sDEBUG_INFO:%s Equation.Input[%i] After %s  length %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 								   i, equation.input[i], strlen(equation.input[i]));
 	}
 
@@ -516,7 +516,7 @@ int reallocate_memory(){
 	}
 
 	for(int i=0; i<equation.size; i++){
-		if(info.debug == 1)printf(DEBUG_M": Equation.Input[%i] After %s  length %i\n", 
+		if(info.debug == 1)printf("%sDEBUG_INFO:%s Equation.Input[%i] After %s  length %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 								   i, equation.input[i], strlen(equation.input[i]));
 	}
 
@@ -530,41 +530,41 @@ int Input_append(char *item){
 	char* new_string = (char*) calloc((strlen(item) + 1), sizeof(char));
 
 	if(new_string == 0){
-		printf(ERROR_M": Could not create memory for new_string\n");
+		printf("%sERROR:%s Could not create memory for new_string\n", ERROR_M, DEFAULT_COLOUR_M);
 	}
 	strncpy(&new_string[0], item, strlen(item));
 
 	equation.input[num_char] = &new_string[0];
 	if(info.debug == 1){
-		printf(DEBUG_M": Item expected %s\n", item);
-		printf(DEBUG_M": String copied %s\n", new_string);
-		printf(DEBUG_M": String stored %s\n", (equation.input[num_char]));
-		printf(DEBUG_M": Num_char %i\n", num_char);
+		printf("%sDEBUG_INFO:%s Item expected %s\n", DEBUG_M, DEFAULT_COLOUR_M, item);
+		printf("%sDEBUG_INFO:%s String copied %s\n", DEBUG_M, DEFAULT_COLOUR_M, new_string);
+		printf("%sDEBUG_INFO:%s String stored %s\n", DEBUG_M, DEFAULT_COLOUR_M, (equation.input[num_char]));
+		printf("%sDEBUG_INFO:%s Num_char %i\n", DEBUG_M, DEFAULT_COLOUR_M, num_char);
 	}
 
 	if(strcmp(new_string, (equation.input[num_char])) != 0){
-		printf(ERROR_M": String copied not equal to string stored\n");
+		printf("%sERROR:%s String copied not equal to string stored\n", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//Check that memory has been allocated
 	if(equation.pos == 0){
 		output.formula = (char*) calloc(MemExpand, sizeof(char));
 		if(output.formula == 0){
-			printf(ERROR_M": Calloc output memory");
+			printf("%sERROR:%s Calloc output memory\n", ERROR_M, DEFAULT_COLOUR_M);
 			return 1;
 		}
 		strncpy(output.formula, equation.input[0], strlen(equation.input[0]));
-		if(info.debug == 1 || info.system == 1)printf(DEBUG_M": formula contains %s\n", output.formula);
+		if(info.debug == 1 || info.system == 1)printf("%sDEBUG_INFO:%s formula contains %s\n", DEBUG_M, DEFAULT_COLOUR_M, output.formula);
 	}
 
 	else{
 		//Reallocate memory if needed
 		strcat(output.formula, equation.input[equation.pos]);
-		if(info.debug == 1 || info.system == 1)printf(DEBUG_M": formula contains %s\n", output.formula);
+		if(info.debug == 1 || info.system == 1)printf("%sDEBUG_INFO:%s formula contains %s\n", DEBUG_M, DEFAULT_COLOUR_M, output.formula);
 	}
 	//Call function to display equation on screen
-	if(clear_equation() != 0) printf(ERROR_M": Could not clear equation\n");
-	if(draw_equation() != 0) printf(ERROR_M": Could not draw equation\n");
+	if(clear_equation() != 0) printf("%sERROR:%s Could not clear equation\n", ERROR_M, DEFAULT_COLOUR_M);
+	if(draw_equation() != 0) printf("%sERROR:%s Could not draw equation\n", ERROR_M, DEFAULT_COLOUR_M);
 	equation.pos++;
 
 	return 0;
@@ -595,7 +595,7 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 	int cell_number = item_number - offset;
 
 	if(cell_number < 0 || cell_number > 20){
-		printf(ERROR_M": Cell_number out of range %i, offset %i\n", cell_number, offset);
+		printf("%sERROR:%s Cell_number out of range %i, offset %i\n", ERROR_M, DEFAULT_COLOUR_M, cell_number, offset);
 	}
 	else{
 
@@ -604,8 +604,8 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 		int y_min = grid_space_p.Area[cell_number][2];
 		int y_max = grid_space_p.Area[cell_number][3];
 
-		printf(DEBUG_M" LCD_HIGHLIGHT: cell_number %i, offset %i\n", cell_number, (display_mode == 0 ? 0 : 21));
-		printf(DEBUG_M" LCD_HIGHLIGHT: x_min %i, x_max %i, y_min %i, y_max %i\n", x_min, x_max, y_min, y_max);
+		printf("%sDEBUG_INFO %sLCD_HIGHLIGHT: cell_number %i, offset %i\n", DEBUG_M, DEFAULT_COLOUR_M, cell_number, (display_mode == 0 ? 0 : 21));
+		printf("%sDEBUG_INFO %sLCD_HIGHLIGHT: x_min %i, x_max %i, y_min %i, y_max %i\n", DEBUG_M, DEFAULT_COLOUR_M, x_min, x_max, y_min, y_max);
 
 		//Highlight is currently on
 		if(status == 1){
@@ -614,10 +614,10 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 
 			if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, 
 			                   LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
-				printf(ERROR_M": Could not clear cell\n");
+				printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
 			}
 			if(draw_item(cell_number, offset,
-						 LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf(ERROR_M": Could not redraw symbol\n");
+						 LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0) printf("%sERROR:%s Could not redraw symbol\n", ERROR_M, DEFAULT_COLOUR_M);
 
 			return 0;
 		}
@@ -629,14 +629,14 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 
 			if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, 
 			                   LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0){
-				printf(ERROR_M": Could not clear cell\n");
+				printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
 			}
 			if(draw_item(cell_number, offset,
-						 LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf(ERROR_M": Could not redraw symbol\n");
+						 LCD_COLOR_BLACK, LCD_COLOR_YELLOW) != 0) printf("%sERROR:%s Could not redraw symbol\n", ERROR_M, DEFAULT_COLOUR_M);
 			return 0;
 		}
 		else{
-			printf(ERROR_M": Unknown status %i, Cell_number %i, offset %i\n", status, cell_number, offset);
+			printf("%sERROR:%s Unknown status %i, Cell_number %i, offset %i\n", ERROR_M, DEFAULT_COLOUR_M, status, cell_number, offset);
 		}
 	}
 	return 1;
@@ -645,8 +645,7 @@ int LCD_Cell_Highlight(int status, int item_number, int display_mode){
 //Draw the result of the equation on the screen
 int draw_result(int status){
 	//If status is 0 print result
-	//else print syntaxERROR_M 
-
+	//else print syntax %sERROR%s
 	//Draws specific character passed into function
 	int x_min = grid_space_p.Area[24][0];
 	int x_max = grid_space_p.Area[21][1];
@@ -654,21 +653,21 @@ int draw_result(int status){
 	int y_max = grid_space_p.Area[24][3];
 
 	if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
-		printf(ERROR_M": Could not clear cell\n");
+		printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//Find center of cell given
 	int x_pos = ((x_max - x_min) / 2.0) + x_min;
 	int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-	if(info.debug == 1)printf(DEBUG_M": x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n",
+	if(info.debug == 1)printf("%sDEBUG_INFO:%s x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", DEBUG_M, DEFAULT_COLOUR_M,
 							   x_min, x_max, y_min, y_max, x_pos, y_pos);
 
 	char result_str[13];
 	if(status == 0)snprintf(result_str, 10, "%g", output.result);
-	else strcpy(result_str, "SyntaxERROR_M ");
+	else strcpy(result_str, "Syntax Error");
 
-	if(info.debug == 1)printf(DEBUG_M": result_str %s\n", result_str);
+	if(info.debug == 1)printf("%sDEBUG_INFO:%s result_str %s\n", DEBUG_M, DEFAULT_COLOUR_M, result_str);
 
 	BSP_LCD_SetFont(&Font16);
 	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
@@ -689,14 +688,14 @@ int draw_equation(){
 	int offset = 0;
 
 	if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
-		printf(ERROR_M": Could not clear cell\n");
+		printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	//Find center of cell given
 	int x_pos = ((x_max - x_min) / 2.0) + x_min;
 	int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-	if(info.debug == 1)printf(DEBUG_M": x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", 
+	if(info.debug == 1)printf("%sDEBUG_INFO:%s x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", DEBUG_M, DEFAULT_COLOUR_M, 
 							   x_min, x_max, y_min, y_max, x_pos, y_pos);
 
 	//Roll around the display
@@ -710,7 +709,7 @@ int draw_equation(){
 	if(equation.pos == 0){
 		temp_equation = (char*) calloc(LCDResultlen, sizeof(char));
 		if(output.formula == 0){
-			printf(ERROR_M": Calloc output memory");
+			printf("%sERROR:%s Calloc output memory", ERROR_M, DEFAULT_COLOUR_M);
 			return 1;
 		}
 		temp_equation[0] = output.formula[0];
@@ -740,7 +739,7 @@ int clear_equation(){
 	int y_max = grid_space_p.Area[24][3];
 
 	if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, LCD_COLOR_BLACK, LCD_COLOR_WHITE) != 0){
-		printf(ERROR_M": Could not clear cell\n");
+		printf("%sERROR:%s Could not clear cell\n", ERROR_M, DEFAULT_COLOUR_M);
 	}
 
 	return 0;

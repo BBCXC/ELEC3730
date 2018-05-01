@@ -80,7 +80,7 @@ int help_parser(char **array_of_words_p[], int word_count,int debugsys){
     }
   }
   else if(word_count == 1){
-    if(debugsys == 1) printf(DEBUG_M": No Operation selected\n");
+    if(debugsys == 1) printf("%sDEBUG_INFO:%s No Operation selected\n", DEBUG_M, DEFAULT_COLOUR_M);
     //Loop through all command list and print
     while(Command_list[i].NameString != NULL){
       printf(HELP_M"\n", Command_list[i].HelpString, Command_list[i].DescriptionString);
@@ -98,7 +98,7 @@ int help_parser(char **array_of_words_p[], int word_count,int debugsys){
 //Calls next precedent
 //Returns answer at end
 double parseFormula(){
-  if(info.system == 1) printf(SYS_M"Formula Parsed: %s\n", output.formula);
+  if(info.system == 1) printf("%sSYSTEM_INFO:%s Formula Parsed: %s\n", SYS_M, DEFAULT_COLOUR_M, output.formula);
   output.result = parseSub();
   if(*output.formula == '\0'){
     //return output.result;
@@ -426,20 +426,20 @@ double parseNumber(){
     printf("Syntax Error\n");
     }
   }
-  if(info.system == 1) printf(SYS_M"Number Found: %lf\n", (number * neg_flag));
+  if(info.system == 1) printf("%sSYSTEM_INFO:%s Number Found: %lf\n", SYS_M, DEFAULT_COLOUR_M, (number * neg_flag));
   return (number * neg_flag);
 }
 
 /***********************************************************************************************************************
 ****************************************************Title Animation*****************************************************
 ***********************************************************************************************************************/
-//int title_animation(){
-//  BSP_LCD_Clear(LCD_COLOR_WHITE);
-//  BSP_LCD_SetFont(&Font12);
-//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//
-//  return 0;
-//}
+int title_animation(){
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
+  return 0;
+}
 
 /***********************************************************************************************************************
 *********************************************************Other**********************************************************

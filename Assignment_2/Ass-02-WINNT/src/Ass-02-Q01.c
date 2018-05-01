@@ -77,7 +77,7 @@ void CommandLineParserProcess(void){
       if(c == '\r'){
         printf("\n");
         command_line[i-1] = 0;
-        if(StringProcess(&command_line, i) != 0) printf(ERROR_M": Could not process string\n");
+        if(StringProcess(&command_line, i) != 0) printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
         i = 0;
         info.first_time = 1;
       }
@@ -98,7 +98,7 @@ void CommandLineParserProcess(void){
     }
     command_line[i]=0;
 
-    if(StringProcess(&command_line, i) != 0) printf(ERROR_M": Could not process string");
+    if(StringProcess(&command_line, i) != 0) printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
     i = 0;
 
   #endif
@@ -113,14 +113,14 @@ int StringProcess(char *command_line, int i){
 
   if(info.system == 1){
     for(int i=0; i<word_count; i++){
-      printf(SYS_M"Word %i: %s\n", i, array_of_words_p[i]);
+      printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
     }
   }
 
   //If words were detected, and we are using the normal mode
   if(word_count > 0 && info.formula_mode == 0){
 
-    if(info.system == 1) printf(SYS_M"Word Count = %i\n", word_count);
+    if(info.system == 1) printf("%sSYSTEM_INFO:%s Word Count = %i\n", SYS_M, DEFAULT_COLOUR_M, word_count);
 
     char dtos[50];
     //Check the 2 value parameters for pi
@@ -128,7 +128,7 @@ int StringProcess(char *command_line, int i){
       if((strcmp("PI", array_of_words_p[j]) == 0) ||
          (strcmp("pi", array_of_words_p[j]) == 0) ||
          (strcmp("Pi", array_of_words_p[j]) == 0)){
-        if(info.debug == 1) printf(DEBUG_M": Constant PI found\n");
+        if(info.debug == 1) printf("%sDEBUG_INFO:%s Constant PI found\n", DEBUG_M, DEFAULT_COLOUR_M);
         snprintf(dtos, 50, "%lf", M_PI);
         array_of_words_p[j] = dtos;
       }
@@ -138,7 +138,7 @@ int StringProcess(char *command_line, int i){
     for(int j=1; j<word_count; j++){
       if((strcmp("ANS", array_of_words_p[j]) == 0) ||
          (strcmp("ans", array_of_words_p[j]) == 0)){
-        if(info.debug == 1) printf(DEBUG_M": Constant ANS found\n");
+        if(info.debug == 1) printf("%sDEBUG_INFO:%s Constant ANS found\n", DEBUG_M, DEFAULT_COLOUR_M);
         snprintf(dtos, 50, "%lf", prev_ans);
         array_of_words_p[j] = dtos;
       }
@@ -148,7 +148,7 @@ int StringProcess(char *command_line, int i){
     int mode = -1;
     mode = command_parser(&array_of_words_p, word_count, info.debug, &prev_ans);
     if(mode == -1){
-      printf(ERROR_M": Unknown Operation\n");
+      printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     else if(mode == 0){
       printf("The result is %g\n", output.result);
@@ -162,7 +162,7 @@ int StringProcess(char *command_line, int i){
     free(array_of_words_p[0]);
     free(array_of_words_p);
 
-    if(info.debug == 1) printf(DEBUG_M": Arrays have been freed\n");
+    if(info.debug == 1) printf("%sDEBUG_INFO:%s Arrays have been freed\n", DEBUG_M, DEFAULT_COLOUR_M);
   }
 
   //Formula mode ON
@@ -184,11 +184,11 @@ int StringProcess(char *command_line, int i){
     free(array_of_words_p[0]);
     free(array_of_words_p);
 
-    if(info.debug == 1) printf(DEBUG_M": Arrays have been freed\n");
+    if(info.debug == 1) printf("%sDEBUG_INFO:%s Arrays have been freed\n", DEBUG_M, DEFAULT_COLOUR_M);
 
   }
   else{
-    printf(ERROR_M": No strings detected\n");
+    printf("%sERROR:%s No strings detected\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   return 0;
@@ -202,14 +202,14 @@ int StringProcess(char *command_line, int i){
 //Returns 0 on success
 //Returns 1 on failure
 int add_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered ADD function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered ADD function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   double value_2 = 0;
   //For each number perform the functions calculation
   for(int i=1; i<word_count; i++){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[i], "%lf", &value_2) != 1){
-      printf(ERROR_M": Found unknown argument %s\n", (*array_of_words_p)[i]);
+      printf("%sERROR:%s Found unknown argument %s\n", ERROR_M, DEFAULT_COLOUR_M, (*array_of_words_p)[i]);
       return 1;
     }
     value_1+=value_2;
@@ -222,22 +222,22 @@ int add_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int sub_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered SUB function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered SUB function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   double value_2 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
    if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = value_1 - value_2;
@@ -248,14 +248,14 @@ int sub_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int mul_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered MUL function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered MUL function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 1;
   double value_2 = 0;
   //For each number perform the functions calculation
   for(int i=1; i<word_count; i++){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[i], "%lf", &value_2) != 1){
-      printf(ERROR_M": Found unknown argument %s\n", (*array_of_words_p)[i]);
+      printf("%sERROR:%s Found unknown argument %s\n", ERROR_M, DEFAULT_COLOUR_M, (*array_of_words_p)[i]);
       return 1;
     }
     value_1 = value_1 * value_2;
@@ -268,22 +268,22 @@ int mul_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int div_function(char **array_of_words_p[], int word_count, double *result){
- if(info.debug == 1) printf(DEBUG_M": Entered DIV function\n");
+ if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered DIV function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   double value_2 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M, ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
    if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = value_1 / value_2;
@@ -294,31 +294,31 @@ int div_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int sin_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered SIN function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered SIN function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
-	  //Read in next parameter, used as number for calculation
-	  if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-		printf(ERROR_M": Found unknown argument\n");
-		return 1;
-	  }
+    //Read in next parameter, used as number for calculation
+    if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+    return 1;
+    }
   }
   else{
-	  printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
-	  //If radians don't need to alter number
-	  if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
-	  }
-	  //If degrees, number needs to be converted to radians for function
-	  else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
-		value_1 = value_1 * M_PI / 180;
-	  }
+    //If radians don't need to alter number
+    if(strcmp(RADstr, (*array_of_words_p)[2]) == 0){
+    }
+    //If degrees, number needs to be converted to radians for function
+    else if(strcmp(DEGstr, (*array_of_words_p)[2]) == 0){
+    value_1 = value_1 * M_PI / 180;
+    }
   }
   else{
     //Assume radians
@@ -331,22 +331,22 @@ int sin_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int cos_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered COS function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered COS function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-      printf(ERROR_M": Found unknown argument\n");
+      printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-    printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
     //If radians don't need to alter number
@@ -368,22 +368,22 @@ int cos_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int tan_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered TAN function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered TAN function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-      printf(ERROR_M": Found unknown argument\n");
+      printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-    printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
     //If radians don't need to alter number
@@ -405,22 +405,22 @@ int tan_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int asin_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered ARCSIN function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered ARCSIN function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-      printf(ERROR_M": Found unknown argument\n");
+      printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-    printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
     //If radians don't need to alter number
@@ -442,22 +442,22 @@ int asin_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int acos_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered ARCCOS function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered ARCCOS function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-      printf(ERROR_M": Found unknown argument\n");
+      printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-    printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
     //If radians don't need to alter number
@@ -479,22 +479,22 @@ int acos_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int atan_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered ARCTAN function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered ARCTAN function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   if(word_count > 1){
     //Read in next parameter, used as number for calculation
     if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-      printf(ERROR_M": Found unknown argument\n");
+      printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-    printf(ERROR_M": Insufficient Arguments\n");
+    printf("%sERROR:%s Insufficient Arguments\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   if(word_count > 2){
     //If radians don't need to alter number
@@ -516,22 +516,22 @@ int atan_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int pow_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered POWER function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered POWER function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   double value_2 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 3){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
    if(sscanf((*array_of_words_p)[2], "%lf", &value_2) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = pow(value_1, value_2);
@@ -542,16 +542,16 @@ int pow_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int sqrt_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered SQUARE ROOT function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered SQUARE ROOT function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 2){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = sqrt(value_1);
@@ -562,16 +562,16 @@ int sqrt_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int ln_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered NATURAL LOG function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered NATURAL LOG function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 2){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = log(value_1);
@@ -582,16 +582,16 @@ int ln_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int log_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered LOG 10 function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered LOG 10 function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 2){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = log10(value_1);
@@ -602,16 +602,16 @@ int log_function(char **array_of_words_p[], int word_count, double *result){
 //Returns 0 on success
 //Returns 1 on failure
 int exp_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered EXPONENTIAL function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered EXPONENTIAL function\n", DEBUG_M, DEFAULT_COLOUR_M);
   double value_1 = 0;
   //From given number(s) calculate the function and store the result
   if(word_count > 2){
-    printf(ERROR_M": Too many arguments\n");
+    printf("%sERROR:%s Too many arguments\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   //Read in next parameter, used as number for calculation
   if(sscanf((*array_of_words_p)[1], "%lf", &value_1) != 1){
-    printf(ERROR_M": Found unknown argument\n");
+    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
     return 1;
   }
   *result = exp(value_1);
@@ -620,7 +620,7 @@ int exp_function(char **array_of_words_p[], int word_count, double *result){
 
 //Change between setting on and off
 int formula_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered Formula Mode\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered Formula Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
   if(word_count > 1){
     if(strcmp("on", (*array_of_words_p)[1]) == 0){
       info.formula_mode = 1;
@@ -631,19 +631,19 @@ int formula_function(char **array_of_words_p[], int word_count, double *result){
       printf("Formula Mode OFF\n");
     }
     else{
-      printf(ERROR_M": Unknown formula command\n");
+      printf("%sERROR:%s Unknown formula command\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-	  printf("Formula mode currently %s\n", info.formula_mode == 0 ? "OFF" : "ON");
+    printf("Formula mode currently %s\n", info.formula_mode == 0 ? "OFF" : "ON");
   }
   return 0;
 }
 
 //Change between setting on and off
 int debug_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered Debug Mode\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
   if(word_count > 1){
     if(strcmp("on", (*array_of_words_p)[1]) == 0){
       info.debug = 1;
@@ -654,58 +654,58 @@ int debug_function(char **array_of_words_p[], int word_count, double *result){
       printf("Debug OFF\n");
     }
     else{
-      printf(ERROR_M": Unknown debug command\n");
+      printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-	  printf("Debug messages currently %s\n", info.debug == 0 ? "OFF" : "ON");
+    printf("Debug messages currently %s\n", info.debug == 0 ? "OFF" : "ON");
   }
   return 0;
 }
 
 //Change between setting on and off
 int system_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered System Mode\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
   if(word_count > 1){
     if(strcmp("on", (*array_of_words_p)[1]) == 0){
       info.system = 1;
-      printf(SYS_M"System ON\n");
+      printf("%sSYSTEM_INFO:%s System ON\n", SYS_M, DEFAULT_COLOUR_M);
     }
     else if(strcmp("off", (*array_of_words_p)[1]) == 0){
       info.system = 0;
-      printf(SYS_M"System OFF\n");
+      printf("%sSYSTEM_INFO:%s System OFF\n", SYS_M, DEFAULT_COLOUR_M);
     }
     else{
-      printf(ERROR_M": Unknown system command\n");
+      printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
       return 1;
     }
   }
   else{
-	  printf(SYS_M"System messages currently %s\n", info.system == 0 ? "OFF" : "ON");
+    printf("%sSYSTEM_INFO:%s System messages currently %s\n", SYS_M, DEFAULT_COLOUR_M, info.system == 0 ? "OFF" : "ON");
   }
   return 0;
 }
 
 //Clear function, clear terminal screen
 int clear_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered HELP function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
   printf(CLEAR_M);
   return 0;
 }
 
 //Reset function, reset terminal scrollback
 int reset_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered HELP function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
   printf(RESET_M);
   return 0;
 }
 
 //Help function, display help messages
 int help_function(char **array_of_words_p[], int word_count, double *result){
-  if(info.debug == 1) printf(DEBUG_M": Entered HELP function\n");
+  if(info.debug == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
   if(help_parser(array_of_words_p, word_count, info.debug) != 0){
-    printf(ERROR_M": Help Funtion\n");
+    printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
   }
   return 0;
 }
@@ -743,13 +743,13 @@ int string_parser(char *inp, char **array_of_words_p[]){
     //Allocate enough memory to store a pointer to each word
     *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
     if(array_of_words_p == 0){  //If malloc fails returns NULL ptr
-      printf(ERROR_M": Memory allocation failed\n");  //Log ERROR_M 
+      printf("%sERROR:%s Memory allocation failed\n", ERROR_M, DEFAULT_COLOUR_M);  //Log
       return -1;  //Return Failed
     }
     //Set pointer to first word
     char* word_array = (char*) calloc((characters + num_words), sizeof(char));
     if(word_array == 0){  //If malloc fails returns NULL ptr
-      printf(ERROR_M": Memory allocation failed\n");  //LogERROR_M 
+      printf("%sERROR:%s Memory allocation failed\n", ERROR_M, DEFAULT_COLOUR_M);  //Log 
       free(*array_of_words_p);
       return -1;  //Return Failed
     }
