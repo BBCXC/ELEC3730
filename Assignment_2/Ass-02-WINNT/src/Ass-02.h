@@ -13,26 +13,45 @@
 #include "stm32f4xx_hal.h"
 #include "openx07v_c_lcd.h"
 #include "touch_panel.h"
+
+#define KNRM  "\e[0m"
+#define KRED  "\e[31m"//"\x1B[31m"
+#define KGRN  "\e[32m"
+#define KYEL  "\e[33m"
+#define KBLU  "\e[34m"
+#define KMAG  "\e[35m"
+#define KCYN  "\e[36m"
+#define KWHT  "\e[37m"
+
+#define CLEAR_M "\014"
+#define RESET_M "\033[3J"
+
+
 #else
 #include <windows.h>
+
+#define KNRM  "#"
+#define KRED  "#"
+#define KGRN  "#"
+#define KYEL  "#"
+#define KBLU  "#"
+#define KMAG  "#"
+#define KCYN  "#"
+#define KWHT  "#"
+
+#define CLEAR_M "#"
+#define RESET_M "#"
 #endif
+
+#include "Ass-02-Debug.h"
+#include "Ass-02-Screen.h"
+#include "Ass-02-Equation.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <malloc.h>
 #include <string.h>
 #include <math.h>
-
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-
-#define CLEAR_M "\014"
-#define RESET_M "\014"
 
 #define DEFAULT_COLOUR_M KNRM
 #define DEBUG_M KYEL
@@ -45,13 +64,9 @@
 extern void Ass_02_Main(void);
 
 typedef struct{
-	int debug;
-	int system;
-	int formula_mode;
-	int first_time;
+	int BGColour;
 } 
-	sys_t;
-	sys_t info;
+	animation_s;
 
 //Question 1
 typedef struct{
@@ -70,8 +85,8 @@ extern void CommandLineParserProcess(void);
 
 extern int StringProcess(char *command_line, int i);
 extern int string_parser(char *inp, char **array_of_words_p[]);
-extern int help_parser(char **array_of_words_p[], int word_count, int debugsys);
-extern int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
+extern int help_parser(char **array_of_words_p[], int word_count);
+extern int command_parser(char **array_of_words_p[], int word_count, double *prev_ans);
 
 extern int add_function(char **array_of_words_p[], int word_count, double *result);
 extern int sub_function(char **array_of_words_p[], int word_count, double *result);
@@ -94,31 +109,6 @@ extern int system_function(char **array_of_words_p[], int word_count, double *re
 extern int clear_function(char **array_of_words_p[], int word_count, double *result);
 extern int reset_function(char **array_of_words_p[], int word_count, double *result);
 extern int help_function(char **array_of_words_p[], int word_count, double *result);
-
-
-//Question 2
-typedef struct{
-	int Area[25][5];
-	char **items;
-}	
-	grid_struct;
-	grid_struct grid_space_p;
-
-typedef struct{
-	int size;
-	char **input;
-	int pos;
-}
-	str_mem;
-	str_mem equation;
-
-typedef struct{
-	char *formula;
-	double result;
-	double prev_ans;
-}
-	result_mem;
-	result_mem output;
 
 // Question 2
 extern void CalculatorInit(void);

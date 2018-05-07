@@ -13,24 +13,12 @@ void Ass_02_Main(void)
 #ifdef STM32F407xx
   uint16_t i=0;
 #endif
-
-  // Initialise
-  info.debug = 0;
-  info.system = 1;
-  info.formula_mode = 0;
-  info.first_time = 1;
+  Debug_Init();
+  Equation_Init();
 
   CommandLineParserInit();
 #ifdef STM32F407xx
   //Initilise array of strings for the buttons in Q2
-  static char *item[42] = {"=", "+", "ANS", ".", "0", ">", "-", "3", "2", "1",
-                           "<", "/", "6", "5", "4", "AC", "x", "9", "8", "7", "DEL",
-                           "=", "(", "ANS", "sqrt(", "^", ">", ")", "atan(", "acos(", "asin(",
-                           "<", "pi", "tan(", "cos(", "sin(", "AC", "", "log(", "ln(", "exp(", "DEL"};
-  //Store that array of strings in the struct
-  grid_space_p.items = item;
-  output.prev_ans = 0;
-  output.result = 0;
   CalculatorInit();
 #endif
 
