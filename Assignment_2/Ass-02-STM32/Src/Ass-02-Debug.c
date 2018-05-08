@@ -3,8 +3,8 @@
 void Debug_Init(void){
 
 	// Initialise
-	info.debug = 1;
-	info.system = 1;
+	info.debug = 0;
+	info.system = 0;
 	info.formula_mode = 0;
 	info.first_time = 1;
 }

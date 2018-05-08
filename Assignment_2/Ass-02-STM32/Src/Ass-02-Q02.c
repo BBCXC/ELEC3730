@@ -303,7 +303,7 @@ void CalculatorProcess(){
 					if(Get_Pos() > 0){
 						if(Get_System() == 1)printf("%sSYSTEM_INFO:%s Formula Contains Before Deleting: %s, equation.pos %i\n", SYS_M, DEFAULT_COLOUR_M,
 													Get_Formula(), Get_Pos());
-						Increment_Formula(-1);
+						Increment_Pos(-1);
 						Set_Input_Str(Get_Pos(), NULL);
 						Set_Formula_c(Get_Pos(), NULL);
 						if(Get_System() == 1)printf("%sSYSTEM_INFO:%s Formula Contains After Deleting: %s, equation.pos %i\n", SYS_M, DEFAULT_COLOUR_M,
@@ -322,9 +322,9 @@ void CalculatorProcess(){
 					//Clear All items
 					//Clear LCD
 					if(clear_equation() != 0) printf("%sERROR:%s Could not clear Equation\n", ERROR_M, DEFAULT_COLOUR_M);
-
+					DEBUG_P
 					while(Get_Pos() > 0){
-						Increment_Formula(-1);
+						Increment_Pos(-1);
 						Set_Input_Str(Get_Pos(), NULL);
 					}
 					if(Get_Pos() == 0) {
