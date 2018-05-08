@@ -13,14 +13,11 @@
 #include "stm32f4xx_hal.h"
 #include "openx07v_c_lcd.h"
 #include "touch_panel.h"
+
+
 #else
 #include <windows.h>
 #endif
-#include <stdio.h>
-#include <stdint.h>
-#include <malloc.h>
-#include <string.h>
-#include <math.h>
 
 #define KNRM  "\e[0m"
 #define KRED  "\e[31m"//"\x1B[31m"
@@ -34,24 +31,28 @@
 #define CLEAR_M "\014"
 #define RESET_M "\033[3J"
 
+#include "Ass-02-Debug.h"
+#include "Ass-02-Screen.h"
+#include "Ass-02-Equation.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <malloc.h>
+#include <string.h>
+#include <math.h>
+
+#define MemExpand 10
+
 #define DEFAULT_COLOUR_M KNRM
 #define DEBUG_M KYEL
 #define SYS_M KMAG
 #define ERROR_M KRED
 
 #define HELP_M "%-25.25s\t%-35.35s"
+#define DEBUG_P {printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__);}
 
 // Assignment main
 extern void Ass_02_Main(void);
-
-typedef struct{
-	int debug;
-	int system;
-	int formula_mode;
-	int first_time;
-} 
-	sys_t;
-	sys_t info;
 
 typedef struct{
 	int BGColour;
@@ -75,8 +76,8 @@ extern void CommandLineParserProcess(void);
 
 extern int StringProcess(char *command_line, int i);
 extern int string_parser(char *inp, char **array_of_words_p[]);
-extern int help_parser(char **array_of_words_p[], int word_count, int debugsys);
-extern int command_parser(char **array_of_words_p[], int word_count, int debugsys, double *prev_ans);
+extern int help_parser(char **array_of_words_p[], int word_count);
+extern int command_parser(char **array_of_words_p[], int word_count, double *prev_ans);
 
 extern int add_function(char **array_of_words_p[], int word_count, double *result);
 extern int sub_function(char **array_of_words_p[], int word_count, double *result);
@@ -99,31 +100,6 @@ extern int system_function(char **array_of_words_p[], int word_count, double *re
 extern int clear_function(char **array_of_words_p[], int word_count, double *result);
 extern int reset_function(char **array_of_words_p[], int word_count, double *result);
 extern int help_function(char **array_of_words_p[], int word_count, double *result);
-
-
-//Question 2
-typedef struct{
-	int Area[25][5];
-	char **items;
-}	
-	grid_struct;
-	grid_struct grid_space_p;
-
-typedef struct{
-	int size;
-	char **input;
-	int pos;
-}
-	str_mem;
-	str_mem equation;
-
-typedef struct{
-	char *formula;
-	double result;
-	double prev_ans;
-}
-	result_mem;
-	result_mem output;
 
 // Question 2
 extern void CalculatorInit(void);
