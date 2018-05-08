@@ -94,7 +94,7 @@ int command_parser(char **array_of_words_p[], int word_count, double *prev_ans){
 int help_parser(char **array_of_words_p[], int word_count){
 	int i = 0;
 
-	printf(HELP_M"\n", "Format", "Description");
+	printf("%s"HELP_M"%s""\n",KGRN, "Format", "Description", KNRM);
 	if(word_count > 1){
 		//While we haven't checked the whole list
 		while(Command_list[i].NameString != NULL){

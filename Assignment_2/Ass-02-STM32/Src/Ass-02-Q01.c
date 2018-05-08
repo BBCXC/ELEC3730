@@ -57,7 +57,7 @@ void CommandLineParserInit(void){
 void CommandLineParserProcess(void){
   char c;
   static int i = 0;
-  static char *command_line;
+  static char command_line[101];
 
 
   // Check for input and echo back
@@ -68,7 +68,6 @@ void CommandLineParserProcess(void){
       printf("--> Enter text: ");
     }
     if(HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK){
-      DEBUG_P
       printf("%c", c);
       HAL_GPIO_TogglePin(GPIOD, LD4_Pin); // Toggle LED4
 
@@ -76,10 +75,10 @@ void CommandLineParserProcess(void){
       i++;
 
       //If we get a return character then process the string
-      if(c == '\r'){
+      if(c == '\r' || i > 101){
         printf("\n");
-        command_line[i-1] = 0;
-        if(StringProcess(command_line, i) != 0) printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+        command_line[i-1] = '\0';
+        if(StringProcess(&command_line, i) != 0) printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
         i = 0;
         Set_First_Time(1);
       }
@@ -93,13 +92,12 @@ void CommandLineParserProcess(void){
     c=getchar();
 
     //If we get a new line character then process the string
-    while (c != '\n'){
+    while (c != '\n' || i < 101){
       command_line[i]=c;
       i++;
       c=getchar();
     }
     command_line[i]=0;
-
     if(StringProcess(&command_line, i) != 0) printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
     i = 0;
 

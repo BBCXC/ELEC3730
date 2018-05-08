@@ -5,7 +5,7 @@ void Debug_Init(void){
 	// Initialise
 	info.debug = 1;
 	info.system = 1;
-	info.formula_mode = 1;
+	info.formula_mode = 0;
 	info.first_time = 1;
 }
 int Get_Debug(void){
