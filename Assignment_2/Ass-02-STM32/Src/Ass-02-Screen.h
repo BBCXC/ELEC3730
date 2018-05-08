@@ -1,13 +1,11 @@
 #ifndef ASS_02_SCREEN_H_
 #define ASS_02_SCREEN_H_
 
-typedef struct{
-	int Area[25][5];
-	char **items;
-}	
-	grid_struct;
-	grid_struct grid_space_p;
-
+typedef struct {
+  int Area[25][5];
+  char **items;
+} grid_struct;
+grid_struct grid_space_p;
 
 extern void Screen_Init(void);
 extern int Get_Area(int pos1, int pos2);
