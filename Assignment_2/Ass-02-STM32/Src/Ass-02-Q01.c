@@ -763,7 +763,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       printf("%sSYSTEM_INFO:%s Graph ON\n", SYS_M, DEFAULT_COLOUR_M);
     } else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
       Set_Graph_Mode(0);
-      //TODO CalculatorInit();
+      CalculatorInit();
       printf("%sSYSTEM_INFO:%s Graph OFF\n", SYS_M, DEFAULT_COLOUR_M);
     } else if (strcmp("rescale", (*array_of_words_p)[1]) == 0) {
       rescale_graph();

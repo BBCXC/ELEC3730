@@ -5,8 +5,8 @@
 
 #define MAX_AXIS_NUM 6
 #define CHAR_HEIGHT 5
-#define DEFAULT_X_MIN 0
-#define DEFAULT_X_MAX 5
+#define DEFAULT_X_MIN -10
+#define DEFAULT_X_MAX 10
 #define DEFAULT_Y_MIN -10
 #define DEFAULT_Y_MAX 10
 #define DEFAULT_DELTA 0.01

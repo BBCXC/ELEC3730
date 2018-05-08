@@ -41,21 +41,29 @@ LCD_COLOR_ORANGE        0xFD20
 *Initilisation************************************************
 ***********************************************************************************************************************/
 // Initilise the calculator and draw number pad
+void DisplayInit(){
+	// Initialize and turn on LCD and calibrate the touch panel
+	BSP_LCD_Init();
+	BSP_LCD_DisplayOn();
+	BSP_TP_Init();
+
+	// Clear screen
+	BSP_LCD_Clear(LCD_COLOR_WHITE);
+	BSP_LCD_SetFont(&Font12);
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
+	// Display title animation
+	if (title_animation() != 0) {
+	printf("%sERROR:%s Unable to draw animation", ERROR_M, DEFAULT_COLOUR_M);
+	}
+}
+
 void CalculatorInit() {
-  // Initialize and turn on LCD and calibrate the touch panel
-  BSP_LCD_Init();
-  BSP_LCD_DisplayOn();
-  BSP_TP_Init();
 
   // Clear screen
   BSP_LCD_Clear(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-
-  // Display title animation
-  if (title_animation() != 0) {
-    printf("%sERROR:%s Unable to draw animation", ERROR_M, DEFAULT_COLOUR_M);
-  }
 
   // Set basic layout of calculator grid
   if (calculator_layout() != 0) {

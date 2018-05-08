@@ -2,10 +2,6 @@
 
 // if switched call different mode
 void GraphInit() {
-  // Initialize and turn on LCD and calibrate the touch panel
-  BSP_LCD_Init();
-  BSP_LCD_DisplayOn();
-  BSP_TP_Init();
 
   // Clear screen
   BSP_LCD_Clear(LCD_COLOR_WHITE);
@@ -59,8 +55,9 @@ void GraphProcess() {
 
     if (parseFormula() == 0) {
       Set_Prev_ans(Get_Result());
-      BSP_LCD_DrawLine(Map_X_Display(i - delta), Map_Y_Display(graph.prev_ans), Map_X_Display(i), Map_Y_Display(Get_Result()));
-      //TODO printf("Draw Line From point(%lf,%lf) to point(%lf, %lf)\n",i-delta, graph.prev_ans, i, Get_Result());
+      BSP_LCD_DrawLine(Map_X_Display(i - delta), (Map_Y_Display(graph.prev_ans)), Map_X_Display(i), (Map_Y_Display(Get_Result())));
+      //printf("Draw Line From point(%lf,%lf) to point(%lf, %lf)\n",i-delta, graph.prev_ans, i, Get_Result());
+      //printf("Mapp Line From point(%lf,%lf) to point(%lf, %lf)\n",Map_X_Display(i - delta), Map_Y_Display(graph.prev_ans), Map_X_Display(i), Map_Y_Display(Get_Result()));
       graph.prev_ans = Get_Result();
     }
     i = i + delta;
@@ -72,7 +69,7 @@ double Map_X_Display(double Input){
 }
 
 double Map_Y_Display(double Input){
-  return((Input - graph.y_min) / (graph.y_max - graph.y_min) * (BSP_LCD_GetYSize() - 0) + 0);
+  return(BSP_LCD_GetYSize() - ((Input - graph.y_min) / (graph.y_max - graph.y_min) * (BSP_LCD_GetYSize() - 0) + 0));
 }
 
 int graph_layout() {
@@ -115,6 +112,7 @@ int draw_axisnum() {
   for (int i = 0; i <= MAX_AXIS_NUM; i++) {
     printnum = x_axis_min + i * x_num_increment;
     snprintf(num_str, 50, "%g", printnum);
+    printf("X axis numbers %s\n", num_str);
     BSP_LCD_DisplayStringAt((i * x_spacing), x_axis - CHAR_HEIGHT,
                             (uint8_t *)num_str, CENTER_MODE);
   }
