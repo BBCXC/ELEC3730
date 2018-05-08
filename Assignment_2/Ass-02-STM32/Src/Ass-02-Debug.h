@@ -8,6 +8,7 @@ typedef struct {
   int system;
   int formula_mode;
   int first_time;
+  int graph_mode;
 } sys_t;
 sys_t info;
 

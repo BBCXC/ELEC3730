@@ -153,8 +153,10 @@ int calculator_layout() {
 
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
-  /**************************************************Vertical
-   * Grid***************************************************/
+  // clang-format off
+  /**************************************************Vertical Grid***************************************************/
+  // clang-format on
+
   // y_pos is fixed for vertical lines
   y_pos = cell_height;
   // Length is the cell spacing for the horizontal lines * the number of
@@ -174,8 +176,9 @@ int calculator_layout() {
              DEFAULT_COLOUR_M, x_pos, y_pos, len);
   }
 
-  /*************************************************Horizontal
-   * Grid**************************************************/
+  // clang-format off
+  /*************************************************Horizontal Grid**************************************************/
+  // clang-format on
   // x_pos is fixed for horizontal lines
   x_pos = display_width;
   // Length is the cell spacing for the vertical lines * the number of vertical

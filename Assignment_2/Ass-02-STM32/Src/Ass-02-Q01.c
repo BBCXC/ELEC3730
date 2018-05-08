@@ -83,9 +83,16 @@ void CommandLineParserProcess(void) {
     if (c == '\r' || i > 101) {
       printf("\n");
       command_line[i - 1] = '\0';
-      if (StringProcess(&command_line, i) != 0)
-        printf("%sERROR:%s Could not process string\n", ERROR_M,
-               DEFAULT_COLOUR_M);
+      if (Get_Graph_Mode() == 0) {
+        if (StringProcess(&command_line, i) != 0)
+          printf("%sERROR:%s Could not process string\n", ERROR_M,
+                 DEFAULT_COLOUR_M);
+      } else if (Get_Graph_Mode() == 1) {
+        if (Graph_StringProcess(&command_line, i) != 0)
+          printf("%sERROR:%s Could not process string\n", ERROR_M,
+                 DEFAULT_COLOUR_M);
+      }
+
       i = 0;
       Set_First_Time(1);
     }
@@ -739,6 +746,49 @@ int help_function(char **array_of_words_p[], int word_count, double *result) {
            DEFAULT_COLOUR_M);
   if (help_parser(array_of_words_p, word_count) != 0) {
     printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
+  }
+  return 0;
+}
+
+int graph_function(char **array_of_words_p[], int word_count, double *result) {
+  if (Get_Debug() == 1)
+    printf("%sDEBUG_INFO:%s Entered GRAPH function\n", DEBUG_M,
+           DEFAULT_COLOUR_M);
+
+  if (word_count == 2) {
+    if (strcmp("on", (*array_of_words_p)[1]) == 0) {
+      Set_Graph_Mode(1);
+      GraphInit();
+      printf("%sSYSTEM_INFO:%s Graph ON\n", SYS_M, DEFAULT_COLOUR_M);
+    } else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
+      Set_Graph_Mode(0);
+      CalculatorInit();
+      printf("%sSYSTEM_INFO:%s Graph OFF\n", SYS_M, DEFAULT_COLOUR_M);
+    } else if (strcmp("rescale", (*array_of_words_p)[1]) == 0) {
+      rescale_graph();
+    } else if (strcmp("reset_scale", (*array_of_words_p)[1]) == 0) {
+      reset_scale();
+    } else if (strcmp("help", (*array_of_words_p)[1]) == 0) {
+      graph_help();
+    } else {
+      printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+      return 1;
+    }
+  } else if (word_count > 2) {
+    if (strcmp("axis_scale", (*array_of_words_p)[1]) == 0) {
+      if (word_count == 6) {
+        set_axis_scale((*array_of_words_p)[2], (*array_of_words_p)[3], (
+            *array_of_words_p)[4], (*array_of_words_p)[5]);
+      } else {
+        printf(
+            "%sERROR:%s Incorrect number of scale values:\n\tExpected: <x_min> "
+            "<x_max> <y_min> <y_max>\n",
+            ERROR_M, DEFAULT_COLOUR_M);
+      }
+    }
+  } else {  // Less than 2 arguments
+    printf("%sSYSTEM_INFO:%s System messages currently %s\n", SYS_M,
+           DEFAULT_COLOUR_M, Get_System() == 0 ? "OFF" : "ON");
   }
   return 0;
 }

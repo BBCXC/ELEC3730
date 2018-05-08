@@ -42,7 +42,8 @@ const command_s Command_list[] = {
     {"ln",      &ln_function,      "ln <num 1>",                "Add one or more numbers"},
     {"log",     &log_function,     "log <num 1>",               "Add one or more numbers"},
     {"exp",     &exp_function,     "exp <num 1>",               "Add one or more numbers"},
-    {"formula", &formula_function, "formula <on|off>",          "Display help messages"},
+    {"formula", &formula_function, "formula <on|off>",          "Allows Formula Input"},
+    {"graph",   &graph_function,   "graph <on|off>",            "Allows graph output on LCD"},
     {"debug",   &debug_function,   "debug <on|off>",            "Display debug messages"},
     {"system",  &system_function,  "system <on|off>",           "Display system messages"},
     {"clear",   &clear_function,   "reset",                     "Clear terminal screen"},
@@ -397,6 +398,10 @@ double parseFactor() {
           return temp;
         }
       }
+    }
+  } else if (Get_Graph_Mode() == 1) {
+    if (*output.formula == 'X') {
+      return (Get_Graph_Increment());
     }
   } else {
     printf("Syntax Error\n");

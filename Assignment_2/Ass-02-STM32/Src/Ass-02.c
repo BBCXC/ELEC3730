@@ -19,14 +19,20 @@ void Ass_02_Main(void) {
   CommandLineParserInit();
 #ifdef STM32F407xx
   // Initilise array of strings for the buttons in Q2
-  CalculatorInit();
+  if (Get_Graph_Mode() == 0) {
+    CalculatorInit();
+  } else if (Get_Graph_Mode() == 1) {
+    GraphInit();
+  }
 #endif
 
   // Loop indefinitely
   while (1) {
     CommandLineParserProcess();
 #ifdef STM32F407xx
-    CalculatorProcess();
+    if (Get_Graph_Mode() == 0) {
+      CalculatorProcess();
+    }
 #endif
 
 #ifdef STM32F407xx

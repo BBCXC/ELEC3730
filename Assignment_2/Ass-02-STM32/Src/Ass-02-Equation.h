@@ -37,7 +37,7 @@ extern void Set_Formula(char *Value);
 extern void Set_Formula_c(int position, char Value);
 extern void Set_Result(double Value);
 extern void Set_Prev_ans(double Value);
-extern int Increment_Formula(int Direction);
+extern int Increment_Pos(int Direction);
 extern void Reset_Formula_pos(void);
 
 #endif /* ASS_02_EQUATION_H_ */

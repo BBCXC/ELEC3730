@@ -33,6 +33,7 @@
 #include "Ass-02-Debug.h"
 #include "Ass-02-Equation.h"
 #include "Ass-02-Screen.h"
+#include "Ass-02-Graph.h"
 
 #include <malloc.h>
 #include <math.h>
@@ -48,8 +49,7 @@
 #define ERROR_M KRED
 
 #define HELP_M "%-25.25s\t%-35.35s"
-#define DEBUG_P
-{ printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__); }
+#define DEBUG_P { printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__); }
 
 // Assignment main
 extern void Ass_02_Main(void);
@@ -120,6 +120,7 @@ extern int reset_function(char **array_of_words_p[], int word_count,
                           double *result);
 extern int help_function(char **array_of_words_p[], int word_count,
                          double *result);
+extern int graph_function(char **array_of_words_p[], int word_count, double *result);
 
 // Question 2
 extern void CalculatorInit(void);
