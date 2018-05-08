@@ -2,11 +2,11 @@
 
 void Debug_Init(void) {
   // Initialise
-  info.debug = 0;
-  info.system = 0;
+  info.debug = 1;
+  info.system = 1;
   info.formula_mode = 0;
   info.first_time = 1;
-  info.graph_mode = 0;
+  info.graph_mode = 1;
 }
 int Get_Debug(void) { return (info.debug); }
 

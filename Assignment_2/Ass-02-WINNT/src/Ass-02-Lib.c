@@ -244,7 +244,6 @@ double parseFactor() {
         if (*output.formula == '(') {
           ++output.formula;
           double temp = parseSub();
-          //printf("X should be: %lf\n", temp);
           temp = sin(temp * M_PI / 180);
           ++output.formula;
           return temp;
@@ -466,38 +465,38 @@ double parseNumber() {
 // clang-format on
 
 int title_animation() {
-  //TODO BSP_LCD_Clear(LCD_COLOR_WHITE);
-  //TODO BSP_LCD_SetFont(&Font12);
-  //TODO BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
-  // int j = 0;
-  // static int button_debounce = 0;
-  // static int off_debounce = 0;
+  int j = 0;
+  static int button_debounce = 0;
+  static int off_debounce = 0;
 
-  // // Increment through the lst of colours
-  // while (Title_Animation[j].BGColour != NULL) {
-  //   BSP_LCD_Clear(Title_Animation[j].BGColour);
-  //   for (int i = 0; i < 1500; i++) {
-  //     // Break if the user touches the screen
-  //     if (BSP_TP_GetDisplayPoint(&display) == 0) {
-  //       button_debounce++;
-  //       if (button_debounce >= 50) {
-  //         BSP_LCD_Clear(LCD_COLOR_WHITE);
-  //         return 0;
-  //       }
-  //     } else {
-  //       off_debounce++;
-  //       // User is definately not pressing a button, reset the holding flag
-  //       if (off_debounce > 100) {
-  //         button_debounce = 0;
-  //         off_debounce = 0;
-  //       }
-  //     }
-  //   }
-  //   j++;
-  // }
+  // Increment through the lst of colours
+  while (Title_Animation[j].BGColour != NULL) {
+    BSP_LCD_Clear(Title_Animation[j].BGColour);
+    for (int i = 0; i < 1500; i++) {
+      // Break if the user touches the screen
+      if (BSP_TP_GetDisplayPoint(&display) == 0) {
+        button_debounce++;
+        if (button_debounce >= 50) {
+          BSP_LCD_Clear(LCD_COLOR_WHITE);
+          return 0;
+        }
+      } else {
+        off_debounce++;
+        // User is definately not pressing a button, reset the holding flag
+        if (off_debounce > 100) {
+          button_debounce = 0;
+          off_debounce = 0;
+        }
+      }
+    }
+    j++;
+  }
 
-  // BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
 
   return 0;
 }

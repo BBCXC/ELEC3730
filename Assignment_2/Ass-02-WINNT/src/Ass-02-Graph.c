@@ -1,19 +1,16 @@
 #include "Ass-02-Graph.h"
 
-  int display_height = 256; //TODO HACK
-  int display_width = 340; //TODO HACK
-
 // if switched call different mode
 void GraphInit() {
   // Initialize and turn on LCD and calibrate the touch panel
-// TODO// TODO BSP_LCD_Init();
-// TODO//  BSP_LCD_DisplayOn();
-// TODO//  BSP_TP_Init();
+  BSP_LCD_Init();
+  BSP_LCD_DisplayOn();
+  BSP_TP_Init();
 
   // Clear screen
-// TODO//TODO  BSP_LCD_Clear(LCD_COLOR_WHITE);
-// TODO//  BSP_LCD_SetFont(&Font12);
-// TODO//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
   layout.x_axis_min = DEFAULT_X_MIN;
   layout.x_axis_max = DEFAULT_X_MAX;
@@ -46,7 +43,7 @@ void GraphProcess() {
 
   // Store the string
   static char graph_formula[50];
-  //printf("Formula Input %s\n", Get_Formula()); //TODO HACK
+
   strcpy(graph_formula, Get_Formula());
   graph.formula = graph_formula;
   if (parseFormula() == 0) {
@@ -54,39 +51,42 @@ void GraphProcess() {
     Set_Prev_ans(Get_Result());
 	
     graph.prev_ans = Get_Result();
-	  //printf("1 Result %lf\n", Get_Result());
   }
   //TODO This needs to scale to the screen
   for (double i = x_min + delta; i <= x_max;) {
-	  //printf("DELTA: %lf\n", graph.delta);
     Set_Formula(graph_formula);
     Set_Graph_Increment(i);
-    //printf("Set graph increment should be: %lf \t but is: %lf\n",i, Get_Graph_Increment());
+
     if (parseFormula() == 0) {
       Set_Prev_ans(Get_Result());
-      // TODOBSP_LCD_DrawLine(i - delta, graph.prev_ans, i, Get_Result());
-      printf("Draw Line From point(%lf,%lf) to point(%lf, %lf)\n",i-delta, graph.prev_ans, i, Get_Result());
+      BSP_LCD_DrawLine(Map_X_Display(i - delta), Map_Y_Display(graph.prev_ans), Map_X_Display(i), Map_Y_Display(Get_Result()));
+      //TODO printf("Draw Line From point(%lf,%lf) to point(%lf, %lf)\n",i-delta, graph.prev_ans, i, Get_Result());
       graph.prev_ans = Get_Result();
-      //printf("%lf Result %lf\n", i, Get_Result());
     }
     i = i + delta;
-    //printf("Increment i from %lf to %lf in steps of %lf\n", x_min, x_max, i);
-
   }
+}
+
+double Map_X_Display(double Input){
+  return((Input - graph.x_min) / (graph.x_max - graph.x_min) * (BSP_LCD_GetXSize() - 0) + 0);
+}
+
+double Map_Y_Display(double Input){
+  return((Input - graph.y_min) / (graph.y_max - graph.y_min) * (BSP_LCD_GetYSize() - 0) + 0);
 }
 
 int graph_layout() {
   // LCD X and Y Size
-  // TODOint display_height = BSP_LCD_GetYSize();
-  // TODOint display_width = BSP_LCD_GetXSize();
+  int display_height = BSP_LCD_GetYSize();
+  int display_width = BSP_LCD_GetXSize();
 
   int x_axis = display_height / 2;
   int y_axis = display_width / 2;
 
-  // TODOBSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
-  // TODOBSP_LCD_DrawVLine(y_axis, 0, display_height);
-  // TODOBSP_LCD_DrawHLine(0, x_axis, display_width);
+  BSP_LCD_DrawVLine(y_axis, 0, display_height);
+  BSP_LCD_DrawHLine(0, x_axis, display_width);
 
   return 0;
 }
@@ -94,8 +94,8 @@ int graph_layout() {
 // Draw numpad layout
 int draw_axisnum() {
 
-  // TODOint display_height = BSP_LCD_GetYSize();
-  // TODOint display_width = BSP_LCD_GetXSize();
+  int display_height = BSP_LCD_GetYSize();
+  int display_width = BSP_LCD_GetXSize();
 
   int x_axis = display_height / 2;
   int y_axis = display_width / 2;
@@ -108,17 +108,15 @@ int draw_axisnum() {
   int x_num_increment = (x_axis_max - x_axis_min) / MAX_AXIS_NUM;
   double printnum = 0;
   char num_str[50];
-// TODO// TODO BSP_LCD_SetFont(&Font12);
-// TODO//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
   for (int i = 0; i <= MAX_AXIS_NUM; i++) {
-	
     printnum = x_axis_min + i * x_num_increment;
-	
     snprintf(num_str, 50, "%g", printnum);
-	
-	  printf("Print x axis number %s\n", num_str);
-// TODO//  TODO  BSP_LCD_DisplayStringAt((i * x_spacing), x_axis - CHAR_HEIGHT,
-//                            (uint8_t *)num_str, CENTER_MODE);
+    BSP_LCD_DisplayStringAt((i * x_spacing), x_axis - CHAR_HEIGHT,
+                            (uint8_t *)num_str, CENTER_MODE);
   }
   // Print Y AXIS values
   int y_axis_min = layout.y_axis_min;
@@ -128,14 +126,13 @@ int draw_axisnum() {
   int y_spacing = display_height / MAX_AXIS_NUM;
   int y_num_increment = (y_axis_max - y_axis_min) / MAX_AXIS_NUM;
 
-// TODO// TODO  BSP_LCD_SetFont(&Font12);
-// TODO//  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   for (int i = 0; i <= MAX_AXIS_NUM; i++) {
     printnum = y_axis_min + i * y_num_increment;
     snprintf(num_str, 50, "%g", printnum);
-    printf("Print y axis number %s\n", num_str);
-// TODO//  TODO  BSP_LCD_DisplayStringAt(y_axis - CHAR_HEIGHT, (i * y_spacing),
-//                            (uint8_t *)num_str, CENTER_MODE);
+    BSP_LCD_DisplayStringAt(y_axis - CHAR_HEIGHT, (i * y_spacing),
+                           (uint8_t *)num_str, CENTER_MODE);
   }
 
   return 0;

@@ -12,11 +12,21 @@ void GraphInit() {
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
+  layout.x_axis_min = DEFAULT_X_MIN;
+  layout.x_axis_max = DEFAULT_X_MAX;
+  layout.y_axis_min = DEFAULT_Y_MIN;
+  layout.y_axis_max = DEFAULT_Y_MAX;
+
+  graph.x_min = layout.x_axis_min;
+  graph.x_max = layout.x_axis_max;
+  graph.y_min = layout.y_axis_min; 
+  graph.y_max = layout.y_axis_max;
+  graph.delta = DEFAULT_DELTA;
+
   // Set basic layout of calculator grid
   if (graph_layout() != 0) {
     printf("%sERROR:%s Unable to draw layout", ERROR_M, DEFAULT_COLOUR_M);
   }
-
   // Initilise numpad symbol layout
   if (draw_axisnum() != 0) {
     printf("%sERROR:%s Unable to draw axis numbers", ERROR_M, DEFAULT_COLOUR_M);
@@ -24,29 +34,45 @@ void GraphInit() {
 }
 
 void GraphProcess() {
-  int x_min = graph.x_min;
-  int x_max = graph.x_max;
-  int y_min = graph.y_min;
-  int y_max = graph.y_max;
-  int delta = graph.delta;
+  double x_min = graph.x_min;
+  double x_max = graph.x_max;
+  double y_min = graph.y_min;
+  double y_max = graph.y_max;
+  double delta = graph.delta;
+
 
   // Store the string
-  strcpy(graph.formula, Get_Formula());
+  static char graph_formula[50];
 
+  strcpy(graph_formula, Get_Formula());
+  graph.formula = graph_formula;
   if (parseFormula() == 0) {
+  
     Set_Prev_ans(Get_Result());
+  
     graph.prev_ans = Get_Result();
   }
   //TODO This needs to scale to the screen
-  for (int i = x_min + delta; i < x_max; i += delta) {
-    Set_Formula(graph.formula);
-    Set_Graph_Increment((double)i);
+  for (double i = x_min + delta; i <= x_max;) {
+    Set_Formula(graph_formula);
+    Set_Graph_Increment(i);
+
     if (parseFormula() == 0) {
       Set_Prev_ans(Get_Result());
-      BSP_LCD_DrawLine(i - delta, graph.prev_ans, i, Get_Result());
+      BSP_LCD_DrawLine(Map_X_Display(i - delta), Map_Y_Display(graph.prev_ans), Map_X_Display(i), Map_Y_Display(Get_Result()));
+      //TODO printf("Draw Line From point(%lf,%lf) to point(%lf, %lf)\n",i-delta, graph.prev_ans, i, Get_Result());
       graph.prev_ans = Get_Result();
     }
+    i = i + delta;
   }
+}
+
+double Map_X_Display(double Input){
+  return((Input - graph.x_min) / (graph.x_max - graph.x_min) * (BSP_LCD_GetXSize() - 0) + 0);
+}
+
+double Map_Y_Display(double Input){
+  return((Input - graph.y_min) / (graph.y_max - graph.y_min) * (BSP_LCD_GetYSize() - 0) + 0);
 }
 
 int graph_layout() {
@@ -73,7 +99,6 @@ int draw_axisnum() {
 
   int x_axis = display_height / 2;
   int y_axis = display_width / 2;
-
   // Print X AXIS values
   int x_axis_min = layout.x_axis_min;
   int x_axis_max = layout.x_axis_max;
@@ -82,17 +107,17 @@ int draw_axisnum() {
   int x_spacing = display_width / MAX_AXIS_NUM;
   int x_num_increment = (x_axis_max - x_axis_min) / MAX_AXIS_NUM;
   double printnum = 0;
-  char *num_str = "";
+  char num_str[50];
 
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+
   for (int i = 0; i <= MAX_AXIS_NUM; i++) {
     printnum = x_axis_min + i * x_num_increment;
     snprintf(num_str, 50, "%g", printnum);
     BSP_LCD_DisplayStringAt((i * x_spacing), x_axis - CHAR_HEIGHT,
                             (uint8_t *)num_str, CENTER_MODE);
   }
-
   // Print Y AXIS values
   int y_axis_min = layout.y_axis_min;
   int y_axis_max = layout.y_axis_max;
@@ -107,26 +132,60 @@ int draw_axisnum() {
     printnum = y_axis_min + i * y_num_increment;
     snprintf(num_str, 50, "%g", printnum);
     BSP_LCD_DisplayStringAt(y_axis - CHAR_HEIGHT, (i * y_spacing),
-                            (uint8_t *)num_str, CENTER_MODE);
+                           (uint8_t *)num_str, CENTER_MODE);
   }
 
   return 0;
 }
 
-void set_axis_scale(int x_min, int x_max, int y_min, int y_max) {
-  layout.x_axis_min = x_min;
-  layout.x_axis_max = x_max;
-  layout.y_axis_min = y_min;
-  layout.y_axis_max = y_max;
+void set_axis_scale(int i, double Value) {
+  if(i == 2){
+    layout.x_axis_min = Value;
+  }
+  else if(i == 3){
+    layout.x_axis_max = Value;
+  }
+  else if(i == 4){
+    layout.y_axis_min = Value;
+  }
+  else if(i == 5){
+    layout.y_axis_max = Value;
+  }
+}
+
+double Get_axis_scale(int Value){
+  if(Value == 1){
+    return(layout.x_axis_min);
+  }
+  else if(Value == 2){
+    return(layout.x_axis_max);
+  }
+  else if(Value == 3){
+    return(layout.y_axis_min);
+  }
+  else if(Value == 4){
+    return(layout.y_axis_max);
+  }
+  return(0);
 }
 
 void rescale_graph() {
   GraphInit();
-  GraphProcess();
+  if(graph.formula != NULL){
+  Set_Formula(graph.formula);
+    GraphProcess();
+  }
+  else{
+    printf("%sERROR:%s No formula currently entered to rescale\n", ERROR_M, DEFAULT_COLOUR_M);
+  }
 }
 
 void reset_scale() {
-  set_axis_scale(DEFAULT_X_MIN, DEFAULT_X_MAX, DEFAULT_Y_MIN, DEFAULT_Y_MAX);
+  
+  set_axis_scale(2, DEFAULT_X_MIN);
+  set_axis_scale(3, DEFAULT_X_MAX);
+  set_axis_scale(4, DEFAULT_Y_MIN);
+  set_axis_scale(5, DEFAULT_Y_MAX);
   GraphInit();
   GraphProcess();
 }
@@ -135,7 +194,7 @@ void graph_help() {
   printf("NOTE: This is unfinished\n");
   printf("reset_scale: resets scale to default, redraws graph\n");
   printf("rescale: redraws current graph with current scale\n");
-  printf("axis_scale: sets scale to <x_min> <x_max> <y_min> <y_max>\n");
+  printf("scale: sets scale to <x_min> <x_max> <y_min> <y_max>\n");
 }
 
 int Graph_StringProcess(char *command_line, int i) {
@@ -157,8 +216,9 @@ int Graph_StringProcess(char *command_line, int i) {
     } else {
       Set_Formula(array_of_words_p[0]);
       Set_Result(0);
-
+  
       GraphProcess();
+  
     }
 
     free(array_of_words_p[0]);
@@ -176,10 +236,10 @@ int Graph_StringProcess(char *command_line, int i) {
 }
 
 void Set_Graph_Increment(double Value){
-	graph.increment = Value;
+  graph.increment = Value;
 }
 
 double Get_Graph_Increment(){
-	return(graph.increment);
+  return(graph.increment);
 }
 

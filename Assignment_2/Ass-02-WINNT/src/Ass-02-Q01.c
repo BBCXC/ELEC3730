@@ -112,17 +112,8 @@ void CommandLineParserProcess(void) {
     c = getchar();
   }
   command_line[i] = 0;
-//  TODO if (StringProcess(&command_line, i) != 0)
-//    printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
-  if (Get_Graph_Mode() == 0) {
-          if (StringProcess(&command_line, i) != 0)
-            printf("%sERROR:%s Could not process string\n", ERROR_M,
-                   DEFAULT_COLOUR_M);
-        } else if (Get_Graph_Mode() == 1) {
-          if (Graph_StringProcess(&command_line, i) != 0)
-            printf("%sERROR:%s Could not process string\n", ERROR_M,
-                   DEFAULT_COLOUR_M);
-        } //TODO HACK
+  if (StringProcess(&command_line, i) != 0)printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+ 
   i = 0;
 
 #endif
@@ -766,9 +757,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
 
   if (word_count == 2) {
     if (strcmp("on", (*array_of_words_p)[1]) == 0) {
-    	
       Set_Graph_Mode(1);
-    	
       GraphInit();
       
       printf("%sSYSTEM_INFO:%s Graph ON\n", SYS_M, DEFAULT_COLOUR_M);
@@ -797,11 +786,8 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
           }
           else{
             set_axis_scale(i, value_1);
-            printf("%i is %lf\n", i, value_1);
           }
         }
-        printf("Axis scale should be %s, %s, %s, %s\n",(*array_of_words_p)[2], (*array_of_words_p)[3], (*array_of_words_p)[4], (*array_of_words_p)[5]);
-        printf("Axis Scale set to <x_min> %lf, <x_max> %lf, <y_min> %lf, <y_max> %lf\n", Get_axis_scale(1), Get_axis_scale(2), Get_axis_scale(3), Get_axis_scale(4));
       } else {
         printf(
             "%sERROR:%s Incorrect number of scale values:\n\tExpected: <x_min> "

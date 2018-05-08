@@ -38,12 +38,12 @@ double Get_Prev_ans(void) { return (output.prev_ans); }
 
 void Set_Formula(char *Value) {
   output.formula = Value;
-  printf("Formula Expected %s\n", output.formula);
+  //printf("Formula Expected %s\n", output.formula);
 }
 
 void Set_Formula_c(int position, char Value) {
   output.formula[position] = Value;
-  printf("Formula Expected %s\n", output.formula);
+  //printf("Formula Expected %s\n", output.formula);
 }
 
 void Set_Result(double Value) { output.result = Value; }

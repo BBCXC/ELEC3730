@@ -35,5 +35,10 @@ typedef struct {
 layout_t layout;
 
 extern double Get_Graph_Increment(void);
+extern void GraphInit(void);
+extern void GraphProcess(void);
+
+double Map_X_Display(double Input);
+double Map_Y_Display(double Input);
 
 #endif /* ASS_02_GRAPH_H_ */

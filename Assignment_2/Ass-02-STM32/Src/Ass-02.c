@@ -17,6 +17,7 @@ void Ass_02_Main(void) {
   Screen_Init();
 
   CommandLineParserInit();
+  
 #ifdef STM32F407xx
   // Initilise array of strings for the buttons in Q2
   if (Get_Graph_Mode() == 0) {
