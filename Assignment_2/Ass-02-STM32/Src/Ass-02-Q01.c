@@ -60,6 +60,7 @@ void CommandLineParserInit(void) {
 ***********************************************************************************************************************/
 // clang-format on
 
+// Takes in commandline characters from putty or windows
 void CommandLineParserProcess(void) {
   char c;
   static int i = 0;
@@ -112,13 +113,17 @@ void CommandLineParserProcess(void) {
     c = getchar();
   }
   command_line[i] = 0;
-  if (StringProcess(&command_line, i) != 0)printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
- 
+  if (StringProcess(&command_line, i) != 0)
+    printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+
   i = 0;
 
 #endif
 }
 
+// Takes string, converts to words
+// Replaces PI and ANS with appropriate numbers
+// Processes strings to result
 int StringProcess(char *command_line, int i) {
   static double prev_ans = 0;
   char **array_of_words_p;
@@ -751,6 +756,9 @@ int help_function(char **array_of_words_p[], int word_count, double *result) {
   return 0;
 }
 
+// If graph mode called
+// Check next argument
+// Alter appropriate parameter
 int graph_function(char **array_of_words_p[], int word_count, double *result) {
   if (Get_Debug() == 1)
     printf("%sDEBUG_INFO:%s Entered GRAPH function\n", DEBUG_M,
@@ -761,7 +769,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       Set_Graph_Mode(1);
       Set_Formula_Mode(0);
       GraphInit();
-      
+
       printf("%sSYSTEM_INFO:%s Graph ON\n", SYS_M, DEFAULT_COLOUR_M);
     } else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
       Set_Graph_Mode(0);
@@ -775,8 +783,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       Set_Angle_Mode(1);
     } else if (strcmp("deg", (*array_of_words_p)[1]) == 0) {
       Set_Angle_Mode(0);
-    }
-    else if (strcmp("help", (*array_of_words_p)[1]) == 0) {
+    } else if (strcmp("help", (*array_of_words_p)[1]) == 0) {
       graph_help();
     } else {
       printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
@@ -786,12 +793,12 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
     if (strcmp("scale", (*array_of_words_p)[1]) == 0) {
       if (word_count == 6) {
         double value_1 = 0;
-        for(int i=2; i<6; i++){
+        for (int i = 2; i < 6; i++) {
           if (sscanf((*array_of_words_p)[i], "%lf", &value_1) != 1) {
-            printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+            printf("%sERROR:%s Found unknown argument\n", ERROR_M,
+                   DEFAULT_COLOUR_M);
             return 1;
-          }
-          else{
+          } else {
             set_axis_scale(i, value_1);
           }
         }
@@ -803,8 +810,8 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       }
     }
   } else {  // Less than 2 arguments
-    printf("%sSYSTEM_INFO:%s Graph currently %s\n", SYS_M,
-           DEFAULT_COLOUR_M, Get_System() == 0 ? "OFF" : "ON");
+    printf("%sSYSTEM_INFO:%s Graph currently %s\n", SYS_M, DEFAULT_COLOUR_M,
+           Get_System() == 0 ? "OFF" : "ON");
   }
   return 0;
 }
@@ -815,6 +822,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
 ***********************************************************************************************************************/
 // clang-format on
 
+// Takes input string, splits into words
 int string_parser(char *inp, char **array_of_words_p[]) {
   const char delim = ' ';
   char curr_char;

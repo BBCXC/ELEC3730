@@ -12,14 +12,22 @@ void Screen_Init(void) {
   grid_space_p.items = item;
 }
 
+// Return the value x_min x_max y_min y_max of the given button
+// Pos1 button number
+// Pos2 parameter x_min x_max y_min y_max
 int Get_Area(int pos1, int pos2) { return (grid_space_p.Area[pos1][pos2]); }
 
+// Return the item number of the button given
 char *Get_Item(int Item_Value) { return (grid_space_p.items[Item_Value]); }
 
+// Set the value of the given button and given parameter to value
+// Pos1 button number
+// Pos2 parameter x_min x_max y_min y_max
 void Set_Area(int pos1, int pos2, int value) {
   grid_space_p.Area[pos1][pos2] = value;
 }
 
+// Set the button item to Value
 void Set_Item(int pos, int Item_number) {
   grid_space_p.items[pos] = Item_number;
 }
@@ -34,6 +42,7 @@ int get_touch_pos(int display_x, int display_y) {
       return (grid_space_p.Area[i][4]);
     }
   }
+  // Dummy variable if out of range
   return 100;
 }
 
@@ -59,8 +68,8 @@ int draw_item(int cell_number, int offset, int text_colour, int cell_colour) {
   BSP_LCD_SetFont(&Font16);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   BSP_LCD_DisplayStringAt(x_pos, y_pos,
-		  	  	  	  	  (uint8_t *)grid_space_p.items[cell_number + offset],
-						  CENTER_MODE);
+                          (uint8_t *)grid_space_p.items[cell_number + offset],
+                          CENTER_MODE);
 
   return 0;
 }
