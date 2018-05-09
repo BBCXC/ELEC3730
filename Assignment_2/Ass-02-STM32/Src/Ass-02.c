@@ -12,16 +12,18 @@ void Ass_02_Main(void) {
 #ifdef STM32F407xx
   uint16_t i = 0;
 #endif
+  // Initilise structs for specific functions
   Debug_Init();
   Equation_Init();
   Screen_Init();
 
   CommandLineParserInit();
-  
+
 #ifdef STM32F407xx
-  // Initilise array of strings for the buttons in Q2
+  // Initilise display
   DisplayInit();
 
+  // Initilise LCD for specific mode
   if (Get_Graph_Mode() == 0) {
     CalculatorInit();
   } else if (Get_Graph_Mode() == 1) {

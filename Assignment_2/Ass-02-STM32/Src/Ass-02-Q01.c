@@ -112,8 +112,9 @@ void CommandLineParserProcess(void) {
     c = getchar();
   }
   command_line[i] = 0;
-  if (StringProcess(&command_line, i) != 0)printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
- 
+  if (StringProcess(&command_line, i) != 0)
+    printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+
   i = 0;
 
 #endif
@@ -759,7 +760,7 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
     if (strcmp("on", (*array_of_words_p)[1]) == 0) {
       Set_Graph_Mode(1);
       GraphInit();
-      
+
       printf("%sSYSTEM_INFO:%s Graph ON\n", SYS_M, DEFAULT_COLOUR_M);
     } else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
       Set_Graph_Mode(0);
@@ -767,8 +768,10 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       printf("%sSYSTEM_INFO:%s Graph OFF\n", SYS_M, DEFAULT_COLOUR_M);
     } else if (strcmp("rescale", (*array_of_words_p)[1]) == 0) {
       rescale_graph();
-    } else if (strcmp("reset_scale", (*array_of_words_p)[1]) == 0) {
+    } else if (strcmp("resetscale", (*array_of_words_p)[1]) == 0) {
       reset_scale();
+    } else if (strcmp("reset", (*array_of_words_p)[1]) == 0) {
+      reset_graph();
     } else if (strcmp("help", (*array_of_words_p)[1]) == 0) {
       graph_help();
     } else {
@@ -779,12 +782,12 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
     if (strcmp("scale", (*array_of_words_p)[1]) == 0) {
       if (word_count == 6) {
         double value_1 = 0;
-        for(int i=2; i<6; i++){
+        for (int i = 2; i < 6; i++) {
           if (sscanf((*array_of_words_p)[i], "%lf", &value_1) != 1) {
-            printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+            printf("%sERROR:%s Found unknown argument\n", ERROR_M,
+                   DEFAULT_COLOUR_M);
             return 1;
-          }
-          else{
+          } else {
             set_axis_scale(i, value_1);
           }
         }
@@ -796,8 +799,8 @@ int graph_function(char **array_of_words_p[], int word_count, double *result) {
       }
     }
   } else {  // Less than 2 arguments
-    printf("%sSYSTEM_INFO:%s Graph currently %s\n", SYS_M,
-           DEFAULT_COLOUR_M, Get_System() == 0 ? "OFF" : "ON");
+    printf("%sSYSTEM_INFO:%s Graph currently %s\n", SYS_M, DEFAULT_COLOUR_M,
+           Get_System() == 0 ? "OFF" : "ON");
   }
   return 0;
 }

@@ -59,8 +59,8 @@ int draw_item(int cell_number, int offset, int text_colour, int cell_colour) {
   BSP_LCD_SetFont(&Font16);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   BSP_LCD_DisplayStringAt(x_pos, y_pos,
-		  	  	  	  	  (uint8_t *)grid_space_p.items[cell_number + offset],
-						  CENTER_MODE);
+                          (uint8_t *)grid_space_p.items[cell_number + offset],
+                          CENTER_MODE);
 
   return 0;
 }

@@ -36,30 +36,31 @@ LCD_COLOR_ORANGE        0xFD20
 
 #include "Ass-02.h"
 
+// clang-format off
 /***********************************************************************************************************************
-************************************************Calculator
-*Initilisation************************************************
+************************************************Calculator Initilisation************************************************
 ***********************************************************************************************************************/
+// clang-format on
+
 // Initilise the calculator and draw number pad
-void DisplayInit(){
-	// Initialize and turn on LCD and calibrate the touch panel
-	BSP_LCD_Init();
-	BSP_LCD_DisplayOn();
-	BSP_TP_Init();
+void DisplayInit() {
+  // Initialize and turn on LCD and calibrate the touch panel
+  BSP_LCD_Init();
+  BSP_LCD_DisplayOn();
+  BSP_TP_Init();
 
-	// Clear screen
-	BSP_LCD_Clear(LCD_COLOR_WHITE);
-	BSP_LCD_SetFont(&Font12);
-	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  // Clear screen
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 
-	// Display title animation
-	if (title_animation() != 0) {
-	printf("%sERROR:%s Unable to draw animation", ERROR_M, DEFAULT_COLOUR_M);
-	}
+  // Display title animation
+  if (title_animation() != 0) {
+    printf("%sERROR:%s Unable to draw animation", ERROR_M, DEFAULT_COLOUR_M);
+  }
 }
 
 void CalculatorInit() {
-
   // Clear screen
   BSP_LCD_Clear(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
@@ -245,52 +246,12 @@ int draw_sym() {
   return 0;
 }
 
-////Draw specific item in a specific cell
-// int draw_item(int cell_number, int offset, int text_colour, int cell_colour){
-//	//Cell_number : 0 to 21
-//	//Offset : 0 or 21, depending on symbol or number screen
-//
-//    //Draws specific character passed into function
-//    int x_min = Get_Area(cell_number, 0);
-//    int x_max = Get_Area(cell_number, 1);
-//    int y_min = Get_Area(cell_number, 2);
-//    int y_max = Get_Area(cell_number, 3);
-//
-//    if(LCD_Cell_Colour(x_min, x_max, y_min, y_max, text_colour, cell_colour)
-//    != 0){
-//		printf("%sERROR:%s Could not clear cell\n", ERROR_M,
-// DEFAULT_COLOUR_M);
-//    }
-//    //Find center of cell given
-//    int x_pos = ((x_max - x_min) / 2.0) + x_min;
-//    int y_pos = ((y_max - y_min) / 2.0) + y_min;
-//
-//  	BSP_LCD_SetFont(&Font16);
-//    BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//    BSP_LCD_DisplayStringAt(x_pos, y_pos, (uint8_t*)Get_Item(cell_number +
-//    offset), CENTER_MODE);
-//
-//    return 0;
-//}
-
-// Return the item touched on the screen
-// int get_touch_pos(int display_x, int display_y){
-//	for(int i=0; i<21; i++){
-//		if((display_x >= Get_Area(i, 0)) &&
-//		   (display_x <= Get_Area(i, 0)) &&
-//		   (display_y >= Get_Area(i, 0)) &&
-//		   (display_y <= Get_Area(i, 0))){
-//			return (grid_space_p.Area[i][4]);
-//		}
-//	}
-//	printf("Touched Coordinates %i, %i\n", display_x, display_y);
-//	return 100;
-//}
-
+// clang-format off
 /*******************************************************************************************
-*************************************Calculator
-*Process*************************************
+*************************************Calculator Process*************************************
 *******************************************************************************************/
+// clang-format on
+
 // Main calculator process function
 void CalculatorProcess() {
   static int button_debounce = 0;

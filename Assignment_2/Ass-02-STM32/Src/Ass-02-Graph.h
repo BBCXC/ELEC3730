@@ -51,5 +51,6 @@ extern double Get_axis_scale(int Value);
 extern void Set_Graph_Increment(double Value);
 extern void reset_scale(void);
 extern void rescale_graph(void);
+extern void reset_graph(void);
 
 #endif /* ASS_02_GRAPH_H_ */

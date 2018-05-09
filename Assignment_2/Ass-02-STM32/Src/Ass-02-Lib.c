@@ -401,7 +401,7 @@ double parseFactor() {
     }
   } else if (Get_Graph_Mode() == 1) {
     if (*output.formula == 'X') {
-    	++output.formula;
+      ++output.formula;
       return (Get_Graph_Increment());
     }
   } else {
