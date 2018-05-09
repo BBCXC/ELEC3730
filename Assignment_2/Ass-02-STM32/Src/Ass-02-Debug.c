@@ -2,11 +2,12 @@
 
 void Debug_Init(void) {
   // Initialise
-  info.debug = 1;
-  info.system = 1;
+  info.debug = 0;
+  info.system = 0;
   info.formula_mode = 0;
   info.first_time = 1;
-  info.graph_mode = 1;
+  info.graph_mode = 0;
+  info.angle_mode = 1;
 }
 int Get_Debug(void) { return (info.debug); }
 
@@ -17,6 +18,10 @@ int Get_Formula_Mode(void) { return (info.formula_mode); }
 int Get_First_Time(void) { return (info.first_time); }
 
 int Get_Graph_Mode(void) { return (info.graph_mode); }
+
+int Get_Angle_Mode(void) { return (info.angle_mode); }
+
+void Set_Angle_Mode(int Value) { info.angle_mode = Value; }
 
 void Set_Debug(int Value) { info.debug = Value; }
 

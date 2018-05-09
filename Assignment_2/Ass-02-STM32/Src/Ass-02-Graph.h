@@ -3,7 +3,7 @@
 
 #include "Ass-02.h"
 
-#define MAX_AXIS_NUM 6
+#define MAX_AXIS_NUM 5
 #define CHAR_HEIGHT 5
 #define DEFAULT_X_MIN -10
 #define DEFAULT_X_MAX 10
@@ -51,6 +51,5 @@ extern double Get_axis_scale(int Value);
 extern void Set_Graph_Increment(double Value);
 extern void reset_scale(void);
 extern void rescale_graph(void);
-extern void reset_graph(void);
 
 #endif /* ASS_02_GRAPH_H_ */

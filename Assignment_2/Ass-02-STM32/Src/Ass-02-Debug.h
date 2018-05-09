@@ -9,6 +9,7 @@ typedef struct {
   int formula_mode;
   int first_time;
   int graph_mode;
+  int angle_mode;
 } sys_t;
 sys_t info;
 

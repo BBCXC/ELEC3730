@@ -244,7 +244,12 @@ double parseFactor() {
         if (*output.formula == '(') {
           ++output.formula;
           double temp = parseSub();
-          temp = sin(temp * M_PI / 180);
+          if(Get_Angle_Mode() == 1){
+        	  temp = sin(temp);
+          }
+          else{
+        	  temp = sin(temp * M_PI / 180);
+          }
           ++output.formula;
           return temp;
         }
@@ -276,7 +281,12 @@ double parseFactor() {
         if (*output.formula == '(') {
           ++output.formula;
           double temp = parseSub();
-          temp = cos(temp * M_PI / 180);
+          if(Get_Angle_Mode() == 1){
+                  	  temp = cos(temp);
+                    }
+                    else{
+                  	  temp = cos(temp * M_PI / 180);
+                    }
           ++output.formula;
           return temp;
         }
@@ -293,7 +303,12 @@ double parseFactor() {
         if (*output.formula == '(') {
           ++output.formula;
           double temp = parseSub();
-          temp = tan(temp * M_PI / 180);
+          if(Get_Angle_Mode() == 1){
+                  	  temp = tan(temp);
+                    }
+                    else{
+                  	  temp = tan(temp * M_PI / 180);
+                    }
           ++output.formula;
           return temp;
         }
@@ -312,7 +327,12 @@ double parseFactor() {
           if (*output.formula == '(') {
             ++output.formula;
             double temp = parseSub();
-            temp = asin(temp * M_PI / 180);
+            if(Get_Angle_Mode() == 1){
+                    	  temp = asin(temp);
+                      }
+                      else{
+                    	  temp = asin(temp * M_PI / 180);
+                      }
             ++output.formula;
             return temp;
           }
@@ -327,7 +347,12 @@ double parseFactor() {
           if (*output.formula == '(') {
             ++output.formula;
             double temp = parseSub();
-            temp = acos(temp * M_PI / 180);
+            if(Get_Angle_Mode() == 1){
+                    	  temp = acos(temp);
+                      }
+                      else{
+                    	  temp = acos(temp * M_PI / 180);
+                      }
             ++output.formula;
             return temp;
           }
@@ -342,7 +367,12 @@ double parseFactor() {
           if (*output.formula == '(') {
             ++output.formula;
             double temp = parseSub();
-            temp = atan(temp * M_PI / 180);
+            if(Get_Angle_Mode() == 1){
+                    	  temp = atan(temp);
+                      }
+                      else{
+                    	  temp = atan(temp * M_PI / 180);
+                      }
             ++output.formula;
             return temp;
           }
@@ -401,7 +431,7 @@ double parseFactor() {
     }
   } else if (Get_Graph_Mode() == 1) {
     if (*output.formula == 'X') {
-      ++output.formula;
+    	++output.formula;
       return (Get_Graph_Increment());
     }
   } else {
