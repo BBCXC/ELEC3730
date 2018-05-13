@@ -67,3 +67,78 @@ window_buffer_len =
 //
 
 //
+
+double Input_buffer[250][42];
+
+//Calculate avg of last 40 samples
+double temp = 0;
+for(int i=2; i<42; i++){
+  temp += Input_buffer[x][i];
+}
+
+Input_buffer[x][1] = temp / 40.0;
+
+//Need method of storing where my current position (x) is within the buffer
+
+| = 2px
+| 64px|     250px      |
+********************************** - 2px
+* play*                          *
+*     *                          *
+*     *                          *  ~142px
+* stop*                          *
+*     *0                       10*
+********************************** - 2px
+* save* timestamp       +  -  ^  *
+* load* |FILENAME        |       *  ~92px
+* new *           1 of 10    !^  *
+********************************** - 2px
+
+//save, load, new 64px by 30px with 1px boarders between buttons
+
+// maybe do some kind of different background colour in the graph
+
+// + - zoom buttons reset?
+
+//auto scale
+//from given data values on screen (in buffer)
+// store maximum
+// if maximum < scale + delta
+//    rescale zoom in
+// else if maximum > scale
+//    rescale zoom out
+// else
+//    scale must be within the happy delta, leave it
+
+
+//scale function maps Input_buffer[x][1]
+// to the 142px height of the graph
+// this is stored in Input_buffer[x][0]
+// to rescale
+// minimum should probably stay at 0 (-1)
+// max value changes, 
+// values are passed through scale function each time they need to be displayed (Slow)
+// would be better to store current scaled values unless they need to change (faster)
+// to do this store current scaled in Input_buffer[x][0]
+// an the original in [x][1]
+// only remap the old values if the scale changes
+
+//Similarly to Ass2 have an array of buttons, this time with a fixed item in it
+// have highlight function
+// 
+
+
+//SD
+// when sd mounts store a list of strings, which are the names of the files
+// this includes the number of files
+// to sort through
+// just step through list
+// use name in list to search for file to open
+
+//if file loaded should auto scale data to fit
+// this can be done in read function. looking for max value
+// then calc scale parameter
+// then map the data to 25hz
+// then map to display coordinates
+
+
