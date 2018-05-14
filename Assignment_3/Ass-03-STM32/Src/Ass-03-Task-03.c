@@ -2,6 +2,8 @@
 // $Revision: 1301 $
 //   $Author: Peter $
 
+// Waits for a key press from the PuTTY console and reads a file from the SD card.
+
 #include "Ass-03.h"
 
 //

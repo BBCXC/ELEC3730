@@ -2,6 +2,8 @@
 // $Revision: 1301 $
 //   $Author: Peter $
 
+// Reads touch panel input based on a timer and draws a dot on the LCD screen and send a message to Task 2.
+
 #include "Ass-03.h"
 
 //

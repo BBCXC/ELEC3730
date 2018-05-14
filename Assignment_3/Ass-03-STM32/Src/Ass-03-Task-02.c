@@ -2,6 +2,8 @@
 // $Revision: 1301 $
 //   $Author: Peter $
 
+// Waits for a message from Task 1 and displays the result.
+
 #include "Ass-03.h"
 
 //
@@ -33,3 +35,4 @@ void Ass_03_Task_02(void const * argument)
       loop++;
   }
 }
+

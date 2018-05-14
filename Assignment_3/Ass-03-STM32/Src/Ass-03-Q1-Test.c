@@ -11,6 +11,8 @@ struct window {
   int window_buflen;  // Number of input values that are mapped to the
                           // window buffer
 
+  int auto_scale = // Holds the maximum value that the window buffer has on the screen
+
   int next = 0;	// Holds the position in the window buffer array
   				// that is the latest filled
 
@@ -39,6 +41,15 @@ int populateWindow_avg(){
 		input.next++;
 		Window_buffer[window.next][0] += Input_buffer[input.next];
 	}
+
+	// TODO find max in an efficient way not like a caveman
+	window.auto_scale = 0;
+	for(int i=0; i<window.width; i++){
+		if(Window_buffer[i][0] > window.auto_scale){
+			window.auto_scale = Window_buffer[i][0];
+		}
+	}
+
 
 	// Window buffer now contains average of last 40 samples
 	return 0;
@@ -115,6 +126,10 @@ struct button {
 * new *           1 of 10    !^  *
 ********************************** - 2px
 
+
+// Decide what things are displayed
+// Store that information somewhere
+// TODO
 void LCDPopulate(){
 	// TODO below has been commented out, hard coding for now, should be done on the fly
 	// int display_height
@@ -241,4 +256,32 @@ void LCDPopulate(){
 	button.position[14][1] = 288;
 	button.position[14][2] = 210;
 	button.position[14][3] = 238;
+}
+
+// Draw window buffer to screen
+// Scale y values based on auto scale
+// DONE
+void graphWindow(){
+
+	int element = window.next;
+	
+	int Xpos = window.position[0];
+	// Scale window buffer to fill the height based on the maximum value in window buffer
+	int Ypos = (Window_buffer[element][0] / window.auto_scale) * window.height;
+	
+	// TODO add mutex wait
+	LCD_DrawPixel(Xpos, Ypos, window.line_colour);
+	// TODO add mutex release
+
+	for(int i=Xpos + 1; i<window.position[1]; i++){
+		element++;
+		if(element == window.width){element = 0;}
+
+		// Scale window buffer to fill the height based on the maximum value in window buffer
+		Ypos = (Window_buffer[element][0] / window.auto_scale) * window.height;
+		// TODO add mutex wait
+		LCD_DrawPixel(i, Ypos, window.line_colour);
+		// TODO add mutex release
+	}
+	// TODO add some function that prints the values based on some colour gradient?
 }
