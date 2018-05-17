@@ -1,4 +1,17 @@
 void Task_01() {
+    // Outside of the while loop populate the input with the simulaed data
+    for (int i = 0; i < 10000; i++) {
+        Input_buffer[j] = simulated_data[j % 2000];
+    }
+    // Inside the while loop, look for flag
+
+    if (FLAG == 4) {
+        // DMA has got new data
+        // Process my DMA
+        FLAG = 0;
+    }
+
+
     // Reads touch panel input based on a timer and draws a dot on the LCD screen
     // and send a message to Task 2.
 
@@ -100,6 +113,10 @@ void Task_01() {
         case State_STOP:
             // disregard the interrupt given by the dma
             break;
+        default:
+            // No idea what state we're in, just stop
+            State_Thread1 = State_STOP;
+            break;
     }
 }
 
@@ -124,6 +141,8 @@ int populateWindow_avg() {
     // // if the previous max value is in the bucket i am about to overwrite
     // then re calculate the max
     // otherwise the max remains
+
+    // TODO Decide if this implementation is worth it
 
     int avg_input = Input_buffer[input.next];
 
@@ -174,16 +193,26 @@ void Set_zoom_coeff(int direction) {
     // Redraw window
 }
 
-// Thread 2
+// clang-format off
+/***********************************************************************************************************************
+******************************************************* Thread 2 *******************************************************
+***********************************************************************************************************************/
+// clang-format on
+
 void Task_02() {
     // Waits for a message from Task 1 and displays the result.
 
     // If signal from task 1
     // this might be message or signal
+
+    // TODO This could be updated less frequenty if needed. eg 5hz or less
+
     // Do something
     GraphProcess();
     // Each time you draw the graph draw the BPM over the top of the graph
     Draw_BMP();
+
+    //
 }
 
 void ClearWindow() {
@@ -198,7 +227,7 @@ void ClearWindow() {
     int windowlen    = x_max - x_min osMutexWait(myMutex01Handle, osWaitForever);
     uint32_t counter = 0;
 
-    BSP_LCD_SetTextColor(LCD_COLOUR_WHITE);
+    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
 
     for (counter = y_min; counter < y_max; counter++) {
         BSP_LCD_DrawHLine(x_min, counter, windowlen);
@@ -235,7 +264,7 @@ void GraphProcess() {
         // TODO add mutex wait
         osMutexWait(myMutex01Handle, osWaitForever);
         // erase old dot
-        BSP_LCD_SetTextColor(LCD_COLOUR_WHITE);
+        BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
         BSP_LCD_DrawVLine(x_min + element, y_min, y_max - y_min);
         LCD_DrawPixel(i, Ypos, line_colour);
         // TODO add mutex release
@@ -248,10 +277,40 @@ void GraphProcess() {
     }
     // TODO add some function that prints the values based on some colour
     // gradient?
+
+    // TODO dont print the graph in the BMP spot if BMP is on
     osMutexRelease(windowbuf_Handle);
 }
+
+typedef struct {
+    int window[4];  // Position of BPM
+    int value;      // Current BPM value
+
+    int toggle;  // Whether BPM is active or not
+
+} BMP_data_t;
+BMP_data_t bmp;
 
 void Draw_BMP() {
     // take given BMP
     // draw in given spot
+
+    // TODO add bpm initilization function to remove drawing the "BMP" part again
+
+    // TODO add bpm toggle
+
+    x_min = bmp.window[0];
+    x_max = bmp.window[1];
+    y_min = bmp.window[2];
+    y_max = bmp.window[3];
+
+    char* output;
+
+    sprintf(output, "BPM: %d", bmp.value);
+
+    BSP_LCD_SetTextColor(LCD_COLOR_RED);
+    BSP_LCD_DisplayStringAt(x_max + 1, y_min + 1, (uint8_t*) output, LEFT_MODE);
+    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+
+    // TODO Add colour to BPM reading if values is about preset limit
 }
