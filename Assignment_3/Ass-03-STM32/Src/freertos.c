@@ -66,6 +66,8 @@ osMessageQId myQueue01Handle;
 osTimerId myTimer01Handle;
 osMutexId myMutex01Handle;
 osMutexId myMutex02Handle;
+osMutexId inputbuf_Handle;   // Protect Input buffer
+osMutexId windowbuf_Handle;  // Protect Window buffer
 osSemaphoreId myBinarySem01Handle;
 osSemaphoreId myBinarySem02Handle;
 osSemaphoreId myCountingSem01Handle;
@@ -104,6 +106,14 @@ void MX_FREERTOS_Init(void) {
     /* definition and creation of myMutex02 */
     osMutexDef(myMutex02);
     myMutex02Handle = osMutexCreate(osMutex(myMutex02));
+
+    /* definition and creation of myMutex02 */
+    osMutexDef(myMutexIB);
+    inputbuf_Handle = osMutexCreate(osMutex(myMutexIB));
+
+    /* definition and creation of myMutex02 */
+    osMutexDef(myMutexWB);
+    windowbuf_Handle = osMutexCreate(osMutex(myMutexWB));
 
     /* USER CODE BEGIN RTOS_MUTEX */
     /* add mutexes, ... */
@@ -200,7 +210,7 @@ void Callback01(void const* argument) {
 
     // STEPIEN: Period timer to signal reading the touch panel display
     osSignalSet(defaultTaskHandle, 1);
-    FLAG++;
+    SIM_FLAG++;
     /* USER CODE END Callback01 */
 }
 

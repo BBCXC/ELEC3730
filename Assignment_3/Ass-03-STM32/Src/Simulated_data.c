@@ -1,4 +1,6 @@
-int simulated_data[2000];
+#include "Ass-03.h"
+
+
 int element = 0;
 
 typedef struct {
@@ -8,6 +10,24 @@ typedef struct {
     double prev_ans;
 } formula;
 formula graph;
+
+typedef struct {
+    char* formula;
+    int pos;
+    double result;
+    double prev_ans;
+} result_mem;
+result_mem output;
+
+int Simulated_DMA() {
+    if (SIM_FLAG == 4) {
+        // DMA has got new data
+        // Process my DMA
+        return 1;
+        SIM_FLAG = 0;
+    }
+    return 0;
+}
 
 void Simulated_data() {
     // \sin\left(\sin\left(x\right)\cdot0.1x\right)
@@ -25,7 +45,7 @@ void Simulated_data() {
         strcpy(graph_formula, const_formula);
         graph.formula = graph_formula;
         if (parseFormula() == 0) {
-            simulated_data[i] = Map_Data(Get_Result());
+            simulated_data[i] = Map_Data(output.result);
         }
     }
     // now i have 2000 points of simulated data
@@ -47,14 +67,14 @@ int Map_Data(double Input) {
 // Calls next precedent
 // Returns answer at end
 double parseFormula() {
-    if (Get_System() == 1) printf("%sSYSTEM_INFO:%s Formula Parsed: %s\n", SYS_M, DEFAULT_COLOUR_M, output.formula);
+    if (1) safe_printf("%sSYSTEM_INFO:%s Formula Parsed: %s\n", SYS_M, DEFAULT_COLOUR_M, output.formula);
     output.result = parseSub();
     if (*output.formula == '\0') {
         // return output.result;
         return 0;
     }
-    printf("Expected end of output.input but found %c\n", *output.formula);
-    printf("Syntax Error\n");
+    safe_printf("Expected end of output.input but found %c\n", *output.formula);
+    safe_printf("Syntax Error\n");
     return 1;
 }
 
@@ -359,8 +379,8 @@ double parseFactor() {
         }
     }
     else {
-        printf("Syntax Error\n");
-        printf("Unknown symbol %c\n", *output.formula);
+        safe_printf("Syntax Error\n");
+        safe_printf("Unknown symbol %c\n", *output.formula);
     }
     return 0;
 }
@@ -383,7 +403,7 @@ double parseNumber() {
         ++output.formula;
     }
     else {
-        printf("Syntax Error\n");
+        safe_printf("Syntax Error\n");
     }
 
     while (*output.formula >= '0' && *output.formula <= '9') {
@@ -407,9 +427,9 @@ double parseNumber() {
             }
         }
         else {
-            printf("Syntax Error\n");
+            safe_printf("Syntax Error\n");
         }
     }
-    if (Get_System() == 1) printf("%sSYSTEM_INFO:%s Number Found: %lf\n", SYS_M, DEFAULT_COLOUR_M, (number * neg_flag));
+    if (1) safe_printf("%sSYSTEM_INFO:%s Number Found: %lf\n", SYS_M, DEFAULT_COLOUR_M, (number * neg_flag));
     return (number * neg_flag);
 }
