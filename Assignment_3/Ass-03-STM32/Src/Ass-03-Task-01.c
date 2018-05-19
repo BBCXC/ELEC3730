@@ -2,60 +2,154 @@
 // $Revision: 1301 $
 //   $Author: Peter $
 
-// Reads touch panel input based on a timer and draws a dot on the LCD screen and send a message to Task 2.
-
 #include "Ass-03.h"
 
 //
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE
 //
 
-// void Ass_03_Task_01(void const* argument) {
+void Ass_03_Task_01(void const * argument){
 
-//     uint32_t loop = 0;
-//     uint8_t ts[100];
-//     uint16_t i;
+	windowInit();
+	safe_printf("HERE %d\n", window.width);
+	static int State_Thread1 = State_PLAY;
 
-//     safe_printf("Hello from Task 1\n");
+	static int button_debounce = 0;
+	static int off_debounce = 0;
+	static int holding = 0;
 
-//     // Display welcome message
-//     osMutexWait(myMutex01Handle, osWaitForever);
-//     BSP_LCD_Clear(LCD_COLOR_WHITE);
-//     BSP_LCD_SetFont(&Font12);
-//     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//     BSP_LCD_DisplayStringAt(5, 5, (uint8_t*) "ELEC3730 Assignment 3 (v01 $Rev: 1301 $)", LEFT_MODE);
-//     BSP_LCD_DisplayStringAt(5, 20, (uint8_t*) "This is some demonstration code", LEFT_MODE);
-//     BSP_LCD_DisplayStringAt(5, 35, (uint8_t*) "that can be used as a starting point", LEFT_MODE);
-//     BSP_LCD_DisplayStringAt(5, 50, (uint8_t*) "for the assignment.", LEFT_MODE);
-//     osMutexRelease(myMutex01Handle);
+	osMutexWait(windowbuf_Handle, osWaitForever);
+	for (int i = 0; i < 250; i++) {
+		Window_buffer[i][0] = i % 50;
+		safe_printf("%d\n",i);
+	}
+	osMutexRelease(windowbuf_Handle);
 
-//     while (1) {
-//         if (BSP_TP_GetDisplayPoint(&display) == 0) {
-//             if (((display.y < 180) && (display.y >= 60))) {
-//                 osMutexWait(myMutex01Handle, osWaitForever);
-//                 BSP_LCD_FillCircle(display.x, display.y, 2);
-//                 osMutexRelease(myMutex01Handle);
-//                 safe_printf("Task 1: %d (touch %3d,%3d)\n", loop, display.x, display.y);
+  while (1)
+  {osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
+	  //safe_printf("Running around task 1\n");
+	// Inside the while loop, look for simulated_DMA == 1
 
-//                 // STEPIEN: Send message to Task 2
-//                 osMessagePut(myQueue01Handle, (uint32_t) display.x, 0);
+	// Reads touch panel input based on a timer and draws a dot on the LCD screen
+	// and send a message to Task 2.
 
-//                 sprintf(ts, "Task 1: %d", (int) loop);
-//                 osMutexWait(myMutex01Handle, osWaitForever);
-//                 BSP_LCD_SetFont(&Font12);
-//                 BSP_LCD_DisplayStringAt(5, 190, ts, LEFT_MODE);
-//                 osMutexRelease(myMutex01Handle);
-//                 loop++;
-//             }
-//         }
-//         // STEPIEN: Signal received from timer
-//         osSignalWait(1, osWaitForever);
-//         if (i > 100) {
-//             HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
-//             i = 0;
-//         }
-//         else {
-//             i++;
-//         }
-//     }
-// }
+	// Check for touch
+	  if (BSP_TP_GetDisplayPoint(&display) == 0) {
+	      button_debounce++;
+
+	      // If the button has successfully debounced and the user isn't holding the
+	      // button
+	      if (button_debounce >= 50 && holding == 0) {
+	        button_debounce = 0;
+	        off_debounce = 0;
+	        holding = 1;
+
+			//Do something
+			if(State_Thread1 == State_PLAY){
+				State_Thread1 = State_STOP;
+				safe_printf("State set to stop\n");
+			}
+			else if(State_Thread1 == State_STOP){
+				State_Thread1 = State_PLAY;
+				safe_printf("State set to play\n");
+			}
+	      }
+	      else if (button_debounce >= 50 && holding == 1) {
+	            button_debounce = 0;
+	            off_debounce = 0;
+	          }
+	      }
+		// No button pressed, debounce this
+		else {
+		  off_debounce++;
+		  // User is definately not pressing a button, reset the holding flag
+		  if (off_debounce > 100) {
+			holding = 0;
+			button_debounce = 0;
+			off_debounce = 0;
+		  }
+		}
+	if(State_Thread1 == State_PLAY){
+			// take the interrupt from the dma
+			if (1){//Simulated_DMA() == 1) {
+				// MUTEX ON INPUT BUFFER
+				osMutexWait(inputbuf_Handle, osWaitForever);
+				// store the 40 samples into the input buffer
+				// TODO Probably won't be able to cheat this but oh well
+				// Move on you've already done that]
+				input.next += 40;
+				// MUTEX ON WINDOW BUFFER
+				osMutexWait(windowbuf_Handle, osWaitForever);
+				// map values to window buffer
+
+				osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
+
+//				if (populateWindow_avg() != 0) {
+//					safe_printf("%sERROR:%s Could not map input buffer to window buffer\n", ERROR_M, DEFAULT_COLOUR_M);
+//				}
+				// MUTEX OFF WINDOW BUFFER
+				osMutexRelease(windowbuf_Handle);
+				// MUTEX OFF INPUT BUFFER
+				osMutexRelease(inputbuf_Handle);
+			}
+
+			// draw window buffer - interrupt
+			// TODO this may have to be 5hz or something instead of 25hz
+	}
+	else if(State_Thread1 == State_STOP){
+			// disregard the interrupt given by the dma
+			if (1){//Simulated_DMA() == 1) {
+				osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
+			}
+			else {
+				// Do something
+			}
+	}
+  }
+}
+
+// Only called when input buffer has been populated with next 40 samples
+int populateWindow_avg() {
+    // Increment Window buffer position
+    osMutexWait(inputbuf_Handle, osWaitForever);
+    osMutexWait(windowbuf_Handle, osWaitForever);
+    window.next++;
+    if (window.next == window.width) {
+        window.next = 0;
+    }
+
+    // Increment Input buffer position
+    input.next++;
+    if (input.next == Max_Samples) {
+        input.next = 0;
+    }
+
+    // // Alternative to the other max finder
+    // int temp = Window_buffer[window.next][0];
+    // // if the previous max value is in the bucket i am about to overwrite
+    // then re calculate the max
+    // otherwise the max remains
+
+    // TODO Decide if this implementation is worth it
+
+    int avg_input = Input_buffer[input.next];
+
+    for (int i = 1; i < window.buflen; i++) {
+        input.next++;
+        avg_input += Input_buffer[input.next];
+    }
+    osMutexRelease(inputbuf_Handle);
+    // I want an int without losing the double division
+    Window_buffer[window.next][0] = (int) (avg_input / (double) window.buflen);
+
+    window.auto_scale = 0;
+    for (int i = 0; i < window.width; i++) {
+        if (Window_buffer[i][0] > window.auto_scale) {
+            window.auto_scale = Window_buffer[i][0];
+        }
+    }
+    osMutexRelease(windowbuf_Handle);
+
+    // Window buffer now contains average of last 40 samples
+    return 0;
+}

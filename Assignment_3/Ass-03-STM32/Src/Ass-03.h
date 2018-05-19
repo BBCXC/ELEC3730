@@ -9,22 +9,110 @@
 
 // Standard includes
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
 #include "task.h"
+#include "cmsis_os.h"
 
-#include "fatfs.h"
-#include "openx07v_c_lcd.h"
 #include "stm32f4xx_hal.h"
-#include "touch_panel.h"
 #include "usart.h"
+#include "touch_panel.h"
+#include "openx07v_c_lcd.h"
+#include "fatfs.h"
 
-#include <malloc.h>
-#include <math.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <malloc.h>
 #include <string.h>
+#include <math.h>
 
-int SIM_FLAG = 0;
+#include "Ass-03-Window.h"
+
+// OS handles
+extern osThreadId defaultTaskHandle;
+extern osThreadId myTask02Handle;
+extern osThreadId myTask03Handle;
+extern osTimerId myTimer01Handle;
+
+extern osSemaphoreId myBinarySem01Handle;
+extern osSemaphoreId myBinarySem02Handle;
+extern osMessageQId myQueue01Handle;
+extern osMutexId myMutex01Handle; // Protect LCD
+extern osMutexId myMutex02Handle; // Protect console output
+
+//MY MUTEX HANDLES
+extern osMutexId inputbuf_Handle;   // Protect Input buffer
+extern osMutexId windowbuf_Handle;  // Protect Window buffer
+
+// Assignment tasks
+extern void Ass_03_Task_01(void const *argument);
+extern void Ass_03_Task_02(void const *argument);
+extern void Ass_03_Task_03(void const *argument);
+
+// Library functions
+extern uint8_t BSP_TP_Init(void);
+extern uint8_t BSP_TP_GetDisplayPoint(Coordinate *pDisplay);
+
+// STEPIEN: Safe printf() to ensure that only one task can write to
+//          the console at a time
+
+#define safe_printf(fmt, ...) \
+	osMutexWait(myMutex02Handle, osWaitForever); \
+	printf(fmt, ##__VA_ARGS__); \
+	osMutexRelease(myMutex02Handle);
+
+//
+// ADD YOUR CODE
+//
+
+#define PLAY_BUTTON "PLAY"
+#define STOP_BUTTON "STOP"
+#define SAVE_BUTTON "SAVE"
+#define OVERWRITE_BUTTON "OVERWRITE"
+#define NEW_BUTTON "NEW"
+#define CANCEL_BUTTON "CANCEL"
+#define LOAD_BUTTON "LOAD"
+#define LEFT_SCROLL "LEFT"
+#define RIGHT_SCROLL "RIGHT"
+#define ZOOM_IN "IN"
+#define ZOOM_OUT "OUT"
+#define ZOOM_RESET "RESET"
+#define MENU_UP "UP"
+#define MENU_DOWN "DOWN"
+
+#define State_PLAY 1
+#define State_STOP 0
+
+#define num_buttons 12
+typedef struct {
+    int position[num_buttons][4];  // = {(x_min, x_max, y_min, y_max),   // Button 1
+                                   // (x_min, x_max, y_min, y_max)};  // Button 2
+    int item[num_buttons];
+
+} button_t;
+button_t button;
+
+uint8_t Input_buffer[10000];
+
+typedef struct {
+    int width;        //       = 250;
+    int height;       //     = 142;
+    int position[4];  // = {x_min, x_max, y_min, y_max};
+
+    int bg_colour;
+    int line_colour;
+    int grid_colour;
+
+    int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
+    int buflen;      // Number of input values that are mapped to the
+                     // window buffer
+
+    int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
+                     // screen
+
+    int next;  // = 0;  // Holds the position in the window buffer array
+               // that is the latest filled
+
+} input_t;
+input_t input;
 
 #define KNRM "\e[0m"
 #define KRED "\e[31m"  //"\x1B[31m"
@@ -72,111 +160,5 @@ int SIM_FLAG = 0;
 #define LCD_COLOR_BLACK 0x0000
 #define LCD_COLOR_BROWN 0xA145
 #define LCD_COLOR_ORANGE 0xFD20
-
-extern double parseFormula(void);
-extern double parseSub(void);
-extern double parseSum(void);
-extern double parsePro(void);
-extern double parseDiv(void);
-extern double parseFactor(void);
-extern double parseNumber(void);
-extern double parsePow(void);
-
-#define num_buttons 12
-typedef struct {
-    int position[num_buttons][4];  // = {(x_min, x_max, y_min, y_max),   // Button 1
-                                   // (x_min, x_max, y_min, y_max)};  // Button 2
-    int item[num_buttons];
-
-} button_t;
-button_t button;
-
-typedef struct {
-    int width;        //       = 250;
-    int height;       //     = 142;
-    int position[4];  // = {x_min, x_max, y_min, y_max};
-
-    int bg_colour;
-    int line_colour;
-    int grid_colour;
-
-    int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
-    int buflen;      // Number of input values that are mapped to the
-                     // window buffer
-
-    int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
-                     // screen
-
-    int next;  // = 0;  // Holds the position in the window buffer array
-               // that is the latest filled
-
-} window_t;
-window_t window;
-#define Max_Samples 10000
-#define MAX_ZOOM 1
-#define MIN_ZOOM 1
-
-int Window_buffer[250][2];  // window.width][2];
-
-typedef struct {
-    int width;        //       = 250;
-    int height;       //     = 142;
-    int position[4];  // = {x_min, x_max, y_min, y_max};
-
-    int bg_colour;
-    int line_colour;
-    int grid_colour;
-
-    int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
-    int buflen;      // Number of input values that are mapped to the
-                     // window buffer
-
-    int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
-                     // screen
-
-    int next;  // = 0;  // Holds the position in the window buffer array
-               // that is the latest filled
-
-} input_t;
-input_t input;
-
-int Input_buffer[10000];
-int simulated_data[2000];
-
-// OS handles
-extern osThreadId defaultTaskHandle;
-extern osThreadId myTask02Handle;
-extern osThreadId myTask03Handle;
-extern osTimerId myTimer01Handle;
-
-extern osSemaphoreId myBinarySem01Handle;
-extern osSemaphoreId myBinarySem02Handle;
-extern osMessageQId myQueue01Handle;
-extern osMutexId myMutex01Handle;  // Protect LCD
-extern osMutexId myMutex02Handle;  // Protect console output
-
-extern osMutexId inputbuf_Handle;   // Protect Input buffer
-extern osMutexId windowbuf_Handle;  // Protect Window buffer
-
-// Assignment tasks
-extern void Ass_03_Task_01(void const* argument);
-extern void Ass_03_Task_02(void const* argument);
-extern void Ass_03_Task_03(void const* argument);
-
-// Library functions
-extern uint8_t BSP_TP_Init(void);
-extern uint8_t BSP_TP_GetDisplayPoint(Coordinate* pDisplay);
-
-// STEPIEN: Safe printf() to ensure that only one task can write to
-//          the console at a time
-
-#define safe_printf(fmt, ...)                                                                                          \
-    osMutexWait(myMutex02Handle, osWaitForever);                                                                       \
-    printf(fmt, ##__VA_ARGS__);                                                                                        \
-    osMutexRelease(myMutex02Handle);
-
-//
-// ADD YOUR CODE
-//
 
 #endif /* ASS_03_H_ */
