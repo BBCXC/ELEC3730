@@ -8,116 +8,109 @@
 // REPLACE THE EXAMPLE CODE WITH YOUR CODE
 //
 
-void Ass_03_Task_01(void const * argument){
+void Ass_03_Task_01(void const* argument) {
 
-	// TODO Initilise the input buffer, window buffer, buttons etc here
-	windowInit();
-	safe_printf("HERE %d\n", window.width);
-	static int State_Thread1 = State_PLAY;
+    // TODO Initilise the input buffer, window buffer, buttons etc here
+    windowInit();
 
-	static int button_debounce = 0;
-	static int off_debounce = 0;
-	static int holding = 0;
+    static int State_Thread1 = State_PLAY;
 
-	osMutexWait(windowbuf_Handle, osWaitForever);
-	for (int i = 0; i < 250; i++) {
-		Window_buffer[i][0] = i % 50;
-		safe_printf("%d\n",i);
-	}
-	osMutexRelease(windowbuf_Handle);
+    static int button_debounce = 0;
+    static int off_debounce    = 0;
+    static int holding         = 0;
 
-  while (1)
-  {
-	  osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
-	// Inside the while loop, look for simulated_DMA == 1
+    while (1) {
+        osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
+        // Inside the while loop, look for simulated_DMA == 1
 
-	// Reads touch panel input based on a timer and draws a dot on the LCD screen
-	// and send a message to Task 2.
+        // Reads touch panel input based on a timer and draws a dot on the LCD screen
+        // and send a message to Task 2.
 
-	// Check for touch
-	  if (BSP_TP_GetDisplayPoint(&display) == 0) {
-	      button_debounce++;
+        // Check for touch
+        if (BSP_TP_GetDisplayPoint(&display) == 0) {
+            button_debounce++;
 
-	      // If the button has successfully debounced and the user isn't holding the
-	      // button
+            // If the button has successfully debounced and the user isn't holding the
+            // button
 
-	      // TODO Change the debounce to use a timer
-	      if (button_debounce >= 50 && holding == 0) {
-	        button_debounce = 0;
-	        off_debounce = 0;
-	        holding = 1;
+            // TODO Change the debounce to use a timer
+            if (button_debounce >= 50 && holding == 0) {
+                button_debounce = 0;
+                off_debounce    = 0;
+                holding         = 1;
 
-	        // TODO Get Touch Position
-	        // TODO Decide what button was pressed
+                // TODO Get Touch Position
+                // TODO Decide what button was pressed
 
-			// This will become a check for each button pressed.
-			if(State_Thread1 == State_PLAY){
-				State_Thread1 = State_STOP;
-				safe_printf("State set to stop\n");
-			}
-			else if(State_Thread1 == State_STOP){
-				State_Thread1 = State_PLAY;
-				safe_printf("State set to play\n");
-			}
-	      }
+                // This will become a check for each button pressed.
+                if (State_Thread1 == State_PLAY) {
+                    State_Thread1 = State_STOP;
+                    safe_printf("State set to stop\n");
+                }
+                else if (State_Thread1 == State_STOP) {
+                    State_Thread1 = State_PLAY;
+                    safe_printf("State set to play\n");
+                }
+            }
 
-	      else if (button_debounce >= 50 && holding == 1) {
-	            button_debounce = 0;
-	            off_debounce = 0;
-	          }
-	      }
-		// No button pressed, debounce this
-		else {
-		  off_debounce++;
-		  // User is definately not pressing a button, reset the holding flag
-		  if (off_debounce > 100) {
-			holding = 0;
-			button_debounce = 0;
-			off_debounce = 0;
-		  }
-		}
+            else if (button_debounce >= 50 && holding == 1) {
+                button_debounce = 0;
+                off_debounce    = 0;
+            }
+        }
+        // No button pressed, debounce this
+        else {
+            off_debounce++;
+            // User is definately not pressing a button, reset the holding flag
+            if (off_debounce > 100) {
+                holding         = 0;
+                button_debounce = 0;
+                off_debounce    = 0;
+            }
+        }
 
-	// TODO Process this each round through
-	// TODO Probably need a signal wait or something before this
-	if(State_Thread1 == State_PLAY){
-			// take the interrupt from the dma
-			if (1){//Simulated_DMA() == 1) {
-				// MUTEX ON INPUT BUFFER
-				osMutexWait(inputbuf_Handle, osWaitForever);
-				// store the 40 samples into the input buffer
-				// TODO Probably won't be able to cheat this but oh well
-				// Move on you've already done that]
-				input.next += 40;
-				// MUTEX ON WINDOW BUFFER
-				osMutexWait(windowbuf_Handle, osWaitForever);
-				// map values to window buffer
+        // TODO Process this each round through
+        // TODO Probably need a signal wait or something before this
+        if (State_Thread1 == State_PLAY) {
+            // take the interrupt from the dma
+            if (1) {  // Simulated_DMA() == 1) {
+                // MUTEX ON INPUT BUFFER
+                osMutexWait(inputbuf_Handle, osWaitForever);
+                // store the 40 samples into the input buffer
+                // TODO Probably won't be able to cheat this but oh well
+                // Move on you've already done that]
+                input.next += 40;
+                // MUTEX ON WINDOW BUFFER
+                osMutexWait(windowbuf_Handle, osWaitForever);
+                // map values to window buffer
 
-				osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
+                osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
 
-				// TODO Uncomment this, add function back in and change it to using the non global variables
-//				if (populateWindow_avg() != 0) {
-//					safe_printf("%sERROR:%s Could not map input buffer to window buffer\n", ERROR_M, DEFAULT_COLOUR_M);
-//				}
+                // TODO Uncomment this, add function back in and change it to using the non global variables
+                //				if (populateWindow_avg() != 0) {
+                //					safe_printf("%sERROR:%s Could not map input buffer to window buffer\n", ERROR_M,
+                // DEFAULT_COLOUR_M);
+                //				}
 
-				// MUTEX OFF WINDOW BUFFER
-				osMutexRelease(windowbuf_Handle);
-				// MUTEX OFF INPUT BUFFER
-				osMutexRelease(inputbuf_Handle);
-			}
+                // MUTEX OFF WINDOW BUFFER
+                osMutexRelease(windowbuf_Handle);
+                // MUTEX OFF INPUT BUFFER
+                osMutexRelease(inputbuf_Handle);
+            }
 
-			// draw window buffer - interrupt
-			// TODO this may have to be 5hz or something instead of 25hz
-	}
-	else if(State_Thread1 == State_STOP){
-			// disregard the interrupt given by the dma
-			if (1){//Simulated_DMA() == 1) {
-				osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
-			}
-			else {
-				// Do something
-			}
-	}
-  }
+            // draw window buffer - interrupt
+            // TODO this may have to be 5hz or something instead of 25hz
+        }
+        else if (State_Thread1 == State_STOP) {
+            // disregard the interrupt given by the dma
+            if (1) {  // Simulated_DMA() == 1) {
+                osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
+            }
+            else {
+                // Do something
+            }
+        }
+    }
 }
 
 // Only called when input buffer has been populated with next 40 samples
@@ -135,14 +128,6 @@ int populateWindow_avg() {
     if (input.next == Max_Samples) {
         input.next = 0;
     }
-
-    // // Alternative to the other max finder
-    // int temp = Window_buffer[window.next][0];
-    // // if the previous max value is in the bucket i am about to overwrite
-    // then re calculate the max
-    // otherwise the max remains
-
-    // TODO Decide if this implementation is worth it
 
     int avg_input = Input_buffer[input.next];
 

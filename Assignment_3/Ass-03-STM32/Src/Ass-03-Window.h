@@ -10,22 +10,22 @@
 #include "Ass-03.h"
 
 typedef struct {
-     int width;        //       = 250;
-     int height;       //     = 142;
-     int position[4];  // = {x_min, x_max, y_min, y_max};
+    int width;        //       = 250;
+    int height;       //     = 142;
+    int position[4];  // = {x_min, x_max, y_min, y_max};
 
-     int bg_colour;
-     int line_colour;
-     int grid_colour;
+    int bg_colour;
+    int line_colour;
+    int grid_colour;
 
-     int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
-     int buflen;      // Number of input values that are mapped to the
+    int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
+    int buflen;      // Number of input values that are mapped to the
                      // window buffer
 
-     int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
+    int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
                      // screen
 
-     int next;  // = 0;  // Holds the position in the window buffer array
+    int next;  // = 0;  // Holds the position in the window buffer array
                // that is the latest filled
 
 } window_t;
@@ -34,7 +34,5 @@ window_t window;
 #define Max_Samples 10000
 #define MAX_ZOOM 1
 #define MIN_ZOOM 1
-
-int Window_buffer[250][2];  // window.width][2];
 
 #endif /* ASS_03_WINDOW_H_ */
