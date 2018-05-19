@@ -20,6 +20,7 @@ void Ass_03_Task_02(void const * argument)
 
   safe_printf("Hello from Task 2\n");
 
+  	  // TODO Move to an initilisation function
 	BSP_LCD_Clear(LCD_COLOR_WHITE);
 	BSP_LCD_SetFont(&Font12);
 	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
@@ -31,6 +32,9 @@ void Ass_03_Task_02(void const * argument)
       if (event.status == osEventMessage)
       {
     	  State_Thread1 = event.value.v;
+    	  //TODO Remove this
+    	  // TODO Just check the state the the message has sent
+    	  // TODO On that state, perform appropriate action on the screen
 		  if(State_Thread1 != Prev_State){
 			  Prev_State = State_Thread1;
 			  if(State_Thread1 == State_STOP){
@@ -55,6 +59,8 @@ void Ass_03_Task_02(void const * argument)
   }
 }
 
+//TODO Can be removed,
+// TODO this will become part of the button printing function
 void PrintState(int State){
 	osMutexWait(myMutex01Handle, osWaitForever);
 	BSP_LCD_SetFont(&Font12);
@@ -78,6 +84,7 @@ void PrintState(int State){
 
 }
 
+//TODO Change to only clear the window
 void ClearWindow() {
     // Get the min and max window parts
     //osMutexWait(windowbuf_Handle, osWaitForever);
@@ -106,6 +113,10 @@ void ClearWindow() {
     osMutexRelease(myMutex01Handle);
 }
 
+// TODO Remove hard coded hack for input values
+// TODO Use the window buffer as input
+// TODO Use the window struct
+// TODO Take readings from task 1
 void GraphProcess() {
     // take the window buffer
     // graph it
@@ -137,6 +148,7 @@ void GraphProcess() {
 	// TODO add mutex wait
 	osMutexWait(myMutex01Handle, osWaitForever);
 	// erase old dot
+	//TODO Remove 5 step jump
 	BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
 	//Erase the old pixel
 	BSP_LCD_DrawVLine(i + 0, y_min, y_max - y_min);

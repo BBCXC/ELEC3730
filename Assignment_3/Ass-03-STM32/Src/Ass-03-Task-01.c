@@ -10,6 +10,7 @@
 
 void Ass_03_Task_01(void const * argument){
 
+	// TODO Initilise the input buffer, window buffer, buttons etc here
 	windowInit();
 	safe_printf("HERE %d\n", window.width);
 	static int State_Thread1 = State_PLAY;
@@ -26,8 +27,8 @@ void Ass_03_Task_01(void const * argument){
 	osMutexRelease(windowbuf_Handle);
 
   while (1)
-  {osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
-	  //safe_printf("Running around task 1\n");
+  {
+	  osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
 	// Inside the while loop, look for simulated_DMA == 1
 
 	// Reads touch panel input based on a timer and draws a dot on the LCD screen
@@ -39,12 +40,17 @@ void Ass_03_Task_01(void const * argument){
 
 	      // If the button has successfully debounced and the user isn't holding the
 	      // button
+
+	      // TODO Change the debounce to use a timer
 	      if (button_debounce >= 50 && holding == 0) {
 	        button_debounce = 0;
 	        off_debounce = 0;
 	        holding = 1;
 
-			//Do something
+	        // TODO Get Touch Position
+	        // TODO Decide what button was pressed
+
+			// This will become a check for each button pressed.
 			if(State_Thread1 == State_PLAY){
 				State_Thread1 = State_STOP;
 				safe_printf("State set to stop\n");
@@ -54,6 +60,7 @@ void Ass_03_Task_01(void const * argument){
 				safe_printf("State set to play\n");
 			}
 	      }
+
 	      else if (button_debounce >= 50 && holding == 1) {
 	            button_debounce = 0;
 	            off_debounce = 0;
@@ -69,6 +76,9 @@ void Ass_03_Task_01(void const * argument){
 			off_debounce = 0;
 		  }
 		}
+
+	// TODO Process this each round through
+	// TODO Probably need a signal wait or something before this
 	if(State_Thread1 == State_PLAY){
 			// take the interrupt from the dma
 			if (1){//Simulated_DMA() == 1) {
@@ -84,9 +94,11 @@ void Ass_03_Task_01(void const * argument){
 
 				osMessagePut(myQueue01Handle, (uint32_t)State_Thread1, 0);
 
+				// TODO Uncomment this, add function back in and change it to using the non global variables
 //				if (populateWindow_avg() != 0) {
 //					safe_printf("%sERROR:%s Could not map input buffer to window buffer\n", ERROR_M, DEFAULT_COLOUR_M);
 //				}
+
 				// MUTEX OFF WINDOW BUFFER
 				osMutexRelease(windowbuf_Handle);
 				// MUTEX OFF INPUT BUFFER

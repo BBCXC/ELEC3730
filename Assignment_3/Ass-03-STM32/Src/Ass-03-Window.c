@@ -7,7 +7,10 @@ void windowInit() {
     window.buflen = Max_Samples / window.zoom_coeff / window.width;
     window.width = 250;        //       = 250;
     window.height = 142;       //     = 142;
-    window.position[4];  // = {x_min, x_max, y_min, y_max};
+    window.position[0] = 68;//{68, 318, 2, 144};  // = {x_min, x_max, y_min, y_max};
+    window.position[1] = 318;
+	window.position[2] = 2;
+	window.position[3] = 144;
 
     window.bg_colour = LCD_COLOR_WHITE;
     window.line_colour = LCD_COLOR_BLACK;
@@ -23,3 +26,15 @@ void windowInit() {
                    // that is the latest filled
 }
 
+int Get_Zoom_Coeff(){
+	osMutexWait(windowbuf_Handle, osWaitForever);
+	int temp = window.zoom_coeff;
+	osMutexRelease(windowbuf_Handle);
+	return temp;
+}
+
+void Set_Zoom_Coeff(int Value){
+	osMutexWait(windowbuf_Handle, osWaitForever);
+	window.zoom_coeff = Value;
+	osMutexRelease(windowbuf_Handle);
+}

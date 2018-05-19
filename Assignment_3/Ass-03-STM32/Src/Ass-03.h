@@ -4,6 +4,13 @@
 
 // Assignment 3 include file
 
+// TODO Tidy
+// TODO Remove the input buffer and struct
+// This should be in a file similar to the window one
+// TODO Make buttons file
+// Store the position of the buttons as well as what each button is
+// Store the string / label of the button too
+
 #ifndef ASS_03_H_
 #define ASS_03_H_
 
