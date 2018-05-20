@@ -9,7 +9,6 @@
 //
 
 void Ass_03_Task_01(void const* argument) {
-
     // TODO Initilise the input buffer, window buffer, buttons etc here
     windowInit();
 
@@ -23,8 +22,8 @@ void Ass_03_Task_01(void const* argument) {
         osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
         // Inside the while loop, look for simulated_DMA == 1
 
-        // Reads touch panel input based on a timer and draws a dot on the LCD screen
-        // and send a message to Task 2.
+        // Reads touch panel input based on a timer and draws a dot on the LCD
+        // screen and send a message to Task 2.
 
         // Check for touch
         if (BSP_TP_GetDisplayPoint(&display) == 0) {
@@ -86,9 +85,11 @@ void Ass_03_Task_01(void const* argument) {
 
                 osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
 
-                // TODO Uncomment this, add function back in and change it to using the non global variables
+                // TODO Uncomment this, add function back in and change it to using the
+                // non global variables
                 //				if (populateWindow_avg() != 0) {
-                //					safe_printf("%sERROR:%s Could not map input buffer to window buffer\n", ERROR_M,
+                //					safe_printf("%sERROR:%s Could
+                // not map input buffer to window buffer\n", ERROR_M,
                 // DEFAULT_COLOUR_M);
                 //				}
 

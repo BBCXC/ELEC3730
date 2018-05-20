@@ -9,6 +9,10 @@
 
 #include "Ass-03.h"
 
+#define Max_Samples 10000
+#define MAX_ZOOM 1
+#define MIN_ZOOM 1
+
 typedef struct {
     int width;        //       = 250;
     int height;       //     = 142;
@@ -31,8 +35,6 @@ typedef struct {
 } window_t;
 window_t window;
 
-#define Max_Samples 10000
-#define MAX_ZOOM 1
-#define MIN_ZOOM 1
+int Window_buffer[window.width][2];
 
 #endif /* ASS_03_WINDOW_H_ */
