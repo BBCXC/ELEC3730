@@ -17,6 +17,7 @@ void Ass_03_Task_01(void const* argument) {
     static int button_debounce = 0;
     static int off_debounce    = 0;
     static int holding         = 0;
+    static int popup           = 0;
 
     while (1) {
         osMessagePut(myQueue01Handle, (uint32_t) State_Thread1, 0);
@@ -39,17 +40,18 @@ void Ass_03_Task_01(void const* argument) {
                 holding         = 1;
 
                 // TODO Get Touch Position
+                touch_pos = get_touch_pos(display.x, display.y, popup);
                 // TODO Decide what button was pressed
 
                 // This will become a check for each button pressed.
-                if (State_Thread1 == State_PLAY) {
-                    State_Thread1 = State_STOP;
-                    safe_printf("State set to stop\n");
-                }
-                else if (State_Thread1 == State_STOP) {
-                    State_Thread1 = State_PLAY;
-                    safe_printf("State set to play\n");
-                }
+                // if (State_Thread1 == State_PLAY) {
+                //     State_Thread1 = State_STOP;
+                //     safe_printf("State set to stop\n");
+                // }
+                // else if (State_Thread1 == State_STOP) {
+                //     State_Thread1 = State_PLAY;
+                //     safe_printf("State set to play\n");
+                // }
             }
 
             else if (button_debounce >= 50 && holding == 1) {
