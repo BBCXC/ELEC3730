@@ -3,6 +3,7 @@
 //   $Author: Peter $
 
 #include "Ass-03.h"
+#include "ff.h"
 
 // This is the console task. Can use your code from the previous assignment
 // and expand.
@@ -89,6 +90,15 @@ uint8_t myReadFile()
 		safe_printf("ERROR: Opening 'Hello.txt'\n");
 		return 1;
 	}
+
+
+
+
+	TCHAR* buff[100];
+	UINT len = 100;
+	res = getcwd(&buff, len);
+
+
 	safe_printf("Task 1: Opened file 'Hello.txt'\n");
 
 	// Read data from file
