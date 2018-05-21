@@ -29,6 +29,10 @@ void Ass_03_Task_01(void const * argument)
   Coordinate display;
   char c;
 
+  printf(RESET_M);
+	printf(CLEAR_M);
+	printf(KNRM);
+
   safe_printf("Hello from Task 1 (Initialise LCD and TP first)\n");
 
   // STEPIEN: Initialize and turn on LCD and calibrate the touch panel
@@ -36,6 +40,16 @@ void Ass_03_Task_01(void const * argument)
   BSP_LCD_DisplayOn();
   BSP_TP_Init();
   //
+
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+
+  //Initilise structs here
+  window_init();
+  button_init();
+
+  safe_printf("All structures initilised\n");
+
+
   // Signal other tasks to start
   osSignalSet(myTask02Handle, 1);
   osSignalSet(myTask03Handle, 1);
@@ -43,13 +57,13 @@ void Ass_03_Task_01(void const * argument)
 
   // Display welcome message
   osMutexWait(myMutex01Handle, osWaitForever);
-  BSP_LCD_Clear(LCD_COLOR_WHITE);
+//  BSP_LCD_Clear(LCD_COLOR_WHITE);
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-  BSP_LCD_DisplayStringAt(5, 5, (uint8_t*)"ELEC3730 Assignment 3 (v02 $Rev: 1327 $)",LEFT_MODE);
-  BSP_LCD_DisplayStringAt(5,20, (uint8_t*)"This is some demonstration code",LEFT_MODE);
-  BSP_LCD_DisplayStringAt(5,35, (uint8_t*)"that can be used as a starting point",LEFT_MODE);
-  BSP_LCD_DisplayStringAt(5,50, (uint8_t*)"for the assignment.",LEFT_MODE);
+//  BSP_LCD_DisplayStringAt(5, 5, (uint8_t*)"ELEC3730 Assignment 3 (v02 $Rev: 1327 $)",LEFT_MODE);
+//  BSP_LCD_DisplayStringAt(5,20, (uint8_t*)"This is some demonstration code",LEFT_MODE);
+//  BSP_LCD_DisplayStringAt(5,35, (uint8_t*)"that can be used as a starting point",LEFT_MODE);
+//  BSP_LCD_DisplayStringAt(5,50, (uint8_t*)"for the assignment.",LEFT_MODE);
   osMutexRelease(myMutex01Handle);
 
   while (1)

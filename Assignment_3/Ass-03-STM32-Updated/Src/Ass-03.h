@@ -39,6 +39,7 @@ extern osSemaphoreId myBinarySem04Handle;
 extern osSemaphoreId myBinarySem05Handle;
 extern osSemaphoreId myBinarySem06Handle;
 extern osMessageQId myQueue01Handle;
+extern osMessageQId myQueue02Handle; // State message
 extern osMutexId myMutex01Handle; // Protect LCD
 extern osMutexId myMutex02Handle; // Protect console output
 
@@ -66,5 +67,38 @@ extern uint8_t getfp(Coordinate *display);
 //
 // ADD YOUR CODE
 //
+
+#include "Ass-03-Window.h"
+#include "Ass-03-Button.h"
+
+extern osMutexId windowbuf_Handle; // Protect Window buffer
+
+#define KNRM "\e[0m"
+#define KRED "\e[31m"  //"\x1B[31m"
+#define KGRN "\e[32m"
+#define KYEL "\e[33m"
+#define KBLU "\e[34m"
+#define KMAG "\e[35m"
+#define KCYN "\e[36m"
+#define KWHT "\e[37m"
+
+#define CLEAR_M "\014"
+#define RESET_M "\033[3J"
+
+#define MemExpand 10
+
+#define DEFAULT_COLOUR_M KNRM
+#define DEBUG_M KYEL
+#define SYS_M KMAG
+#define ERROR_M KRED
+
+#define HELP_M "%-25.25s\t%-35.35s"
+#define DEBUG_P { printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__); }
+
+#define XOFF 68
+#define YOFF 2
+#define XSIZE 250
+#define YSIZE 142
+
 
 #endif /* ASS_03_H_ */

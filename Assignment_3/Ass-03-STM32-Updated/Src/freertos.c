@@ -64,6 +64,7 @@ osThreadId myTask02Handle;
 osThreadId myTask03Handle;
 osThreadId myTask04Handle;
 osMessageQId myQueue01Handle;
+osMessageQId myQueue02Handle;
 osTimerId myTimer01Handle;
 osMutexId myMutex01Handle;
 osMutexId myMutex02Handle;
@@ -77,7 +78,7 @@ osSemaphoreId myBinarySem06Handle;
 osSemaphoreId myCountingSem01Handle;
 
 /* USER CODE BEGIN Variables */
-
+osMutexId windowbuf_Handle;
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -118,6 +119,10 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+
+  /* definition and creation of myMutex03 */
+  osMutexDef(myMutex04);
+  windowbuf_Handle = osMutexCreate(osMutex(myMutex04));
   /* USER CODE END RTOS_MUTEX */
 
   /* Create the semaphores(s) */
@@ -196,6 +201,10 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  /* Create the queue(s) */
+  /* definition and creation of myQueue01 */
+  osMessageQDef(myQueue02, 4, uint32_t);
+  myQueue02Handle = osMessageCreate(osMessageQ(myQueue02), NULL);
   /* USER CODE END RTOS_QUEUES */
 }
 
