@@ -27,11 +27,9 @@
 #define OVERWRITE_BUTTON "overwrite"
 #define CANCEL_BUTTON "cancel"
 
-int popup       = 0;  // TODO Remove global variable
-char* touch_pos = NULL;
-
 void Ass_03_Task_02(void const* argument) {
 
+    char* touch_pos = NULL;
     Coordinate display;
 
     osSignalWait(1, osWaitForever);
@@ -40,7 +38,7 @@ void Ass_03_Task_02(void const* argument) {
     while (1) {
         if (getfp(&display) == 0) {
             // If the position touched matches some given coordinates
-            touch_pos = get_touch_pos(display.x, display.y, popup);
+            touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
             if (touch_pos != 100) {
                 // Do something on that touch
                 safe_printf("Task 2: (touch: %s, %3d,%3d)\n", touch_pos, display.x, display.y);
@@ -128,6 +126,7 @@ int Save_Popup() {
         safe_printf("%sDEBUG INFO:%s Entered Save_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     // Set State to popup
+    Set_Popup_Status(1);
     Set_State_Thread(2);
     // Draw rectangle
     // Clear inside rectangle
@@ -160,6 +159,7 @@ int Clear_Popup() {
     if (Get_Debug() == 1) {
         safe_printf("%sDEBUG INFO:%s Entered Clear_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
+    Set_Popup_Status(0);
     Task_4_Init();
     return 0;
 }

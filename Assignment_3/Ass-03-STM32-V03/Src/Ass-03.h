@@ -70,6 +70,8 @@ extern uint8_t getfp(Coordinate* display);
 extern osMessageQId myQueue02Handle;  // State message
 
 #include "Ass-03-Button.h"
+#include "Ass-03-Debug.h"
+#include "Ass-03-Popup.h"
 #include "Ass-03-Window.h"
 
 extern osMutexId windowbuf_Handle;  // Protect Window buffer

@@ -11,6 +11,7 @@
 
 typedef struct {
     int position[4];
+    int status;
 } popup_t;
 popup_t popup;
 
