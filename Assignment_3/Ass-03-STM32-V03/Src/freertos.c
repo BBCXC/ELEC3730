@@ -78,6 +78,10 @@ osSemaphoreId myCountingSem01Handle;
 
 /* USER CODE BEGIN Variables */
 osMutexId windowbuf_Handle;
+osMutexId button_Handle;  // Protect button struct
+osMutexId popup_Handle;   // Protect popup struct
+osMutexId debug_Handle;   // Protect debug struct
+
 osMessageQId myQueue02Handle;
 /* USER CODE END Variables */
 
@@ -122,6 +126,18 @@ void MX_FREERTOS_Init(void) {
     /* definition and creation of myMutex03 */
     osMutexDef(myMutex04);
     windowbuf_Handle = osMutexCreate(osMutex(myMutex04));
+
+    /* definition and creation of myMutex03 */
+    osMutexDef(myMutex05);
+    button_Handle = osMutexCreate(osMutex(myMutex05));
+
+    /* definition and creation of myMutex03 */
+    osMutexDef(myMutex06);
+    popup_Handle = osMutexCreate(osMutex(myMutex06));
+
+    /* definition and creation of myMutex03 */
+    osMutexDef(myMutex07);
+    debug_Handle = osMutexCreate(osMutex(myMutex07));
     /* USER CODE END RTOS_MUTEX */
 
     /* Create the semaphores(s) */

@@ -73,6 +73,9 @@ extern osMessageQId myQueue02Handle;  // State message
 #include "Ass-03-Window.h"
 
 extern osMutexId windowbuf_Handle;  // Protect Window buffer
+extern osMutexId button_Handle;     // Protect button struct
+extern osMutexId popup_Handle;      // Protect popup struct
+extern osMutexId debug_Handle;      // Protect debug struct
 
 #define KNRM "\e[0m"
 #define KRED "\e[31m"  //"\x1B[31m"

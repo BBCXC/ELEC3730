@@ -19,6 +19,13 @@ typedef struct {
 } button_t;
 button_t button;
 
+typedef struct {
+    char* NameString;
+    int position[4];
+    int (*Function_p)(int index);
+    char* Symbol;
+} button_s;
+
 extern void button_init();
 
 extern int draw_play(int index);

@@ -45,8 +45,10 @@ void Ass_03_Task_01(void const* argument) {
     BSP_LCD_Clear(LCD_COLOR_WHITE);
 
     // Initilise structs here
+    debug_init();
     window_init();
     button_init();
+    popup_init();
 
     safe_printf("All structures initilised\n");
 
@@ -95,9 +97,9 @@ uint8_t myReadFile() {
         return 1;
     }
 
-//    TCHAR* buff;
-//	UINT len = 100;
-//    res = getcwd(&buff, len);
+    //    TCHAR* buff;
+    //	UINT len = 100;
+    //    res = getcwd(&buff, len);
 
     rtext[bytesread] = '\0';
     safe_printf("Task 1: Read: '%s'\n", rtext);

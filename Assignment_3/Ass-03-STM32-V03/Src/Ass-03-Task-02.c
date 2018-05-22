@@ -14,12 +14,23 @@
 // buttons are pressed. See suggested updates for the touch panel task
 // that checks for button presses. Can do more in that task.
 
-int popup     = 0;  // TODO Remove global variable
-int touch_pos = NULL;
+#define PLAY_BUTTON "play"
+#define STOP_BUTTON "stop"
+#define SAVE_BUTTON "save"
+#define LOAD_BUTTON "load"
+#define ZOOM_IN_BUTTON "zoom_in"
+#define ZOOM_OUT_BUTTON "zoom_out"
+#define RESET_BUTTON "reset"
+#define UP_BUTTON "up"
+#define DOWN_BUTTON "down"
+#define NEW_BUTTON "new"
+#define OVERWRITE_BUTTON "overwrite"
+#define CANCEL_BUTTON "cancel"
+
+int popup       = 0;  // TODO Remove global variable
+char* touch_pos = NULL;
 
 void Ass_03_Task_02(void const* argument) {
-
-    uint32_t loop = 0;
 
     Coordinate display;
 
@@ -28,40 +39,127 @@ void Ass_03_Task_02(void const* argument) {
 
     while (1) {
         if (getfp(&display) == 0) {
-            // if((display.y > YOFF+5) && (display.y < YOFF+YSIZE-5) &&
-            // 	(display.x > XOFF+5) && (display.x < XOFF+XSIZE-5))
-            // {
-            // 	osMutexWait(myMutex01Handle, osWaitForever);
-            // 	BSP_LCD_FillCircle(display.x, display.y, 2);
-            // 	osMutexRelease(myMutex01Handle);
-            // 	loop++;
-            // 	safe_printf("Task 2: %d (got  %3d,%3d)\n", loop, display.x, display.y);
-            // }
-
             // If the position touched matches some given coordinates
             touch_pos = get_touch_pos(display.x, display.y, popup);
             if (touch_pos != 100) {
                 // Do something on that touch
-                osMutexWait(myMutex01Handle, osWaitForever);
-                //			BSP_LCD_FillCircle(display.x, display.y, 2);
-
-                osMutexRelease(myMutex01Handle);
-                safe_printf("Task 2: %d (touch: %d, %3d,%3d)\n", loop, touch_pos, display.x, display.y);
-                loop++;
+                safe_printf("Task 2: (touch: %s, %3d,%3d)\n", touch_pos, display.x, display.y);
 
                 // Touched stop
-                if (touch_pos == 1) {
-                    Set_Zoom_Coeff_w(0);
-                    // osMessagePut (myQueue02Handle, 0, 0);
+                if (strcmp(touch_pos, STOP_BUTTON) == 0) {
+                    Set_State_Thread(0);
                     safe_printf("Set state to stop\n");
                 }
-                else if (touch_pos == 0) {
-                    Set_Zoom_Coeff_w(1);
+                else if (strcmp(touch_pos, PLAY_BUTTON) == 0) {
+                    Set_State_Thread(1);
+                    safe_printf("Set state to play\n");
+                }
+                else if (strcmp(touch_pos, PLAY_BUTTON) == 0) {
+                    Set_State_Thread(1);
 
                     safe_printf("Set state to play\n");
-                    // osMessagePut (myQueue02Handle, 1, 0);
+                }
+                else if (strcmp(touch_pos, SAVE_BUTTON) == 0) {
+                    safe_printf("Button pressed SAVE_BUTTON\n");
+                    // TODO Call save function - popup window
+                    if (Save_Popup() != 0) {
+                        safe_printf("%sERROR:%s Save_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+                    }
+                }
+                else if (strcmp(touch_pos, LOAD_BUTTON) == 0) {
+                    safe_printf("Button pressed LOAD_BUTTON\n");
+                    // TODO Call Load function
+                    if (Load_File() != 0) {
+                        safe_printf("%sERROR:%s Load_File function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+                    }
+                }
+                else if (strcmp(touch_pos, ZOOM_IN_BUTTON) == 0) {
+                    safe_printf("Button pressed ZOOM_IN_BUTTON\n");
+                    // TODO increment zoom_coeff
+                }
+                else if (strcmp(touch_pos, ZOOM_OUT_BUTTON) == 0) {
+                    safe_printf("Button pressed ZOOM_OUT_BUTTON\n");
+                    // TODO decrement zoom_coeff
+                }
+                else if (strcmp(touch_pos, RESET_BUTTON) == 0) {
+                    safe_printf("Button pressed RESET_BUTTON\n");
+                    // TODO Reset zoom_coeff to default
+                }
+                else if (strcmp(touch_pos, UP_BUTTON) == 0) {
+                    safe_printf("Button pressed UP_BUTTON\n");
+                    // TODO Increment up list of items
+                }
+                else if (strcmp(touch_pos, DOWN_BUTTON) == 0) {
+                    safe_printf("Button pressed DOWN_BUTTON\n");
+                    // TODO Increment down list of items
+                }
+                else if (strcmp(touch_pos, NEW_BUTTON) == 0) {
+                    safe_printf("Button pressed NEW_BUTTON\n");
+                    // TODO call save_new function
+                    if (Save_New() != 0) {
+                        safe_printf("%sERROR:%s Save_New function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+                    }
+                }
+                else if (strcmp(touch_pos, OVERWRITE_BUTTON) == 0) {
+                    safe_printf("Button pressed OVERWRITE_BUTTON\n");
+                    // TODO call save_overwrite function
+                    if (Save_Overwrite() != 0) {
+                        safe_printf("%sERROR:%s Save_Overwrite function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+                    }
+                }
+                else if (strcmp(touch_pos, CANCEL_BUTTON) == 0) {
+                    safe_printf("Button pressed CANCEL_BUTTON\n");
+                    // TODO clear popup window
+                    //      redraw original window
+                    if (Clear_Popup() != 0) {
+                        safe_printf("%sERROR:%s Clear_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+                    }
+                }
+                else {
+                    safe_printf("Unknown Position Pressed\n");
                 }
             }
         }
     }
+}
+
+int Save_Popup() {
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
+    // Set State to popup
+    Set_State_Thread(2);
+    // Draw rectangle
+    // Clear inside rectangle
+    // Draw buttons inside
+    // Set popup to on
+    return 0;
+}
+int Load_File() {
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Load_File()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
+    safe_printf("Unimplemented\n");
+    return 0;
+}
+int Save_New() {
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_New()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
+    safe_printf("Unimplemented\n");
+    return 0;
+}
+int Save_Overwrite() {
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_Overwrite()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
+    safe_printf("Unimplemented\n");
+    return 0;
+}
+int Clear_Popup() {
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Clear_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
+    Task_4_Init();
+    return 0;
 }

@@ -3,14 +3,15 @@
 
 void window_init() {
 
+    osMutexWait(windowbuf_Handle, osWaitForever);
     window.zoom_coeff = 1;
     window.buflen     = Max_Samples / window.zoom_coeff / window.width;
     window.width      = 250;  // TODO Calculate
     window.height     = 142;  // TODO Calculate
 
-    window.position[0] = 68;   // TODO Calculate
-    window.position[1] = window.position[0] + window.width;  // TODO Calculate
-    window.position[2] = 2;    // TODO Calculate
+    window.position[0] = 68;                                  // TODO Calculate
+    window.position[1] = window.position[0] + window.width;   // TODO Calculate
+    window.position[2] = 2;                                   // TODO Calculate
     window.position[3] = window.position[2] + window.height;  // TODO Calculate
 
     window.bg_colour   = LCD_COLOR_WHITE;
@@ -23,11 +24,12 @@ void window_init() {
 
     window.next = 0;  // Holds the position in the window buffer array
                       // that is the latest filled
+    osMutexRelease(windowbuf_Handle);
 }
 
 int Get_Window_Buffer(int Position, int Value) {
     osMutexWait(windowbuf_Handle, osWaitForever);
-    //int temp = Window_buffer[Position][Value];
+    // int temp = Window_buffer[Position][Value];
     int temp = 0;
     osMutexRelease(windowbuf_Handle);
     return temp;
@@ -35,7 +37,7 @@ int Get_Window_Buffer(int Position, int Value) {
 
 void Set_Window_Buffer(int Position, int Value1, int Value2) {
     osMutexWait(windowbuf_Handle, osWaitForever);
-    //Window_buffer[Position][Value1] = Value2;
+    // Window_buffer[Position][Value1] = Value2;
     osMutexRelease(windowbuf_Handle);
 }
 
