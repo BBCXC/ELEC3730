@@ -27,6 +27,12 @@ typedef struct {
 } button_s;
 
 extern void button_init();
+extern void pbutton_init();
+
+extern int Draw_Button_list();
+extern int Draw_Button_boxes();
+extern int Draw_Popup_list();
+extern int Draw_Popup_boxes();
 
 extern int draw_play(int index);
 extern int draw_stop(int index);

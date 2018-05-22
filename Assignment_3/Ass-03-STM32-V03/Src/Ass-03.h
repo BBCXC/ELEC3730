@@ -107,5 +107,13 @@ extern osMutexId debug_Handle;      // Protect debug struct
 #define XSIZE 250
 #define YSIZE 142
 
+void Task_4_Init(void);
+
+extern int Save_Popup();
+extern int Load_File();
+extern int Save_New();
+extern int Save_Overwrite();
+extern int Clear_Popup();
+
 
 #endif /* ASS_03_H_ */

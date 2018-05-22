@@ -17,5 +17,12 @@ typedef struct {
 } info_t;
 info_t info;
 
+extern void debug_init();
+extern int Get_State_Thread();
+extern void Set_State_Thread(int Value);
+extern int Get_Debug(void);
+extern int Get_System(void);
+extern void Set_Debug(int Value);
+extern void Set_System(int Value);
 
 #endif /* ASS_03_DEBUG_H_ */

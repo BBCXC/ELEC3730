@@ -29,8 +29,8 @@ void Ass_03_Task_01(void const* argument) {
     Coordinate display;
     char c;
 
-    printf(RESET_M);
-    printf(CLEAR_M);
+    //printf(RESET_M);
+    //printf(CLEAR_M);
     printf(KNRM);
 
     safe_printf("Hello from Task 1 - Console (serial input)\n");
@@ -47,7 +47,7 @@ void Ass_03_Task_01(void const* argument) {
     // Initilise structs here
     debug_init();
     window_init();
-    button_init();
+    //button_init();
     popup_init();
 
     safe_printf("All structures initilised\n");
@@ -73,6 +73,7 @@ void Ass_03_Task_01(void const* argument) {
         loop++;
         myReadFile();
         myWriteFile();
+        //safe_printf("Here1\n");
     }
 }
 

@@ -3,10 +3,10 @@
 
 void popup_init() {
     osMutexWait(popup_Handle, osWaitForever);
-    popup.position[0] = (int) (BSP_LCD_GetXSize() / 3);
-    popup.position[1] = (int) (BSP_LCD_GetXSize() / 3);
-    popup.position[2] = (int) (2 * (BSP_LCD_GetYSize() / 3));
-    popup.position[3] = (int) (2 * (BSP_LCD_GetYSize() / 3));
+    popup.position[0] = (int) (BSP_LCD_GetXSize() / 6);
+    popup.position[1] = (int) (BSP_LCD_GetYSize() / 6);
+    popup.position[2] = (int) (5 * (BSP_LCD_GetXSize() / 6));
+    popup.position[3] = (int) (5 * (BSP_LCD_GetYSize() / 6));
 
     popup.status = 0;
     osMutexRelease(popup_Handle);

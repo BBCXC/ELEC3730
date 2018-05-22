@@ -29,83 +29,82 @@
 
 void Ass_03_Task_02(void const* argument) {
 
-    char* touch_pos = NULL;
+    int touch_pos = 100;
+    char* button_pressed;
     Coordinate display;
 
     osSignalWait(1, osWaitForever);
     safe_printf("Hello from Task 2 - Pulse Rate Application (touch screen input)\n");
 
     while (1) {
+    	//safe_printf("Here    2\n");
         if (getfp(&display) == 0) {
             // If the position touched matches some given coordinates
             touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
             if (touch_pos != 100) {
+            	//safe_printf("Here    3\n");
+            	button_pressed = Get_Button_Name(touch_pos, Get_Popup_Status());
                 // Do something on that touch
-                safe_printf("Task 2: (touch: %s, %3d,%3d)\n", touch_pos, display.x, display.y);
+                safe_printf("Task 2: (touch: %s, %3d,%3d)\n", button_pressed, display.x, display.y);
 
                 // Touched stop
-                if (strcmp(touch_pos, STOP_BUTTON) == 0) {
+                if (strcmp(button_pressed, STOP_BUTTON) == 0) {
                     Set_State_Thread(0);
                     safe_printf("Set state to stop\n");
                 }
-                else if (strcmp(touch_pos, PLAY_BUTTON) == 0) {
+                else if (strcmp(button_pressed, PLAY_BUTTON) == 0) {
                     Set_State_Thread(1);
                     safe_printf("Set state to play\n");
                 }
-                else if (strcmp(touch_pos, PLAY_BUTTON) == 0) {
-                    Set_State_Thread(1);
-
-                    safe_printf("Set state to play\n");
-                }
-                else if (strcmp(touch_pos, SAVE_BUTTON) == 0) {
+                else if (strcmp(button_pressed, SAVE_BUTTON) == 0) {
                     safe_printf("Button pressed SAVE_BUTTON\n");
                     // TODO Call save function - popup window
                     if (Save_Popup() != 0) {
                         safe_printf("%sERROR:%s Save_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
                 }
-                else if (strcmp(touch_pos, LOAD_BUTTON) == 0) {
+                else if (strcmp(button_pressed, LOAD_BUTTON) == 0) {
                     safe_printf("Button pressed LOAD_BUTTON\n");
                     // TODO Call Load function
                     if (Load_File() != 0) {
                         safe_printf("%sERROR:%s Load_File function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
                 }
-                else if (strcmp(touch_pos, ZOOM_IN_BUTTON) == 0) {
+                else if (strcmp(button_pressed, ZOOM_IN_BUTTON) == 0) {
                     safe_printf("Button pressed ZOOM_IN_BUTTON\n");
                     // TODO increment zoom_coeff
                 }
-                else if (strcmp(touch_pos, ZOOM_OUT_BUTTON) == 0) {
+                else if (strcmp(button_pressed, ZOOM_OUT_BUTTON) == 0) {
                     safe_printf("Button pressed ZOOM_OUT_BUTTON\n");
                     // TODO decrement zoom_coeff
                 }
-                else if (strcmp(touch_pos, RESET_BUTTON) == 0) {
+                else if (strcmp(button_pressed, RESET_BUTTON) == 0) {
                     safe_printf("Button pressed RESET_BUTTON\n");
                     // TODO Reset zoom_coeff to default
                 }
-                else if (strcmp(touch_pos, UP_BUTTON) == 0) {
+                else if (strcmp(button_pressed, UP_BUTTON) == 0) {
                     safe_printf("Button pressed UP_BUTTON\n");
                     // TODO Increment up list of items
                 }
-                else if (strcmp(touch_pos, DOWN_BUTTON) == 0) {
+                else if (strcmp(button_pressed, DOWN_BUTTON) == 0) {
                     safe_printf("Button pressed DOWN_BUTTON\n");
                     // TODO Increment down list of items
                 }
-                else if (strcmp(touch_pos, NEW_BUTTON) == 0) {
+                else if (strcmp(button_pressed, NEW_BUTTON) == 0) {
                     safe_printf("Button pressed NEW_BUTTON\n");
                     // TODO call save_new function
                     if (Save_New() != 0) {
                         safe_printf("%sERROR:%s Save_New function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
                 }
-                else if (strcmp(touch_pos, OVERWRITE_BUTTON) == 0) {
+                else if (strcmp(button_pressed, OVERWRITE_BUTTON) == 0) {
                     safe_printf("Button pressed OVERWRITE_BUTTON\n");
                     // TODO call save_overwrite function
                     if (Save_Overwrite() != 0) {
                         safe_printf("%sERROR:%s Save_Overwrite function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
                 }
-                else if (strcmp(touch_pos, CANCEL_BUTTON) == 0) {
+                else if (strcmp(button_pressed, CANCEL_BUTTON) == 0) {
                     safe_printf("Button pressed CANCEL_BUTTON\n");
                     // TODO clear popup window
                     //      redraw original window
@@ -116,6 +115,9 @@ void Ass_03_Task_02(void const* argument) {
                 else {
                     safe_printf("Unknown Position Pressed\n");
                 }
+            }
+            else{
+            	safe_printf("Touch is %s\n", touch_pos);
             }
         }
     }

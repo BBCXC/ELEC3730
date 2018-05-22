@@ -25,6 +25,7 @@ void Ass_03_Task_04(void const* argument) {
     uint16_t last_ypos = 0;
 
     int Current_State = 0;
+    int Previous_State = 0;
 
     int Window_buffer[250];
 
@@ -56,10 +57,11 @@ void Ass_03_Task_04(void const* argument) {
         Current_State = Get_State_Thread();
         if (Current_State == 0) {
             // Stop state
-            osDelay(50);
+        	osDelay(100);
             safe_printf("Stopped at position %d\n", last_xpos);
         }
         else if (Current_State == 1) {
+        	Previous_State = 1;
             // Wait for first half of buffer
             osSemaphoreWait(myBinarySem05Handle, osWaitForever);
             osMutexWait(myMutex01Handle, osWaitForever);
@@ -75,7 +77,7 @@ void Ass_03_Task_04(void const* argument) {
                 last_ypos = ypos;
                 xpos++;
 
-                safe_printf("First half, %d, %d, %d\n", i, last_xpos, last_ypos);
+                //safe_printf("First half, %d, %d, %d\n", i, last_xpos, last_ypos);
             }
             osMutexRelease(myMutex01Handle);
             if (last_xpos >= XSIZE - 1) {
@@ -98,7 +100,7 @@ void Ass_03_Task_04(void const* argument) {
                 last_ypos = ypos;
                 xpos++;
 
-                safe_printf("Second half, %d, %d, %d\n", i + 500, last_xpos, last_ypos);
+                //safe_printf("Second half, %d, %d, %d\n", i + 500, last_xpos, last_ypos);
             }
             osMutexRelease(myMutex01Handle);
             if (last_xpos >= XSIZE - 1) {
@@ -107,28 +109,37 @@ void Ass_03_Task_04(void const* argument) {
             }
             HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET);
         }
-        else if (Current_State == 2) {
-            // Draw rectangle
-            // Clear inside rectangle
-            // Draw buttons inside
-            // Set popup to on
-            int pop_pos_0 = Get_Popup_Position(0);
-            int pop_pos_1 = Get_Popup_Position(1);
-            int pop_pos_2 = Get_Popup_Position(2);
-            int pop_pos_3 = Get_Popup_Position(3);
+        else if (Current_State == 2){
+        		if(Previous_State != 2) {
+					Previous_State = 2;
+					// Draw rectangle
+					// Clear inside rectangle
+					// Draw buttons inside
+					// Set popup to on
+					int pop_pos_0 = Get_Popup_Position(0);
+					int pop_pos_1 = Get_Popup_Position(1);
+					int pop_pos_2 = Get_Popup_Position(2);
+					int pop_pos_3 = Get_Popup_Position(3);
 
-            // Draw a box to plot in
-            osMutexWait(myMutex01Handle, osWaitForever);
+					// Draw a box to plot in
+					osMutexWait(myMutex01Handle, osWaitForever);
 
-            BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-            BSP_LCD_FillRect(pop_pos_0, pop_pos_1, pop_pos_2 - pop_pos_0, pop_pos_3 - pop_pos_1);
+					BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+					BSP_LCD_FillRect(pop_pos_0, pop_pos_1, pop_pos_2 - pop_pos_0, pop_pos_3 - pop_pos_1);
 
-            BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_DrawRect(pop_pos_0, pop_pos_1, pop_pos_2 - pop_pos_0, pop_pos_3 - pop_pos_1);
+					BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+					BSP_LCD_DrawRect(pop_pos_0, pop_pos_1, pop_pos_2 - pop_pos_0, pop_pos_3 - pop_pos_1);
 
-            osMutexRelease(myMutex01Handle);
+					osMutexRelease(myMutex01Handle);
 
-            pbutton_init();
+					pbutton_init();
+        		}
+        		else{
+        			osDelay(100);
+        		}
+    }
+        else{
+        	safe_printf("Current State is %d\n", Current_State);
         }
 
 

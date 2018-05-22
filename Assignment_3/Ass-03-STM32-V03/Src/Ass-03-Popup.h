@@ -15,5 +15,9 @@ typedef struct {
 } popup_t;
 popup_t popup;
 
+extern void popup_init();
+extern int Get_Popup_Position(int element);
+extern int Get_Popup_Status();
+extern void Set_Popup_Status(int value);
 
 #endif /* ASS_03_POPUP_H_ */

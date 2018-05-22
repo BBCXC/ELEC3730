@@ -31,4 +31,6 @@ typedef struct {
 } input_t;
 input_t input;
 
+extern void inputInit();
+
 #endif /* ASS_03_INPUT_H_ */

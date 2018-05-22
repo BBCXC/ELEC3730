@@ -37,4 +37,6 @@ window_t window;
 
 //int Window_buffer[250][2];
 
+extern void window_init();
+
 #endif /* ASS_03_WINDOW_H_ */

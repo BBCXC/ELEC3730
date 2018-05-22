@@ -25,6 +25,8 @@ void pbutton_init() {
     if (Draw_Popup_boxes() == 0) {
         safe_printf("Initilised Boxes\n");
     }
+
+    safe_printf("Popup done doodle\n");
 }
 
 // clang-format off
@@ -43,41 +45,51 @@ const button_s Button_list[] = {
 
 // clang-format off
 const button_s Popup_list[] = {
-    {"new",       {0,    0,    0,    0},    &draw_plist_item, "new"},
-    {"overwrite", {0,    0,    0,    0},    &draw_plist_item, "overwrite"},
-    {"cancel",    {0,    0,    0,    0},    &draw_plist_item, "cancel"},
+    {"new",       {54,    125,    140,    200},    &draw_plist_item, "new"},
+    {"overwrite", {125,   195,    140,    200},    &draw_plist_item, "overwrite"},
+    {"cancel",    {195,   266,    140,    200},    &draw_plist_item, "cancel"},
     {NULL,        {NULL, NULL, NULL, NULL}, NULL,             NULL}};
 // clang-format on
+
+char* Get_Button_Name(int element, int status){
+	if(status == 0){
+		return(Button_list[element].NameString);
+	}
+	else if(status == 1){
+		return(Popup_list[element].NameString);
+	}
+	return NULL;
+}
 
 // Return the item touched on the screen
 int get_touch_pos(int display_x, int display_y, int popup) {
     int i = 0;
     if (popup == 0) {
-        osMutexWait(button_Handle, osWaitForever);
+    	safe_printf("Searching button list\n");
+        //osMutexWait(button_Handle, osWaitForever);
         while (Button_list[i].NameString != NULL) {
             safe_printf("Looking for button touched, %d\n", i);
             if ((display_x >= Button_list[i].position[0]) && (display_x <= Button_list[i].position[1])
                 && (display_y >= Button_list[i].position[2]) && (display_y <= Button_list[i].position[3])) {
                 safe_printf("Button Touch %s\n", Button_list[i].NameString);
-                return (Button_list[i].NameString);
+                return (i);
             }
             i++;
         }
-        osMutexRelease(button_Handle);
+        //osMutexRelease(button_Handle);
     }
     else if (popup == 1) {
-        osMutexWait(popup_Handle, osWaitForever);
+    	safe_printf("Searching popup list\n");
         while (Popup_list[i].NameString != NULL) {
             if ((display_x >= Popup_list[i].position[0]) && (display_x <= Popup_list[i].position[1])
                 && (display_y >= Popup_list[i].position[2]) && (display_y <= Popup_list[i].position[3])) {
-                return (Popup_list[i].NameString);
+                return (i);
             }
             i++;
         }
-        osMutexRelease(popup_Handle);
     }
     safe_printf("No button touched\n");
-    return NULL;
+    return(100);
 }
 
 // If a command is called function decides which function pointer to return
@@ -86,12 +98,14 @@ int Draw_Button_list() {
     osMutexWait(button_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Button_list[i].NameString != NULL) {
-        safe_printf("Initilising button %s\n", Button_list[i].NameString);
+    	safe_printf("Initilising button %s\n", Button_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         if (Button_list[i].Function_p(i) == 0) {
+        	safe_printf("Success button %s\n", Button_list[i].NameString);
         }
         else {
+        	safe_printf("Error button %s\n", Button_list[i].NameString);
             return -1;
         }
         i++;
@@ -141,7 +155,6 @@ int Draw_Popup_list() {
 
 int Draw_Popup_boxes() {
     int i = 0;
-    osMutexWait(popup_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Popup_list[i].NameString != NULL) {
         safe_printf("Initilising button box %s\n", Popup_list[i].NameString);
@@ -153,19 +166,16 @@ int Draw_Popup_boxes() {
                          Popup_list[i].position[3] - Popup_list[i].position[2]);
         i++;
     }
-    osMutexRelease(popup_Handle);
     return 0;
 }
 
 int draw_blist_item(int index) {
     // TODO Mutex on button
-    osMutexWait(button_Handle, osWaitForever);
     int x_min  = Button_list[index].position[0];
     int x_max  = Button_list[index].position[1];
     int y_min  = Button_list[index].position[2];
     int y_max  = Button_list[index].position[3];
     char* item = Button_list[index].Symbol;
-    osMutexRelease(button_Handle);
     // TODO Mutex off button
 
     // TODO Calculate the position to draw the item
@@ -184,13 +194,11 @@ int draw_blist_item(int index) {
 }
 int draw_plist_item(int index) {
     // TODO Mutex on button
-    osMutexWait(popup_Handle, osWaitForever);
     int x_min  = Popup_list[index].position[0];
     int x_max  = Popup_list[index].position[1];
     int y_min  = Popup_list[index].position[2];
     int y_max  = Popup_list[index].position[3];
     char* item = Popup_list[index].Symbol;
-    osMutexRelease(popup_Handle);
     // TODO Mutex off button
 
     // TODO Calculate the position to draw the item
