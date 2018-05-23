@@ -6,6 +6,9 @@ void button_init() {
     BSP_LCD_SetFont(&Font12);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
     // TODO Populate the position of each button
+    if (Populate_Button_Position() == 0) {
+        safe_printf("Initilised Buttons\n");
+    }
     if (Draw_Button_list() == 0) {
         safe_printf("Initilised Buttons\n");
     }
@@ -25,48 +28,59 @@ void pbutton_init() {
     if (Draw_Popup_boxes() == 0) {
         safe_printf("Initilised Boxes\n");
     }
-
-    safe_printf("Popup done doodle\n");
 }
 
 // clang-format off
-const button_s Button_list[] = {
-    {"play",      {0,    66,   0,    60},    &draw_blist_item,       "play"},	//&draw_play
-    {"stop",      {0,    66,   60,   120},    &draw_blist_item,       "stop"},	//&draw_stop
-    {"save",      {0,    66,   120,  180},    &draw_blist_item, "save"},
-    {"load",      {0,    66,   180,  240},    &draw_blist_item, "load"},
+button_s Button_list[] = {
+    {"play",      {0,    66,     0,    60},     &draw_blist_item, "play"},	//&draw_play
+    {"stop",      {0,    66,     60,   120},    &draw_blist_item, "stop"},	//&draw_stop
+    {"save",      {0,    66,     120,  180},    &draw_blist_item, "save"},
+    {"load",      {0,    66,     180,  240},    &draw_blist_item, "load"},
     {"zoom_in",   {66,   129,    120,  180},    &draw_blist_item, "+"},
     {"zoom_out",  {129,  192,    120,  180},    &draw_blist_item, "-"},
     {"reset",     {192,  255,    120,  180},    &draw_blist_item, "x"},
-    {"up",        {255,  320,    120,  180},    &draw_blist_item,         "up"}, //draw_up
-    {"down",      {255,  320,    180,  240},    &draw_blist_item,       "down"}, //draw_down
-    {NULL,        {NULL, NULL, NULL, NULL}, NULL,             NULL}};
+    {"up",        {255,  320,    120,  180},    &draw_blist_item, "up"}, //draw_up
+    {"down",      {255,  320,    180,  240},    &draw_blist_item, "down"}, //draw_down
+    {NULL,        {NULL, NULL,   NULL, NULL},   NULL,             NULL}};
 // clang-format on
 
 // clang-format off
-const button_s Popup_list[] = {
+button_s Popup_list[] = {
     {"new",       {54,    125,    140,    200},    &draw_plist_item, "new"},
     {"overwrite", {125,   195,    140,    200},    &draw_plist_item, "overwrite"},
     {"cancel",    {195,   266,    140,    200},    &draw_plist_item, "cancel"},
-    {NULL,        {NULL, NULL, NULL, NULL}, NULL,             NULL}};
+    {NULL,        {NULL,  NULL,   NULL,   NULL},   NULL,             NULL}};
 // clang-format on
 
-char* Get_Button_Name(int element, int status){
-	if(status == 0){
-		return(Button_list[element].NameString);
-	}
-	else if(status == 1){
-		return(Popup_list[element].NameString);
-	}
-	return NULL;
+int Populate_Button_Position() {
+    // Left coloum width = line width - window_x
+    // Right coloum width = Left
+
+    // Play min = line width
+    // Play max = window height / 2 + line width
+
+    // Stop min = Play max + line width
+    // Stop Max = window height + line width
+
+    // TODO
+}
+
+char* Get_Button_Name(int element, int status) {
+    if (status == 0) {
+        return (Button_list[element].NameString);
+    }
+    else if (status == 1) {
+        return (Popup_list[element].NameString);
+    }
+    return NULL;
 }
 
 // Return the item touched on the screen
 int get_touch_pos(int display_x, int display_y, int popup) {
     int i = 0;
     if (popup == 0) {
-    	safe_printf("Searching button list\n");
-        //osMutexWait(button_Handle, osWaitForever);
+        safe_printf("Searching button list\n");
+        // osMutexWait(button_Handle, osWaitForever);
         while (Button_list[i].NameString != NULL) {
             safe_printf("Looking for button touched, %d\n", i);
             if ((display_x >= Button_list[i].position[0]) && (display_x <= Button_list[i].position[1])
@@ -76,10 +90,10 @@ int get_touch_pos(int display_x, int display_y, int popup) {
             }
             i++;
         }
-        //osMutexRelease(button_Handle);
+        // osMutexRelease(button_Handle);
     }
     else if (popup == 1) {
-    	safe_printf("Searching popup list\n");
+        safe_printf("Searching popup list\n");
         while (Popup_list[i].NameString != NULL) {
             if ((display_x >= Popup_list[i].position[0]) && (display_x <= Popup_list[i].position[1])
                 && (display_y >= Popup_list[i].position[2]) && (display_y <= Popup_list[i].position[3])) {
@@ -89,7 +103,7 @@ int get_touch_pos(int display_x, int display_y, int popup) {
         }
     }
     safe_printf("No button touched\n");
-    return(100);
+    return (100);
 }
 
 // If a command is called function decides which function pointer to return
@@ -98,14 +112,14 @@ int Draw_Button_list() {
     osMutexWait(button_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Button_list[i].NameString != NULL) {
-    	safe_printf("Initilising button %s\n", Button_list[i].NameString);
+        safe_printf("Initilising button %s\n", Button_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         if (Button_list[i].Function_p(i) == 0) {
-        	safe_printf("Success button %s\n", Button_list[i].NameString);
+            safe_printf("Success button %s\n", Button_list[i].NameString);
         }
         else {
-        	safe_printf("Error button %s\n", Button_list[i].NameString);
+            safe_printf("Error button %s\n", Button_list[i].NameString);
             return -1;
         }
         i++;
@@ -192,6 +206,7 @@ int draw_blist_item(int index) {
 
     return 0;
 }
+
 int draw_plist_item(int index) {
     // TODO Mutex on button
     int x_min  = Popup_list[index].position[0];
@@ -214,6 +229,7 @@ int draw_plist_item(int index) {
 
     return 0;
 }
+
 int draw_play(int index) {
     // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);
@@ -231,12 +247,27 @@ int draw_play(int index) {
     // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
     // TODO Draw specific symbol / word
+    int width = 1;
+    for (int row = 0; row < SYMBOL_SIZE; row++) {
+        BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+        width < SYMBOL_SIZE / 2 ? width++ : width--;
+        BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
+        if (width < 3) {
+            BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+        }
+        if (width != 1) {
+            BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+            BSP_LCD_Draw_HLine(width + 1, y_cen + row, 1);
+        }
+    }
     // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
+
 int draw_stop(int index) {
     // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);
@@ -254,12 +285,30 @@ int draw_stop(int index) {
     // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
     // TODO Draw specific symbol / word
+    for (int row = 0; row < SYMBOL_SIZE; row++) {
+        // If it's the first row, or the last row
+        // Only print black pixels
+        if (row == 0 || row == SYMBOL_SIZE - 1) {
+            BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, width);
+        }
 
+        // Any other draw a black pixel either side of the red
+        else {
+            BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+            BSP_LCD_SetTextColor(LCD_COLOR_RED);
+            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, SYMBOL_SIZE - 2);
+            BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+            BSP_LCD_Draw_HLine(SYMBOL_SIZE, y_cen + row, 1);
+        }
+    }
     // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
+
 int draw_up(int index) {
     // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);

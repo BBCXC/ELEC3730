@@ -37,13 +37,13 @@ void Ass_03_Task_02(void const* argument) {
     safe_printf("Hello from Task 2 - Pulse Rate Application (touch screen input)\n");
 
     while (1) {
-    	//safe_printf("Here    2\n");
+        // safe_printf("Here    2\n");
         if (getfp(&display) == 0) {
             // If the position touched matches some given coordinates
             touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
             if (touch_pos != 100) {
-            	//safe_printf("Here    3\n");
-            	button_pressed = Get_Button_Name(touch_pos, Get_Popup_Status());
+                // safe_printf("Here    3\n");
+                button_pressed = Get_Button_Name(touch_pos, Get_Popup_Status());
                 // Do something on that touch
                 safe_printf("Task 2: (touch: %s, %3d,%3d)\n", button_pressed, display.x, display.y);
 
@@ -116,8 +116,8 @@ void Ass_03_Task_02(void const* argument) {
                     safe_printf("Unknown Position Pressed\n");
                 }
             }
-            else{
-            	safe_printf("Touch is %s\n", touch_pos);
+            else {
+                safe_printf("Touch is %s\n", touch_pos);
             }
         }
     }
