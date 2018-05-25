@@ -74,7 +74,7 @@ void Ass_03_Task_01(void const* argument) {
         safe_printf("Task 1: %d (got '%c')\n", loop, c);
         loop++;
         myReadFile();
-        myWriteFile();
+        // myWriteFile();
 
 
         CommandLineParserProcess();
@@ -285,7 +285,7 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
 ***********************************************************************************************************************/
 // clang-format on
 
-int analog_function(char** array_of_words_p[], int word_count, double* resul) {
+int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -304,102 +304,106 @@ int analog_function(char** array_of_words_p[], int word_count, double* resul) {
 }
 
 // TODO ls
-int ls_function(char** array_of_words_p[], int word_count, double* resul) {
+int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
-    if (word_count == 2) {
-        // TODO
-        // Declare **word[]
-        // Split path variables up into words
-        // Do something
+    FRESULT res;
+    DIR dir;
+    UINT i = 0;
+    static FILINFO fno;
 
-        //         FRESULT scan_files (
-        //     char* path        /* Start node to be scanned (***also used as work area***) */
-        // )
-        // {
-        //     FRESULT res;
-        //     DIR dir;
-        //     UINT i;
-        //     static FILINFO fno;
+    UINT buf_len           = 50;
+    TCHAR Cur_dir[buf_len] = NULL;
+    char** path_p;
+    char* item[2];
 
+    if (word_count > 1) {
+        // get current directory and store it, f_getcwd
+        res = f_getcwd(Cur_dir, buf_len);
+        if (res != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
 
-        //     res = f_opendir(&dir, path);                       /* Open the directory */
-        //     if (res == FR_OK) {
-        //         for (;;) {
-        //             res = f_readdir(&dir, &fno);                   /* Read a directory item */
-        //             if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-        //             if (fno.fattrib & AM_DIR) {                    /* It is a directory */
-        //                 i = strlen(path);
-        //                 sprintf(&path[i], "/%s", fno.fname);
-        //                 res = scan_files(path);                    /* Enter the directory */
-        //                 if (res != FR_OK) break;
-        //                 path[i] = 0;
-        //             } else {                                       /* It is a file. */
-        //                 printf("%s/%s\n", path, fno.fname);
-        //             }
-        //         }
-        //         f_closedir(&dir)
-        //     }
-
-        //     return res;
-        // }
-
-
-        // int main (void)
-        // {
-        //     FATFS fs;
-        //     FRESULT res;
-        //     char buff[256];
-
-
-        //     res = f_mount(&fs, "", 1);
-        //     if (res == FR_OK) {
-        //         strcpy(buff, "/");
-        //         res = scan_files(buff);
-        //     }
-
-        //     return res;
-        // }
+        res = f_chdir(array_of_words_p[1]);
+        if (res != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
     }
-    else {
-        safe_printf("Too many arguments\n");
+    // Read the first folder/file
+    res = f_readdir(&dir, &fno);
+
+    while (res != FR_OK || fno.fname[0] == 0) {
+        sprintf(&item[i][0], "/%s", fno.fname);
+        // If the item is a directory
+        if (fno.fattrib & AM_DIR) {
+            item[i][1] = 1;
+        }
+        // else the item is a file
+        else {
+            item[i][1] = 0;
+        }
+        res = f_readdir(&dir, &fno);
+        i++;
     }
+    item[i][0] = NULL;
+
+    // Change back to the original directory if there was one
+    if (strcmp(Cur_dir, NULL) == 0) {
+        // change directory back
+        if (f_chdir(Cur_dir) != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
+    }
+
+    // TODO Print the list of items out
+
+    return 0;
 }
+
 // TODO cd
-int cd_function(char** array_of_words_p[], int word_count, double* resul) {
-    int value_1;
+int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
-    if (word_count == 2) {
-        // TODO
-        // Declare **word[]
-        // Split path variables up into words
-        // Do something
-        // FRESULT f_chdir (const TCHAR* path);                                /* Change current directory */
+    FRESULT res;
+
+    if (word_count > 1) {
+        // change directory to the path
+        res = f_chdir(array_of_words_p[1]);
+        if (res != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
     }
     else {
         safe_printf("Too many arguments\n");
     }
+    return 0;
 }
+
 // TODO mkdir
-int mkdir_function(char** array_of_words_p[], int word_count, double* resul) {
-    int value_1;
+int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
-    if (word_count == 2) {
-        // TODO
-        // Declare **word[]
-        // Split path variables up into words
-        // Do something
-        // FRESULT f_mkdir (const TCHAR* path);                                /* Create a sub directory */
+    FRESULT res;
+
+    if (word_count > 1) {
+        res = f_mkdir(array_of_words_p[1]);
+        if (res != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
     }
     else {
         safe_printf("Too many arguments\n");
     }
 }
+
 // TODO cp
-int cp_function(char** array_of_words_p[], int word_count, double* resul) {
+int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -414,23 +418,24 @@ int cp_function(char** array_of_words_p[], int word_count, double* resul) {
         safe_printf("Too many arguments\n");
     }
 }
-// TODO rm
-int rm_function(char** array_of_words_p[], int word_count, double* resul) {
-    int value_1;
+
+int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
-    if (word_count == 2) {
-        // TODO
-        // Declare **word[]
-        // Split path variables up into words
-        // Do something
-        // FRESULT f_unlink (const TCHAR* path);                               /* Delete an existing file or directory
-        // */
+    FRESULT res;
+    if (word_count > 1) {
+        res = f_unlink(array_of_words_p[1]);
+        if (res != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
     }
     else {
-        safe_printf("Too many arguments\n");
+        return 1;
     }
+    return 0;
 }
+
 // TODO
 int Get_Absolute_Path() {
     FRESULT fr;
@@ -439,8 +444,7 @@ int Get_Absolute_Path() {
     fr = f_getcwd(str, SZ_STR); /* Get current directory path */
 }
 
-int expr_function(char** array_of_words_p[], int word_count, double* resul) {
-    int value_1;
+int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
@@ -455,7 +459,7 @@ int expr_function(char** array_of_words_p[], int word_count, double* resul) {
 }
 
 // Change between setting on and off
-int debug_function(char** array_of_words_p[], int word_count, double* result) {
+int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
@@ -478,7 +482,7 @@ int debug_function(char** array_of_words_p[], int word_count, double* result) {
 }
 
 // Change between setting on and off
-int system_function(char** array_of_words_p[], int word_count, double* result) {
+int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
@@ -504,21 +508,21 @@ int system_function(char** array_of_words_p[], int word_count, double* result) {
 }
 
 // Clear function, clear terminal screen
-int clear_function(char** array_of_words_p[], int word_count, double* result) {
+int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     printf(CLEAR_M);
     return 0;
 }
 
 // Reset function, reset terminal scrollback
-int reset_function(char** array_of_words_p[], int word_count, double* result) {
+int reset_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     printf(RESET_M);
     return 0;
 }
 
 // Help function, display help messages
-int help_function(char** array_of_words_p[], int word_count, double* result) {
+int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (help_parser(array_of_words_p, word_count) != 0) {
         printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
