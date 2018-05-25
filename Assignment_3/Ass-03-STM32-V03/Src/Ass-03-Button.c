@@ -63,6 +63,7 @@ int Populate_Button_Position() {
     // Stop Max = window height + line width
 
     // TODO
+	return 0;
 }
 
 char* Get_Button_Name(int element, int status) {

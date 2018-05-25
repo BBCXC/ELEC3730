@@ -15,6 +15,8 @@ typedef struct {
     int debug;
     int system;
     int analog;
+    int angle_mode;
+    int first_time;
 } info_t;
 info_t info;
 

@@ -51,6 +51,7 @@ void Ass_03_Task_01(void const* argument) {
     window_init();
     // button_init();
     popup_init();
+    Equation_Init();
 
     safe_printf("All structures initilised\n");
 
@@ -175,6 +176,9 @@ int StringProcess(char* command_line, int i) {
     static double prev_ans = 0;
     char** array_of_words_p;
 
+    char** path_p;
+    int path_count = 0;
+
     int word_count = string_parser(command_line, &array_of_words_p, ' ');
 
     if (1) {
@@ -183,7 +187,7 @@ int StringProcess(char* command_line, int i) {
         }
     }
     int mode = -1;
-    mode     = command_parser(&array_of_words_p, word_count);
+    mode     = command_parser(&array_of_words_p, word_count, &path_p, &path_count);
 
     if (mode == -1) {
         printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
@@ -305,7 +309,6 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 // TODO ls
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
@@ -313,9 +316,9 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     UINT i = 0;
     static FILINFO fno;
 
-    UINT buf_len           = 50;
-    TCHAR Cur_dir[buf_len] = NULL;
-    char** path_p;
+    const int buf_len = 50;
+    char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
+
     char* item[2];
 
     if (word_count > 1) {
@@ -358,6 +361,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             return 1;
         }
     }
+    free(Cur_dir);
 
     // TODO Print the list of items out
 
@@ -439,9 +443,12 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 // TODO
 int Get_Absolute_Path() {
     FRESULT fr;
-    TCHAR str[SZ_STR];
+    const int buf_len = 50;
+    char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
 
-    fr = f_getcwd(str, SZ_STR); /* Get current directory path */
+    fr = f_getcwd(Cur_dir, buf_len); /* Get current directory path */
+
+    free(Cur_dir);
 }
 
 int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {

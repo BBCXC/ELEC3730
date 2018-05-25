@@ -27,7 +27,7 @@ const command_s Command_list[] = {
 // clang-format on
 
 // If a command is called function decides which function pointer to return
-int command_parser(char** array_of_words_p[], int word_count, double* prev_ans) {
+int command_parser(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     double result = 0;
     int i         = 0;
 
@@ -37,9 +37,8 @@ int command_parser(char** array_of_words_p[], int word_count, double* prev_ans) 
         if (strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0) {
             if (Get_Debug() == 1) printf("Operation: %s\n", Command_list[i].NameString);
             // If the function we wanted returned success
-            if (Command_list[i].Function_p(array_of_words_p, word_count, &result) == 0) {
+            if (Command_list[i].Function_p(array_of_words_p, word_count, path_p, path_count) == 0) {
                 Set_Result(result);
-                *prev_ans = result;
                 if (i <= 14)
                     return 0;
                 else
@@ -404,12 +403,6 @@ double parseFactor() {
                     return temp;
                 }
             }
-        }
-    }
-    else if (Get_Graph_Mode() == 1) {
-        if (*output.formula == 'X') {
-            ++output.formula;
-            return (Get_Graph_Increment());
         }
     }
     else {

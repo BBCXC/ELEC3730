@@ -73,6 +73,7 @@ extern osMessageQId myQueue02Handle;  // State message
 #include "Ass-03-Debug.h"
 #include "Ass-03-Popup.h"
 #include "Ass-03-Window.h"
+#include "Ass-03-Equation.h"
 
 extern osMutexId windowbuf_Handle;  // Protect Window buffer
 extern osMutexId button_Handle;     // Protect button struct
@@ -115,14 +116,43 @@ extern int Save_New();
 extern int Save_Overwrite();
 extern int Clear_Popup();
 
+extern void CommandLineParserProcess(void);
+
+extern int StringProcess(char* command_line, int i);
+extern int string_parser(char* inp, char** array_of_words_p[], char delim);
+extern int help_parser(char** array_of_words_p[], int word_count);
+extern int command_parser(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+
+// Recursive decent parser
+extern double parseFormula(void);
+extern double parseSub(void);
+extern double parseSum(void);
+extern double parsePro(void);
+extern double parseDiv(void);
+extern double parseFactor(void);
+extern double parseNumber(void);
+extern double parsePow(void);
+
+extern int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int reset_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+
+
 // Question 1
 typedef struct {
-    char* NameString;                             // Operation string
-    int (*Function_p)(char** array_of_words_p[],  // Array pointer
-                      int word_count,             // Function pointer
-                      double* result);            // Result Pointer
-    char* HelpString;                             // Help information
-    char* DescriptionString;                      // Description
+    char* NameString;                                                                               // Operation string
+    int (*Function_p)(char** array_of_words_p[], int word_count, char** path_p[], int path_count);  // Result Pointer
+    char* HelpString;                                                                               // Help information
+    char* DescriptionString;                                                                        // Description
 } command_s;
 
 

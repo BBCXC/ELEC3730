@@ -6,6 +6,7 @@ void debug_init() {
     info.State_Thread = 1;
     info.debug        = 1;
     info.system       = 1;
+    info.first_time   = 1;
     info.analog       = 10;
     osMutexRelease(debug_Handle);
 }
@@ -55,5 +56,30 @@ int Get_Analog(void) {
 void Set_Analog(int Value) {
     osMutexWait(debug_Handle, osWaitForever);
     info.analog = Value;
+    osMutexRelease(debug_Handle);
+}
+
+int Get_Angle_Mode(void) {
+    osMutexWait(debug_Handle, osWaitForever);
+    int temp = info.angle_mode;
+    osMutexRelease(debug_Handle);
+    return (temp);
+}
+
+void Set_Angle_Mode(int Value) {
+    osMutexWait(debug_Handle, osWaitForever);
+    info.angle_mode = Value;
+    osMutexRelease(debug_Handle);
+}
+
+int Get_First_Time(void) {
+    osMutexWait(debug_Handle, osWaitForever);
+    int temp = info.first_time;
+    osMutexRelease(debug_Handle);
+    return (temp);
+}
+void Set_First_Time(int Value) {
+    osMutexWait(debug_Handle, osWaitForever);
+    info.first_time = Value;
     osMutexRelease(debug_Handle);
 }

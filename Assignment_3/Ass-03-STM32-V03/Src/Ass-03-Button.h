@@ -41,6 +41,7 @@ extern int draw_blist_item(int index);
 extern int draw_up(int index);
 extern int draw_down(int index);
 extern int draw_plist_item(int index);
+extern int Populate_Button_Position(void);
 
 
 extern int get_touch_pos(int display_x, int display_y, int popup);
