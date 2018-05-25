@@ -10,6 +10,7 @@
 #include "Ass-03.h"
 
 #define num_buttons 12
+#define SYMBOL_SIZE 21
 
 typedef struct {
     int position[num_buttons][4];  // = {(x_min, x_max, y_min, y_max),  // Button 1
