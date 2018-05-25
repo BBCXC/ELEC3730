@@ -278,8 +278,14 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
     return num_words;
 }
 
-/* Continue here */
-int Analog_Func(char** array_of_words_p[], int word_count) {
+
+// clang-format off
+/***********************************************************************************************************************
+**************************************************Operation Function****************************************************
+***********************************************************************************************************************/
+// clang-format on
+
+int analog_function(char** array_of_words_p[], int word_count, double* resul) {
     int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -297,8 +303,143 @@ int Analog_Func(char** array_of_words_p[], int word_count) {
     }
 }
 
-/* Continue here */
-int Expr_Func(char** array_of_words_p[], int word_count) {
+// TODO ls
+int ls_function(char** array_of_words_p[], int word_count, double* resul) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        // TODO
+        // Declare **word[]
+        // Split path variables up into words
+        // Do something
+
+        //         FRESULT scan_files (
+        //     char* path        /* Start node to be scanned (***also used as work area***) */
+        // )
+        // {
+        //     FRESULT res;
+        //     DIR dir;
+        //     UINT i;
+        //     static FILINFO fno;
+
+
+        //     res = f_opendir(&dir, path);                       /* Open the directory */
+        //     if (res == FR_OK) {
+        //         for (;;) {
+        //             res = f_readdir(&dir, &fno);                   /* Read a directory item */
+        //             if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
+        //             if (fno.fattrib & AM_DIR) {                    /* It is a directory */
+        //                 i = strlen(path);
+        //                 sprintf(&path[i], "/%s", fno.fname);
+        //                 res = scan_files(path);                    /* Enter the directory */
+        //                 if (res != FR_OK) break;
+        //                 path[i] = 0;
+        //             } else {                                       /* It is a file. */
+        //                 printf("%s/%s\n", path, fno.fname);
+        //             }
+        //         }
+        //         f_closedir(&dir)
+        //     }
+
+        //     return res;
+        // }
+
+
+        // int main (void)
+        // {
+        //     FATFS fs;
+        //     FRESULT res;
+        //     char buff[256];
+
+
+        //     res = f_mount(&fs, "", 1);
+        //     if (res == FR_OK) {
+        //         strcpy(buff, "/");
+        //         res = scan_files(buff);
+        //     }
+
+        //     return res;
+        // }
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+// TODO cd
+int cd_function(char** array_of_words_p[], int word_count, double* resul) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        // TODO
+        // Declare **word[]
+        // Split path variables up into words
+        // Do something
+        // FRESULT f_chdir (const TCHAR* path);                                /* Change current directory */
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+// TODO mkdir
+int mkdir_function(char** array_of_words_p[], int word_count, double* resul) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        // TODO
+        // Declare **word[]
+        // Split path variables up into words
+        // Do something
+        // FRESULT f_mkdir (const TCHAR* path);                                /* Create a sub directory */
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+// TODO cp
+int cp_function(char** array_of_words_p[], int word_count, double* resul) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        // TODO
+        // Declare **word[]
+        // Split path variables up into words
+        // Do something
+        // FRESULT f_rename (const TCHAR* path_old, const TCHAR* path_new);    /* Rename/Move a file or directory */
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+// TODO rm
+int rm_function(char** array_of_words_p[], int word_count, double* resul) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        // TODO
+        // Declare **word[]
+        // Split path variables up into words
+        // Do something
+        // FRESULT f_unlink (const TCHAR* path);                               /* Delete an existing file or directory
+        // */
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+// TODO
+int Get_Absolute_Path() {
+    FRESULT fr;
+    TCHAR str[SZ_STR];
+
+    fr = f_getcwd(str, SZ_STR); /* Get current directory path */
+}
+
+int expr_function(char** array_of_words_p[], int word_count, double* resul) {
     int value_1;
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -313,7 +454,8 @@ int Expr_Func(char** array_of_words_p[], int word_count) {
     }
 }
 
-int debug_function(char** array_of_words_p[], int word_count) {
+// Change between setting on and off
+int debug_function(char** array_of_words_p[], int word_count, double* result) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
@@ -331,6 +473,55 @@ int debug_function(char** array_of_words_p[], int word_count) {
     }
     else {
         printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
+    }
+    return 0;
+}
+
+// Change between setting on and off
+int system_function(char** array_of_words_p[], int word_count, double* result) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (word_count > 1) {
+        if (strcmp("on", (*array_of_words_p)[1]) == 0) {
+            Set_System(1);
+            printf("%sSYSTEM_INFO:%s System ON\n", SYS_M, DEFAULT_COLOUR_M);
+        }
+        else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
+            Set_System(0);
+            printf("%sSYSTEM_INFO:%s System OFF\n", SYS_M, DEFAULT_COLOUR_M);
+        }
+        else {
+            printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
+    }
+    else {
+        printf("%sSYSTEM_INFO:%s System messages currently %s\n",
+               SYS_M,
+               DEFAULT_COLOUR_M,
+               Get_System() == 0 ? "OFF" : "ON");
+    }
+    return 0;
+}
+
+// Clear function, clear terminal screen
+int clear_function(char** array_of_words_p[], int word_count, double* result) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    printf(CLEAR_M);
+    return 0;
+}
+
+// Reset function, reset terminal scrollback
+int reset_function(char** array_of_words_p[], int word_count, double* result) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    printf(RESET_M);
+    return 0;
+}
+
+// Help function, display help messages
+int help_function(char** array_of_words_p[], int word_count, double* result) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (help_parser(array_of_words_p, word_count) != 0) {
+        printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     return 0;
 }

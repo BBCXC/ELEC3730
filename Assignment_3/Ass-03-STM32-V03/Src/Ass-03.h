@@ -115,5 +115,15 @@ extern int Save_New();
 extern int Save_Overwrite();
 extern int Clear_Popup();
 
+// Question 1
+typedef struct {
+    char* NameString;                             // Operation string
+    int (*Function_p)(char** array_of_words_p[],  // Array pointer
+                      int word_count,             // Function pointer
+                      double* result);            // Result Pointer
+    char* HelpString;                             // Help information
+    char* DescriptionString;                      // Description
+} command_s;
+
 
 #endif /* ASS_03_H_ */

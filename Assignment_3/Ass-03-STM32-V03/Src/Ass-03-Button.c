@@ -290,7 +290,7 @@ int draw_stop(int index) {
         // Only print black pixels
         if (row == 0 || row == SYMBOL_SIZE - 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, width);
+            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, SYMBOL_SIZE);
         }
 
         // Any other draw a black pixel either side of the red
