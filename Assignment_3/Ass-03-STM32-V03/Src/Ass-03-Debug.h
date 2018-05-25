@@ -14,6 +14,7 @@ typedef struct {
     int State_Thread;
     int debug;
     int system;
+    int analog;
 } info_t;
 info_t info;
 
@@ -24,5 +25,7 @@ extern int Get_Debug(void);
 extern int Get_System(void);
 extern void Set_Debug(int Value);
 extern void Set_System(int Value);
+extern int Get_Analog();
+extern void Set_Analog(int Value);
 
 #endif /* ASS_03_DEBUG_H_ */

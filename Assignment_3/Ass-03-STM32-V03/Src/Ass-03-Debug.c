@@ -6,6 +6,7 @@ void debug_init() {
     info.State_Thread = 1;
     info.debug        = 1;
     info.system       = 1;
+    info.analog       = 10;
     osMutexRelease(debug_Handle);
 }
 
@@ -42,5 +43,17 @@ void Set_Debug(int Value) {
 void Set_System(int Value) {
     osMutexWait(debug_Handle, osWaitForever);
     info.system = Value;
+    osMutexRelease(debug_Handle);
+}
+
+int Get_Analog(void) {
+    osMutexWait(debug_Handle, osWaitForever);
+    int temp = info.analog;
+    osMutexRelease(debug_Handle);
+    return (temp);
+}
+void Set_Analog(int Value) {
+    osMutexWait(debug_Handle, osWaitForever);
+    info.analog = Value;
     osMutexRelease(debug_Handle);
 }

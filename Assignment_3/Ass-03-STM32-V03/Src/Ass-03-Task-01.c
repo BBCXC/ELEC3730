@@ -2,6 +2,8 @@
 // $Revision: 1330 $
 //   $Author: Peter $
 
+// TODO MACRO/Function that takes a sting and arguments and if debug is on prints the debug statement
+
 #include "Ass-03.h"
 
 // This is the console task. Can use your code from the previous assignment
@@ -29,8 +31,8 @@ void Ass_03_Task_01(void const* argument) {
     Coordinate display;
     char c;
 
-    //printf(RESET_M);
-    //printf(CLEAR_M);
+    // printf(RESET_M);
+    // printf(CLEAR_M);
     printf(KNRM);
 
     safe_printf("Hello from Task 1 - Console (serial input)\n");
@@ -47,7 +49,7 @@ void Ass_03_Task_01(void const* argument) {
     // Initilise structs here
     debug_init();
     window_init();
-    //button_init();
+    // button_init();
     popup_init();
 
     safe_printf("All structures initilised\n");
@@ -73,7 +75,9 @@ void Ass_03_Task_01(void const* argument) {
         loop++;
         myReadFile();
         myWriteFile();
-        //safe_printf("Here1\n");
+
+
+        CommandLineParserProcess();
     }
 }
 
@@ -135,5 +139,198 @@ uint8_t myWriteFile() {
     f_close(&MyFile);
 
 
+    return 0;
+}
+
+void CommandLineParserProcess(void) {
+    char c;
+    static int i = 0;
+    static char command_line[101];
+
+    if (Get_First_Time() == 1) {
+        Set_First_Time(0);
+        printf("--> Enter text: ");
+    }
+    if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+        // printf("%c", c); TODO Should be fflush
+
+        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+        command_line[i] = c;
+        i++;
+
+        // If we get a return character then process the string
+        if (c == '\r' || i > 101) {
+            printf("\n");
+            command_line[i - 1] = '\0';
+            if (StringProcess(&command_line, i) != 0) {
+                printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+            }
+            i = 0;
+            Set_First_Time(1);
+        }
+    }
+}
+
+int StringProcess(char* command_line, int i) {
+    static double prev_ans = 0;
+    char** array_of_words_p;
+
+    int word_count = string_parser(command_line, &array_of_words_p, ' ');
+
+    if (1) {
+        for (int i = 0; i < word_count; i++) {
+            printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
+        }
+    }
+    int mode = -1;
+    mode     = command_parser(&array_of_words_p, word_count);
+
+    if (mode == -1) {
+        printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
+    }
+    else if (mode == 0) { /* insert debug, analog function etc */
+        myReadFile();
+    }
+}
+
+// Takes input string, splits into words
+int string_parser(char* inp, char** array_of_words_p[], char delim) {
+
+    char curr_char;
+    char prev_char = delim;
+    int num_words  = 0;
+    int len_word   = 0;
+    int characters = 0;
+    int i;
+
+    // Iterate through string and count the numbr of words
+    for (i = 0; i < strlen(inp); i++) {
+        curr_char = inp[i];
+
+        if (curr_char == '\0')
+            return 0;                                         // No words in string
+        else if (curr_char == delim && prev_char == delim) {  // Multiple spaces in a row
+        }
+        else if (curr_char != delim && prev_char == delim) {  // Found new word
+            num_words++;
+            characters++;
+        }
+        else if (curr_char == delim && prev_char != delim) {
+        }
+        else {  // Currently in word, don't do anything
+            characters++;
+        }
+        prev_char = curr_char;
+    }
+
+    // Allocate enough memory to store a pointer to each word
+    *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
+    if (array_of_words_p == 0) {  // If malloc fails returns NULL ptr
+        printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+               DEFAULT_COLOUR_M);  // Log
+        return -1;                 // Return Failed
+    }
+    // Set pointer to first word
+    char* word_array = (char*) calloc((characters + num_words), sizeof(char));
+    if (word_array == 0) {  // If malloc fails returns NULL ptr
+        printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+               DEFAULT_COLOUR_M);  // Log
+        free(*array_of_words_p);
+        return -1;  // Return Failed
+    }
+
+    // Reset variables
+    prev_char  = delim;
+    curr_char  = delim;
+    num_words  = 0;
+    characters = 0;
+
+    // Iterate over string again
+    for (i = 0; i < strlen(inp); i++) {
+        curr_char = inp[i];
+
+        if (curr_char == '\0')
+            return 0;                                         // No words in string
+        else if (curr_char == delim && prev_char == delim) {  // Multiple spaces in a row
+        }
+        else if (curr_char != delim && prev_char == delim) {  // Found new word
+            characters++;
+            num_words++;
+            len_word                           = 1;
+            (*array_of_words_p)[num_words - 1] = &word_array[characters - 1 + (num_words - 1)];
+        }
+        else if (curr_char == delim && prev_char != delim) {  // Found end of word
+            // Copy inp into memory allocation
+            strncpy(&word_array[characters - len_word + (num_words - 1)], (inp + (i - len_word)), len_word);
+            len_word = 0;
+        }
+        else {  // Currently in word, don't do anything
+            characters++;
+            len_word++;
+        }
+        prev_char = curr_char;
+    }
+    if (len_word != 0) {
+        // Copy inp into memory allocation
+        strncpy(&word_array[characters - len_word + (num_words - 1)], (inp + (i - len_word)), len_word);
+        len_word = 0;
+    }
+    return num_words;
+}
+
+/* Continue here */
+int Analog_Func(char** array_of_words_p[], int word_count) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
+            printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
+        else {
+            Set_Analog(value_1);
+        }
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+
+/* Continue here */
+int Expr_Func(char** array_of_words_p[], int word_count) {
+    int value_1;
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+        Set_Formula(array_of_words_p[1]);
+        if (parseFormula() == 0) {
+            safe_printf("Answer: %g", Get_Result());
+        }
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+}
+
+int debug_function(char** array_of_words_p[], int word_count) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (word_count > 1) {
+        if (strcmp("on", (*array_of_words_p)[1]) == 0) {
+            Set_Debug(1);
+            printf("Debug ON\n");
+        }
+        else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
+            Set_Debug(0);
+            printf("Debug OFF\n");
+        }
+        else {
+            printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
+    }
+    else {
+        printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
+    }
     return 0;
 }
