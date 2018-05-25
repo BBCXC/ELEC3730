@@ -529,3 +529,23 @@ int help_function(char** array_of_words_p[], int word_count, char** path_p[], in
     }
     return 0;
 }
+
+// clang-format off
+/***********************************************************************************************************************
+*************************************************Save, Load, Navigate***************************************************
+***********************************************************************************************************************/
+// clang-format on
+
+// TODO
+// Save
+// given an array save file with the given name
+// needs overwrite function
+// needs new file function
+
+// TODO
+// Load
+// on load read the file into an array and give it to another thread
+
+// TODO
+// Navigate
+// This will take the current directory and give the list of correct files to the other thread
