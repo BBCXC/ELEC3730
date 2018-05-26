@@ -31,9 +31,9 @@ void Ass_03_Task_01(void const* argument) {
     Coordinate display;
     char c;
 
-    // printf(RESET_M);
-    // printf(CLEAR_M);
-    printf(KNRM);
+     safe_printf(RESET_M);
+     safe_printf(CLEAR_M);
+    safe_printf(KNRM);
 
     safe_printf("Hello from Task 1 - Console (serial input)\n");
     safe_printf("INFO: Initialise LCD and TP first...\n");
@@ -184,20 +184,21 @@ void CommandLineParserProcess(void) {
 			safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
 		}
 		safe_printf("%s\n", Cur_dir);
+		fflush(stdout);
     }
     if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
-        // printf("%c", c); TODO Should be fflush
-
+		 safe_printf("%c", c); //TODO Should be fflush
+		 fflush(stdout);
         HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
         command_line[i] = c;
         i++;
 
         // If we get a return character then process the string
         if (c == '\r' || i > 101) {
-            printf("\n");
+            safe_printf("\n");
             command_line[i - 1] = '\0';
             if (StringProcess(&command_line, i) != 0) {
-                printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+            	safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
             }
             i = 0;
             Set_First_Time(1);
@@ -351,6 +352,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     DIR dir;
     UINT i = 0;
     static FILINFO fno;
+    char* prev_fno = "";
 
     const int buf_len = 50;
     char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
@@ -361,11 +363,11 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     DEBUG_P
 
 	res = f_getcwd(Cur_dir, buf_len);
-	        if (res != FR_OK) {
-	            safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
-	            return 1;
-	        }
-	        safe_printf("Current Directory %s\n", Cur_dir);
+	if (res != FR_OK) {
+		safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+		return 1;
+	}
+	safe_printf("Current Directory %s\n", Cur_dir);
 
     if (word_count > 1) {
         // get current directory and store it, f_getcwd
@@ -378,6 +380,17 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             return 1;
         }
     }
+    res = f_opendir(&dir, Cur_dir);                       /* Open the directory */
+    while(res == FR_OK){
+    	res = f_readdir(&dir, &fno);                   /* Read a directory item */
+    	safe_printf("Res returned %d\n", res);
+		safe_printf("%s\n", fno.fname);/* It is a file. */
+		if(strcmp(fno.fname, prev_fno) == 0){
+			break;
+		}
+    }
+
+
 
 //		res = f_readdir(&dir, &fno);
 //    while (res != FR_OK || fno.fname[0] == 0) {
@@ -404,14 +417,14 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 //    item[i][0] = NULL;
 
     // Change back to the original directory if there was one
-    if (chgdir_flag == 1) {
-    	safe_printf("Need to change dir back\n");
-        // change directory back
-        if (f_chdir(Cur_dir) != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
-            return 1;
-        }
-    }
+//    if (chgdir_flag == 1) {
+//    	safe_printf("Need to change dir back\n");
+//        // change directory back
+//        if (f_chdir(Cur_dir) != FR_OK) {
+//            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+//            return 1;
+//        }
+//    }
     free(Cur_dir);
 
     // TODO Print the list of items out
@@ -453,7 +466,7 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
     	safe_printf("Making folder %s\n", (*array_of_words_p)[1]);
         res = f_mkdir((*array_of_words_p)[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -488,7 +501,7 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     if (word_count > 1) {
         res = f_unlink((*array_of_words_p)[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
