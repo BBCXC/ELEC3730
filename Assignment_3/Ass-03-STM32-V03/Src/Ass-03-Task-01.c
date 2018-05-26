@@ -171,10 +171,19 @@ void CommandLineParserProcess(void) {
     char c;
     static int i = 0;
     static char command_line[101];
+    FRESULT res;
+    int buf_len = 50;
+    char Cur_dir[buf_len];
 
     if (Get_First_Time() == 1) {
+    	DEBUG_P
         Set_First_Time(0);
-        printf("--> Enter text: ");
+    	DEBUG_P
+        res = f_getcwd(Cur_dir, buf_len);
+		if (res != FR_OK) {
+			safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+		}
+		safe_printf("%s\n", Cur_dir);
     }
     if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
         // printf("%c", c); TODO Should be fflush
@@ -192,6 +201,7 @@ void CommandLineParserProcess(void) {
             }
             i = 0;
             Set_First_Time(1);
+            DEBUG_P
         }
     }
 }
@@ -334,8 +344,9 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 // TODO ls
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
-
+	DEBUG_P
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    DEBUG_P
     FRESULT res;
     DIR dir;
     UINT i = 0;
@@ -343,58 +354,68 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     const int buf_len = 50;
     char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
+    //TODO Check calloc
 
     char* item[2];
     int chgdir_flag = 0;
+    DEBUG_P
+
+	res = f_getcwd(Cur_dir, buf_len);
+	        if (res != FR_OK) {
+	            safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+	            return 1;
+	        }
+	        safe_printf("Current Directory %s\n", Cur_dir);
 
     if (word_count > 1) {
         // get current directory and store it, f_getcwd
     	safe_printf("Need to change dir\n");
     	chgdir_flag = 1;
-        res = f_getcwd(Cur_dir, buf_len);
-        if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
-            return 1;
-        }
 
-        res = f_chdir(array_of_words_p[1]);
+        res = f_chdir((*array_of_words_p)[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Unknown system command f_chdir %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
-    // Read the first folder/file
-    res = f_readdir(&dir, &fno);
 
-    while (res != FR_OK || fno.fname[0] == 0) {
-    	safe_printf("Searching folder\n");
-        sprintf(&item[i][0], "/%s", fno.fname);
-        // If the item is a directory
-        if (fno.fattrib & AM_DIR) {
-            item[i][1] = 1;
-        }
-        // else the item is a file
-        else {
-            item[i][1] = 0;
-        }
-        res = f_readdir(&dir, &fno);
-        i++;
-    }
-    item[i][0] = NULL;
+//		res = f_readdir(&dir, &fno);
+//    while (res != FR_OK || fno.fname[0] == 0) {
+//    	DEBUG_P
+//    	safe_printf("Searching folder\n");
+//        sprintf(&item[i][0], "/%s", fno.fname);
+//        safe_printf("Found %s\n", fno.fname);
+//        DEBUG_P
+//        // If the item is a directory
+//        if (fno.fattrib & AM_DIR) {
+//            item[i][1] = 1;
+//            DEBUG_P
+//        }
+//        // else the item is a file
+//        else {
+//            item[i][1] = 0;
+//            DEBUG_P
+//        }
+//        res = f_readdir(&dir, &fno);
+//        i++;
+//        DEBUG_P
+//    }
+//    DEBUG_P
+//    item[i][0] = NULL;
 
     // Change back to the original directory if there was one
     if (chgdir_flag == 1) {
-    	safe_printf("Need to change dir\n");
+    	safe_printf("Need to change dir back\n");
         // change directory back
         if (f_chdir(Cur_dir) != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
     free(Cur_dir);
 
     // TODO Print the list of items out
-
+    DEBUG_P
     return 0;
 }
 
@@ -406,12 +427,12 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     if (word_count < 3) {
     	if(word_count < 2){
-    		array_of_words_p[1] = "";
+    		(*array_of_words_p)[1] = "/";
     	}
         // change directory to the path
-        res = f_chdir(array_of_words_p[1]);
+        res = f_chdir((*array_of_words_p)[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -465,7 +486,7 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     FRESULT res;
     if (word_count > 1) {
-        res = f_unlink(array_of_words_p[1]);
+        res = f_unlink((*array_of_words_p)[1]);
         if (res != FR_OK) {
             safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
@@ -494,9 +515,9 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
-        Set_Formula(array_of_words_p[1]);
+        Set_Formula((*array_of_words_p)[1]);
         if (parseFormula() == 0) {
-            safe_printf("Answer: %g", Get_Result());
+            safe_printf("Answer: %g\n", Get_Result());
         }
     }
     else {

@@ -102,7 +102,7 @@ extern osMutexId debug_Handle;      // Protect debug struct
 
 #define HELP_M "%-25.25s\t%-35.35s"
 #define DEBUG_P                                                                                                        \
-    { printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__); }
+    { safe_printf("File %s, function %s, line %i\n", __FILE__, __FUNCTION__, __LINE__); }
 
 #define XOFF 68
 #define YOFF 2
