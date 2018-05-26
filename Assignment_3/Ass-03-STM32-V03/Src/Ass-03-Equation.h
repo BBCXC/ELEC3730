@@ -41,5 +41,6 @@ extern int Increment_Pos(int Direction);
 extern void Reset_Formula_pos(void);
 extern int clear_equation();
 extern int draw_equation();
+extern int LCD_Cell_Colour(int x_min, int x_max, int y_min, int y_max, int text_colour, int cell_colour);
 
 #endif /* ASS_03_EQUATION_H_ */

@@ -70,78 +70,102 @@ void Ass_03_Task_01(void const* argument) {
     // BSP_LCD_DisplayStringAt(5, 35, (uint8_t*) "as a starting point for the assignment.", LEFT_MODE);
     osMutexRelease(myMutex01Handle);
 
+    //myReadFile();
+
     while (1) {
-        c = getchar();
-        safe_printf("Task 1: %d (got '%c')\n", loop, c);
-        loop++;
-        myReadFile();
-        // myWriteFile();
+    	//safe_printf("Here\n");
+		char c;
+		static int i = 0;
+		static char command_line[101];
 
+		if (Get_First_Time() == 1) {
+			Set_First_Time(0);
+			safe_printf("--> Enter text: ");
+		}
+//		if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+			// printf("%c", c); TODO Should be fflush
+			c = getchar();
+			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+			command_line[i] = c;
+			i++;
+			if(fflush(command_line) != 0){
+				safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
+			}
 
-        CommandLineParserProcess();
+			// If we get a return character then process the string
+			if (c == '\r' || i > 101) {
+				safe_printf("\n");
+				command_line[i - 1] = '\0';
+				if (StringProcess(&command_line, i) != 0) {
+					safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+				}
+				i = 0;
+				Set_First_Time(1);
+			}
+//		}
     }
 }
 
-uint8_t myReadFile() {
-#define READ_FILE "Hello.txt"
-#define BUFF_SIZE 256
-    uint8_t rtext[BUFF_SIZE];
-    FRESULT res;
-    uint32_t bytesread;
-
-    // Open file Hello.txt
-    if ((res = f_open(&MyFile, READ_FILE, FA_READ)) != FR_OK) {
-        safe_printf("ERROR: Opening '%s'\n", READ_FILE);
-        return 1;
-    }
-    safe_printf("Task 1: Opened file '%s'\n", READ_FILE);
-
-    // Read data from file
-    if ((res = f_read(&MyFile, rtext, BUFF_SIZE - 1, &bytesread)) != FR_OK) {
-        safe_printf("ERROR: Reading '%s'\n", READ_FILE);
-        f_close(&MyFile);
-        return 1;
-    }
-
-    //    TCHAR* buff;
-    //	UINT len = 100;
-    //    res = getcwd(&buff, len);
-
-    rtext[bytesread] = '\0';
-    safe_printf("Task 1: Read: '%s'\n", rtext);
-
-    // Close file
-    f_close(&MyFile);
-
-    return 0;
-}
-
-uint8_t myWriteFile() {
-#define WRITE_FILE "There.txt"
-    FRESULT res;
-    UINT byteswritten;
-
-    // Open file There.txt
-    if ((res = f_open(&MyFile, WRITE_FILE, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
-        safe_printf("ERROR: Opening '%s'\n", WRITE_FILE);
-        return 1;
-    }
-    safe_printf("Task 1: Opened file '%s'\n", WRITE_FILE);
-
-    // Write to file
-    if ((res = f_write(&MyFile, "Hello", 6, &byteswritten)) != FR_OK) {
-        safe_printf("ERROR: Writing '%s'\n", WRITE_FILE);
-        f_close(&MyFile);
-        return 1;
-    }
-    safe_printf("Task 1: Written: %d bytes\n", byteswritten);
-
-    // Close file
-    f_close(&MyFile);
-
-
-    return 0;
-}
+//uint8_t myReadFile() {
+//#define READ_FILE "Hello.txt"
+//#define BUFF_SIZE 256
+//    uint8_t rtext[BUFF_SIZE];
+//    FRESULT res;
+//    uint32_t bytesread;
+//
+//    // Open file Hello.txt
+//    if ((res = f_open(&MyFile, READ_FILE, FA_READ)) != FR_OK) {
+//        safe_printf("ERROR: Opening '%s'\n", READ_FILE);
+//        return 1;
+//    }
+//    safe_printf("Task 1: Opened file '%s'\n", READ_FILE);
+//
+//    // Read data from file
+//    if ((res = f_read(&MyFile, rtext, BUFF_SIZE - 1, &bytesread)) != FR_OK) {
+//        safe_printf("ERROR: Reading '%s'\n", READ_FILE);
+//        f_close(&MyFile);
+//        return 1;
+//    }
+//
+//    //    TCHAR* buff;
+//    //	UINT len = 100;
+//    //    res = getcwd(&buff, len);
+//
+//    rtext[bytesread] = '\0';
+//    safe_printf("Task 1: Read: '%s'\n", rtext);
+//
+//    // Close file
+//    f_close(&MyFile);
+//
+//    return 0;
+//}
+//
+//uint8_t myWriteFile() {
+//#define WRITE_FILE "There.txt"
+//    FRESULT res;
+//    UINT byteswritten;
+//
+//    // Open file There.txt
+//    if ((res = f_open(&MyFile, WRITE_FILE, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+//        safe_printf("ERROR: Opening '%s'\n", WRITE_FILE);
+//        return 1;
+//    }
+//    safe_printf("Task 1: Opened file '%s'\n", WRITE_FILE);
+//
+//    // Write to file
+//    if ((res = f_write(&MyFile, "Hello", 6, &byteswritten)) != FR_OK) {
+//        safe_printf("ERROR: Writing '%s'\n", WRITE_FILE);
+//        f_close(&MyFile);
+//        return 1;
+//    }
+//    safe_printf("Task 1: Written: %d bytes\n", byteswritten);
+//
+//    // Close file
+//    f_close(&MyFile);
+//
+//
+//    return 0;
+//}
 
 void CommandLineParserProcess(void) {
     char c;
@@ -191,10 +215,9 @@ int StringProcess(char* command_line, int i) {
 
     if (mode == -1) {
         printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
+        return -1;
     }
-    else if (mode == 0) { /* insert debug, analog function etc */
-        myReadFile();
-    }
+    return 0;
 }
 
 // Takes input string, splits into words
@@ -291,7 +314,7 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
 
 int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
@@ -300,16 +323,18 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
         }
         else {
             Set_Analog(value_1);
+            safe_printf("Set analog to %d\n", value_1);
         }
     }
     else {
         safe_printf("Too many arguments\n");
     }
+    return 0;
 }
 
 // TODO ls
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
     DIR dir;
@@ -320,18 +345,21 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
 
     char* item[2];
+    int chgdir_flag = 0;
 
     if (word_count > 1) {
         // get current directory and store it, f_getcwd
+    	safe_printf("Need to change dir\n");
+    	chgdir_flag = 1;
         res = f_getcwd(Cur_dir, buf_len);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
 
         res = f_chdir(array_of_words_p[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -339,6 +367,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     res = f_readdir(&dir, &fno);
 
     while (res != FR_OK || fno.fname[0] == 0) {
+    	safe_printf("Searching folder\n");
         sprintf(&item[i][0], "/%s", fno.fname);
         // If the item is a directory
         if (fno.fattrib & AM_DIR) {
@@ -354,10 +383,11 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     item[i][0] = NULL;
 
     // Change back to the original directory if there was one
-    if (strcmp(Cur_dir, NULL) == 0) {
+    if (chgdir_flag == 1) {
+    	safe_printf("Need to change dir\n");
         // change directory back
         if (f_chdir(Cur_dir) != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -370,15 +400,18 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
 // TODO cd
 int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
-    if (word_count > 1) {
+    if (word_count < 3) {
+    	if(word_count < 2){
+    		array_of_words_p[1] = "";
+    	}
         // change directory to the path
         res = f_chdir(array_of_words_p[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -390,26 +423,29 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
 // TODO mkdir
 int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
     if (word_count > 1) {
-        res = f_mkdir(array_of_words_p[1]);
+    	safe_printf("HERE\n");
+    	safe_printf("Making folder %s\n", (*array_of_words_p)[1]);
+        res = f_mkdir((*array_of_words_p)[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
     else {
         safe_printf("Too many arguments\n");
     }
+    return 0;
 }
 
 // TODO cp
 int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         // TODO
@@ -421,16 +457,17 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     else {
         safe_printf("Too many arguments\n");
     }
+    return 0;
 }
 
 int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
     if (word_count > 1) {
         res = f_unlink(array_of_words_p[1]);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command %s\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
     }
@@ -449,10 +486,12 @@ int Get_Absolute_Path() {
     fr = f_getcwd(Cur_dir, buf_len); /* Get current directory path */
 
     free(Cur_dir);
+
+    return 0;
 }
 
 int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         Set_Formula(array_of_words_p[1]);
@@ -463,6 +502,7 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
     else {
         safe_printf("Too many arguments\n");
     }
+    return 0;
 }
 
 // Change between setting on and off

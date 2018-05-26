@@ -74,6 +74,7 @@ extern osMessageQId myQueue02Handle;  // State message
 #include "Ass-03-Popup.h"
 #include "Ass-03-Window.h"
 #include "Ass-03-Equation.h"
+#include "Ass-03-Input.h"
 
 extern osMutexId windowbuf_Handle;  // Protect Window buffer
 extern osMutexId button_Handle;     // Protect button struct

@@ -252,15 +252,15 @@ int draw_play(int index) {
     for (int row = 0; row < SYMBOL_SIZE; row++) {
         BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
         width < SYMBOL_SIZE / 2 ? width++ : width--;
-        BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+        BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
         if (width < 3) {
             BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
         }
         if (width != 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_Draw_HLine(width + 1, y_cen + row, 1);
+            BSP_LCD_DrawHLine(width + 1, y_cen + row, 1);
         }
     }
     // TODO Mutex off LCD
@@ -291,17 +291,17 @@ int draw_stop(int index) {
         // Only print black pixels
         if (row == 0 || row == SYMBOL_SIZE - 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, SYMBOL_SIZE);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, SYMBOL_SIZE);
         }
 
         // Any other draw a black pixel either side of the red
         else {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
             BSP_LCD_SetTextColor(LCD_COLOR_RED);
-            BSP_LCD_Draw_HLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, SYMBOL_SIZE - 2);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, SYMBOL_SIZE - 2);
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_Draw_HLine(SYMBOL_SIZE, y_cen + row, 1);
+            BSP_LCD_DrawHLine(SYMBOL_SIZE, y_cen + row, 1);
         }
     }
     // TODO Mutex off LCD
