@@ -356,18 +356,19 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     const int buf_len = 50;
     char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
+    char* Save_dir     = (char*) calloc(buf_len, sizeof(char));
     //TODO Check calloc
 
     char* item[2];
     int chgdir_flag = 0;
     DEBUG_P
 
-	res = f_getcwd(Cur_dir, buf_len);
+	res = f_getcwd(Save_dir, buf_len);
 	if (res != FR_OK) {
 		safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
 		return 1;
 	}
-	safe_printf("Current Directory %s\n", Cur_dir);
+	safe_printf("Current Directory %s\n", Save_dir);
 
     if (word_count > 1) {
         // get current directory and store it, f_getcwd
@@ -379,53 +380,64 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             safe_printf("%sERROR:%s Unknown system command f_chdir %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
+
+        res = f_getcwd(Cur_dir, buf_len);
+		if (res != FR_OK) {
+			safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+			return 1;
+		}
+		safe_printf("Current Directory %s\n", Cur_dir);
     }
     res = f_opendir(&dir, Cur_dir);                       /* Open the directory */
     while(res == FR_OK){
     	res = f_readdir(&dir, &fno);                   /* Read a directory item */
-    	safe_printf("Res returned %d\n", res);
 		safe_printf("%s\n", fno.fname);/* It is a file. */
 		if(strcmp(fno.fname, prev_fno) == 0){
 			break;
 		}
     }
 
-
-
-//		res = f_readdir(&dir, &fno);
-//    while (res != FR_OK || fno.fname[0] == 0) {
-//    	DEBUG_P
-//    	safe_printf("Searching folder\n");
-//        sprintf(&item[i][0], "/%s", fno.fname);
-//        safe_printf("Found %s\n", fno.fname);
-//        DEBUG_P
-//        // If the item is a directory
-//        if (fno.fattrib & AM_DIR) {
-//            item[i][1] = 1;
-//            DEBUG_P
-//        }
-//        // else the item is a file
-//        else {
-//            item[i][1] = 0;
-//            DEBUG_P
-//        }
-//        res = f_readdir(&dir, &fno);
-//        i++;
-//        DEBUG_P
+    //TODO FIx
+//    res = f_opendir(&dir, Cur_dir);                       /* Open the directory */
+//    while(res == FR_OK){
+//    	res = f_readdir(&dir, &fno);                   /* Read a directory item */
+//    	if (fno.fattrib & AM_DIR) {
+//    		item[i][1] = "dir";
+//    	}
+//    	else {
+//    		item[i][1] = "file";
+//    	}
+//		item[i][0] = fno.fname;	/* It is a file. */
+//		if(strcmp(fno.fname, prev_fno) == 0){
+//			break;
+//		}
+//		i++;
 //    }
-//    DEBUG_P
-//    item[i][0] = NULL;
-
-    // Change back to the original directory if there was one
-//    if (chgdir_flag == 1) {
-//    	safe_printf("Need to change dir back\n");
-//        // change directory back
-//        if (f_chdir(Cur_dir) != FR_OK) {
-//            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
-//            return 1;
-//        }
+//
+//    for(int items = 0; items < i; items++){
+//    	if(strcmp(item[items][1], "dir") == 0){
+//    		safe_printf(KBLU);
+//    	}
+//    	else if(strcmp(item[items][1], "file") == 0){
+//    		safe_printf(KCYN);
+//    	}
+//    	else{
+//    		safe_printf(KGRN);
+//    	}
+//    	safe_printf("%s\n", fno.fname);
 //    }
+
+     //Change back to the original directory if there was one
+    if (chgdir_flag == 1) {
+    	safe_printf("Need to change dir back\n");
+        // change directory back
+        if (f_chdir(Save_dir) != FR_OK) {
+            safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            return 1;
+        }
+    }
     free(Cur_dir);
+    free(Save_dir);
 
     // TODO Print the list of items out
     DEBUG_P

@@ -32,7 +32,7 @@ void pbutton_init() {
 
 // clang-format off
 button_s Button_list[] = {
-    {"play",      {0,    66,     0,    60},     &draw_blist_item, "play"},	//&draw_play
+    {"play",      {0,    66,     0,    60},     &draw_play, "play"},	//&draw_play
     {"stop",      {0,    66,     60,   120},    &draw_blist_item, "stop"},	//&draw_stop
     {"save",      {0,    66,     120,  180},    &draw_blist_item, "save"},
     {"load",      {0,    66,     180,  240},    &draw_blist_item, "load"},
@@ -233,12 +233,12 @@ int draw_plist_item(int index) {
 
 int draw_play(int index) {
     // TODO Mutex on button
-    osMutexWait(button_Handle, osWaitForever);
+//    osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
-    osMutexRelease(button_Handle);
+//    osMutexRelease(button_Handle);
     // TODO Mutex off button
 
     // TODO Calculate the position to draw the item
@@ -251,17 +251,27 @@ int draw_play(int index) {
     int width = 1;
     for (int row = 0; row < SYMBOL_SIZE; row++) {
         BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-        width < SYMBOL_SIZE / 2 ? width++ : width--;
+        if(width < SYMBOL_SIZE / 2){
+        	width++;
+        }
+        else{
+        	width--;
+        }
+        safe_printf("Width %d, row %d", width, row);
         BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+        safe_printf(" Black Line x %d, y %d, len %d",x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
-        if (width < 3) {
+        if (width > 2) {
             BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+            safe_printf(" Green Line x %d, y %d, len %d",x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
         }
-        if (width != 1) {
+        if (width > 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
             BSP_LCD_DrawHLine(width + 1, y_cen + row, 1);
+            safe_printf(" Black Line x %d, y %d, len %d",width + 1, y_cen + row, 1);
         }
+        safe_printf("\n");
     }
     // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
