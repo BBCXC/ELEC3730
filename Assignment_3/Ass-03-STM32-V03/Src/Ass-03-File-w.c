@@ -4,11 +4,11 @@
 void filew_init() {
     osMutexWait(file_Handle, osWaitForever);
     filew.dir_chg = 0;
-    filew.index = 0;
-    filew.num = 1;
-    filew.pos_x = 70;
-	filew.pos_y = 220;
-	filew.name[0] = "No Files";
+    filew.index   = 0;
+    filew.num     = 1;
+    filew.pos_x   = 70;
+    filew.pos_y   = 220;
+    filew.name[0] = "No Files";
     osMutexRelease(file_Handle);
 }
 
@@ -39,13 +39,13 @@ void Set_File_Index(int Value) {
 }
 
 char* Get_File_Name(int index) {
-	DEBUG_P
+    DEBUG_P
     osMutexWait(file_Handle, osWaitForever);
-	DEBUG_P
+    DEBUG_P
     char* temp = filew.name[index];
-	DEBUG_P
+    DEBUG_P
     osMutexRelease(file_Handle);
-	DEBUG_P
+    DEBUG_P
     return temp;
 }
 
@@ -68,10 +68,10 @@ void Set_File_Num(int index) {
     osMutexRelease(file_Handle);
 }
 
-int Get_File_Window_y(){
-	return filew.pos_y;
+int Get_File_Window_y() {
+    return filew.pos_y;
 }
 
-int Get_File_Window_x(){
-	return filew.pos_x;
+int Get_File_Window_x() {
+    return filew.pos_x;
 }

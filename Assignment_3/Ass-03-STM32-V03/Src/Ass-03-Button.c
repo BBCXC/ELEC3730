@@ -5,7 +5,6 @@ void button_init() {
 
     BSP_LCD_SetFont(&Font12);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-    // TODO Populate the position of each button
     if (Populate_Button_Position() == 0) {
         safe_printf("Initilised Buttons\n");
     }
@@ -21,7 +20,6 @@ void pbutton_init() {
 
     BSP_LCD_SetFont(&Font12);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-    // TODO Populate the position of each button
     if (Draw_Popup_list() == 0) {
         safe_printf("Initilised Popup\n");
     }
@@ -33,7 +31,7 @@ void pbutton_init() {
 // clang-format off
 button_s Button_list[] = {
     {"play",      {0,    66,     0,    60},     &draw_play, "play"},	//&draw_play
-    {"stop",      {0,    66,     60,   120},    &draw_blist_item, "stop"},	//&draw_stop
+    {"stop",      {0,    66,     60,   120},    &draw_stop, "stop"},	//&draw_stop
     {"save",      {0,    66,     120,  180},    &draw_blist_item, "save"},
     {"load",      {0,    66,     180,  240},    &draw_blist_item, "load"},
     {"zoom_in",   {66,   129,    120,  180},    &draw_blist_item, "+"},
@@ -53,17 +51,58 @@ button_s Popup_list[] = {
 // clang-format on
 
 int Populate_Button_Position() {
-    // Left coloum width = line width - window_x
-    // Right coloum width = Left
 
-    // Play min = line width
-    // Play max = window height / 2 + line width
+    // Play, stop, save, load xpos
+    for (int i = 0; i < 4; i++) {
+        Button_list[i].position[0] = line_width;
+        Button_list[i].position[1] = display_x - window_width - 2 * line_width;
+    }
+    // Play ypos
+    Button_list[0].position[2] = line_width;
+    Button_list[0].position[3] = (window_height - line_width) / 2 + line_width;
+    // Stop ypos
+    Button_list[1].position[2] = Button_list[0].position[3] + line_width;
+    Button_list[1].position[3] = window_height + line_width;
+    // Save ypos
+    Button_list[2].position[2] = Button_list[1].position[3] + line_width;
+    Button_list[2].position[3] =
+        ((display_y - Button_list[2].position[2] - 2 * line_width) / 2) + Button_list[2].position[2];
+    // Load ypos
+    Button_list[3].position[2] = Button_list[2].position[3] + line_width;
+    Button_list[3].position[3] = display_y - line_width;
+    // Zoom in xpos
+    Button_list[4].position[0] = Button_list[0].position[1] + line_width;
+    Button_list[4].position[1] =
+        (Button_list[7].position[0] - line_width - Button_list[4].position[0] - 2 * line_width) / 3
+        + Button_list[4].position[0];
+    // Zoom out xpos
+    Button_list[5].position[0] = Button_list[4].position[1] + line_width;
+    Button_list[5].position[1] =
+        (Button_list[7].position[0] - line_width - Button_list[4].position[0] - 2 * line_width) / 3
+        + Button_list[5].position[0];
+    ;
+    // Reset xpos
+    Button_list[6].position[0] = Button_list[5].position[1] + line_width;
+    Button_list[6].position[1] = Button_list[7].position[0] - line_width;
+    // Zoom in, zoom out, reset ypos
+    for (int i = 0; i < 3; i++) {
+        Button_list[4 + i].position[2] = Button_list[2].position[2];
+        Button_list[4 + i].position[3] = Button_list[2].position[3];
+    }
+    // Up ypos
+    Button_list[7].position[2] = Button_list[2].position[2];
+    Button_list[7].position[3] = Button_list[2].position[3];
+    // Down ypos
+    Button_list[8].position[2] = Button_list[3].position[2];
+    Button_list[8].position[3] = Button_list[3].position[3];
+    // Up, down xpos
+    for (int i = 0; i < 2; i++) {
+        Button_list[7 + i].position[1] = display_x - line_width;
+        Button_list[7 + i].position[0] =
+            Button_list[7 + i].position[1] - (Button_list[0].position[1] - Button_list[0].position[0]);
+    }
 
-    // Stop min = Play max + line width
-    // Stop Max = window height + line width
-
-    // TODO
-	return 0;
+    return 0;
 }
 
 char* Get_Button_Name(int element, int status) {
@@ -185,121 +224,98 @@ int Draw_Popup_boxes() {
 }
 
 int draw_blist_item(int index) {
-    // TODO Mutex on button
     int x_min  = Button_list[index].position[0];
     int x_max  = Button_list[index].position[1];
     int y_min  = Button_list[index].position[2];
     int y_max  = Button_list[index].position[3];
     char* item = Button_list[index].Symbol;
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
     safe_printf("x y pos of %s is %d, %d\n", item, x_cen, y_cen);
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
     BSP_LCD_DisplayStringAt(x_cen, y_cen, (uint8_t*) item, CENTER_MODE);
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
 
 int draw_plist_item(int index) {
-    // TODO Mutex on button
     int x_min  = Popup_list[index].position[0];
     int x_max  = Popup_list[index].position[1];
     int y_min  = Popup_list[index].position[2];
     int y_max  = Popup_list[index].position[3];
     char* item = Popup_list[index].Symbol;
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
     BSP_LCD_DisplayStringAt(x_cen, y_cen, (uint8_t*) item, CENTER_MODE);
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
 
 int draw_play(int index) {
-    // TODO Mutex on button
-//    osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
-//    osMutexRelease(button_Handle);
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
-    int width = 1;
-    for (int row = 0; row < SYMBOL_SIZE; row++) {
+    int chg_dir = 0;
+    int width   = 0;
+    for (int row = 0; row < SYMBOL_SIZE - 1; row++) {
         BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-        if(width < SYMBOL_SIZE / 2){
-        	width++;
+        if ((width < SYMBOL_SIZE / 2) && chg_dir == 0) {
+            width++;
         }
-        else{
-        	width--;
+        else {
+            chg_dir = 1;
+            width--;
         }
         safe_printf("Width %d, row %d", width, row);
         BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
-        safe_printf(" Black Line x %d, y %d, len %d",x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+        safe_printf(" Black Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
         if (width > 2) {
             BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
-            safe_printf(" Green Line x %d, y %d, len %d",x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+            safe_printf(" Green Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
         }
         if (width > 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
             BSP_LCD_DrawHLine(width + 1, y_cen + row, 1);
-            safe_printf(" Black Line x %d, y %d, len %d",width + 1, y_cen + row, 1);
+            safe_printf(" Black Line x %d, y %d, len %d", width + 1, y_cen + row, 1);
         }
         safe_printf("\n");
     }
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
 
 int draw_stop(int index) {
-    // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
     osMutexRelease(button_Handle);
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
-    for (int row = 0; row < SYMBOL_SIZE; row++) {
+    for (int row = 0; row < SYMBOL_SIZE - 1; row++) {
         // If it's the first row, or the last row
         // Only print black pixels
-        if (row == 0 || row == SYMBOL_SIZE - 1) {
+        if (row == 0 || row == SYMBOL_SIZE - 2) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, SYMBOL_SIZE);
         }
@@ -314,54 +330,41 @@ int draw_stop(int index) {
             BSP_LCD_DrawHLine(SYMBOL_SIZE, y_cen + row, 1);
         }
     }
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
 
 int draw_up(int index) {
-    // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
     osMutexRelease(button_Handle);
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
 
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;
 }
 int draw_down(int index) {
-    // TODO Mutex on button
     osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
     osMutexRelease(button_Handle);
-    // TODO Mutex off button
 
-    // TODO Calculate the position to draw the item
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    // TODO Mutex on LCD
     osMutexWait(myMutex01Handle, osWaitForever);
-    // TODO Draw specific symbol / word
 
-    // TODO Mutex off LCD
     osMutexRelease(myMutex01Handle);
 
     return 0;

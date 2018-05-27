@@ -10,12 +10,12 @@
 #include "Ass-03.h"
 
 typedef struct {
-	int dir_chg;
-	int index;
-	int num;
-	int pos_x;
-	int pos_y;
-	char** name;
+    int dir_chg;
+    int index;
+    int num;
+    int pos_x;
+    int pos_y;
+    char** name;
 } file_t;
 file_t filew;
 
