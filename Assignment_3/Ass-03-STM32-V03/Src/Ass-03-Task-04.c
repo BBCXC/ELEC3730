@@ -63,44 +63,37 @@ void Ass_03_Task_04(void const* argument) {
         else if (Current_State == 1) {
         	Previous_State = 1;
             // Wait for first half of buffer
+        	int first = 1;
             osSemaphoreWait(myBinarySem05Handle, osWaitForever);
             osMutexWait(myMutex01Handle, osWaitForever);
-            for (i = 0; i < 500; i = i + 500) {
+            for (i = 0; i < 1000; i = i + 500) {
                 BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
                 BSP_LCD_DrawVLine(XOFF + xpos, YOFF, YSIZE);
                 BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
                 ypos = (uint16_t)((uint32_t)(ADC_Value[i]) * YSIZE / 4096);
                 BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + xpos, YOFF + ypos);
-                Window_buffer[xpos] = ypos;
+//                Window_buffer[xpos] = ypos;
                 // BSP_LCD_FillRect(xpos,ypos,1,1);
                 last_xpos = xpos;
                 last_ypos = ypos;
                 xpos++;
-
-                //safe_printf("First half, %d, %d, %d\n", i, last_xpos, last_ypos);
-            }
-            osMutexRelease(myMutex01Handle);
-            if (last_xpos >= XSIZE - 1) {
-                xpos      = 0;
-                last_xpos = 0;
-            }
-
-            // Wait for second half of buffer
-            osSemaphoreWait(myBinarySem06Handle, osWaitForever);
-            HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET);
-            osMutexWait(myMutex01Handle, osWaitForever);
-            for (i = 0; i < 500; i = i + 500) {
-                BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-                BSP_LCD_DrawVLine(XOFF + xpos, YOFF, YSIZE);
-                BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-                ypos = (uint16_t)((uint32_t)(ADC_Value[i + 500]) * YSIZE / 4096);
-                BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + xpos, YOFF + ypos);
-                // BSP_LCD_FillCircle(xpos,ypos,2);
-                last_xpos = xpos;
-                last_ypos = ypos;
-                xpos++;
-
-                //safe_printf("Second half, %d, %d, %d\n", i + 500, last_xpos, last_ypos);
+				if (last_xpos >= XSIZE - 1) {
+					xpos      = 0;
+					last_xpos = 0;
+				}
+				if(i < 1000/2){
+					//safe_printf("First half, %d, %d, %d\n", i, last_xpos, last_ypos);
+				}
+				else if(first == 1){
+					first = 0;
+					// Wait for second half of buffer
+					osSemaphoreWait(myBinarySem06Handle, osWaitForever);
+					HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET);
+					//safe_printf("Second half, %d, %d, %d\n", i, last_xpos, last_ypos);
+				}
+				else{
+					//safe_printf("Second half, %d, %d, %d\n", i, last_xpos, last_ypos);
+				}
             }
             osMutexRelease(myMutex01Handle);
             if (last_xpos >= XSIZE - 1) {
@@ -141,6 +134,36 @@ void Ass_03_Task_04(void const* argument) {
         else{
         	safe_printf("Current State is %d\n", Current_State);
         }
+
+        //Check if we have changed directory
+        if(Get_Dir_Chg() == 1){
+
+        	Set_Dir_Chg(0);
+			// Refresh the files shown
+        	Set_File_Index(0);
+
+			safe_printf("Num %d, Index %d\n", Get_File_Num(), Get_File_Index());
+			if(Get_File_Index() < Get_File_Num()){
+
+				int index = Get_File_Index();
+
+				char* File_Name = "No File";
+//				char* F = Get_File_Name(index);
+//				safe_printf("File_Name ----> %s", F);
+
+				Set_File_Index(Get_File_Index() + 1);
+				int x_pos = Get_File_Window_x();
+				int y_pos = Get_File_Window_y();
+				osMutexWait(myMutex01Handle, osWaitForever);
+				BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+				BSP_LCD_DisplayStringAt(x_pos, y_pos, (uint8_t*) File_Name, LEFT_MODE);
+				osMutexRelease(myMutex01Handle);
+
+			}
+
+		}
+
+
 
 
         /*else{

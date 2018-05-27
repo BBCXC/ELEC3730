@@ -52,6 +52,7 @@ void Ass_03_Task_01(void const* argument) {
     // button_init();
     popup_init();
     Equation_Init();
+    filew_init();
 
     safe_printf("All structures initilised\n");
 
@@ -73,6 +74,9 @@ void Ass_03_Task_01(void const* argument) {
     //myReadFile();
 
     while (1) {
+    	if(FileProcess() != 0){
+			safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+		}
     	//safe_printf("Here\n");
 		char c;
 		static int i = 0;
@@ -103,6 +107,9 @@ void Ass_03_Task_01(void const* argument) {
 				Set_First_Time(1);
 			}
 //		}
+			//Get the files within the current folder *.csv
+			//Store names in a list
+
     }
 }
 
@@ -176,9 +183,9 @@ void CommandLineParserProcess(void) {
     char Cur_dir[buf_len];
 
     if (Get_First_Time() == 1) {
-    	DEBUG_P
+
         Set_First_Time(0);
-    	DEBUG_P
+
         res = f_getcwd(Cur_dir, buf_len);
 		if (res != FR_OK) {
 			safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
@@ -202,7 +209,7 @@ void CommandLineParserProcess(void) {
             }
             i = 0;
             Set_First_Time(1);
-            DEBUG_P
+
         }
     }
 }
@@ -343,11 +350,10 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
     return 0;
 }
 
-// TODO ls
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-	DEBUG_P
+
     if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
-    DEBUG_P
+
     FRESULT res;
     DIR dir;
     UINT i = 0;
@@ -359,9 +365,10 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     char* Save_dir     = (char*) calloc(buf_len, sizeof(char));
     //TODO Check calloc
 
-    char* item[2];
+    char** name;
+    char** type;
     int chgdir_flag = 0;
-    DEBUG_P
+
 
 	res = f_getcwd(Save_dir, buf_len);
 	if (res != FR_OK) {
@@ -391,41 +398,17 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     res = f_opendir(&dir, Cur_dir);                       /* Open the directory */
     while(res == FR_OK){
     	res = f_readdir(&dir, &fno);                   /* Read a directory item */
-		safe_printf("%s\n", fno.fname);/* It is a file. */
+		//safe_printf("%s\n", fno.fname);/* It is a file. */
+		if (fno.fattrib & AM_DIR) {
+			safe_printf("%s%s%s\n", KBLU, fno.fname, KNRM);/* It is a file. */
+		}
+		else {
+			safe_printf("%s%s%s\n", KCYN, fno.fname, KNRM);/* It is a file. */
+		}
 		if(strcmp(fno.fname, prev_fno) == 0){
 			break;
 		}
     }
-
-    //TODO FIx
-//    res = f_opendir(&dir, Cur_dir);                       /* Open the directory */
-//    while(res == FR_OK){
-//    	res = f_readdir(&dir, &fno);                   /* Read a directory item */
-//    	if (fno.fattrib & AM_DIR) {
-//    		item[i][1] = "dir";
-//    	}
-//    	else {
-//    		item[i][1] = "file";
-//    	}
-//		item[i][0] = fno.fname;	/* It is a file. */
-//		if(strcmp(fno.fname, prev_fno) == 0){
-//			break;
-//		}
-//		i++;
-//    }
-//
-//    for(int items = 0; items < i; items++){
-//    	if(strcmp(item[items][1], "dir") == 0){
-//    		safe_printf(KBLU);
-//    	}
-//    	else if(strcmp(item[items][1], "file") == 0){
-//    		safe_printf(KCYN);
-//    	}
-//    	else{
-//    		safe_printf(KGRN);
-//    	}
-//    	safe_printf("%s\n", fno.fname);
-//    }
 
      //Change back to the original directory if there was one
     if (chgdir_flag == 1) {
@@ -439,12 +422,9 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     free(Cur_dir);
     free(Save_dir);
 
-    // TODO Print the list of items out
-    DEBUG_P
     return 0;
 }
 
-// TODO cd
 int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -467,7 +447,6 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     return 0;
 }
 
-// TODO mkdir
 int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
@@ -488,17 +467,16 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
     return 0;
 }
 
-// TODO cp
 int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    int value_1;
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
-    if (word_count == 2) {
-        // TODO
-        // Declare **word[]
-        // Split path variables up into words
-        // Do something
-        // FRESULT f_rename (const TCHAR* path_old, const TCHAR* path_new);    /* Rename/Move a file or directory */
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    FRESULT res;
+    if (word_count == 3) {
+    	res = f_rename((*array_of_words_p)[1], (*array_of_words_p)[2]);
+		if (res != FR_OK) {
+			safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+			return 1;
+		}
     }
     else {
         safe_printf("Too many arguments\n");
@@ -523,7 +501,6 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     return 0;
 }
 
-// TODO
 int Get_Absolute_Path() {
     FRESULT fr;
     const int buf_len = 50;
@@ -623,6 +600,60 @@ int help_function(char** array_of_words_p[], int word_count, char** path_p[], in
     return 0;
 }
 
+int FileProcess(){
+	    //if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+
+	    FRESULT res;
+	    DIR dir;
+	    static FILINFO fno;
+	    char* empty_fno = "";
+
+	    const int buf_len = 50;
+	    char* Save_dir     = (char*) calloc(buf_len, sizeof(char));
+	    static char* Prev_dir = "";
+	    //TODO Check calloc
+
+		res = f_getcwd(Save_dir, buf_len);
+		if (res != FR_OK) {
+			safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+			return 1;
+		}
+
+		if(strcmp(Save_dir, Prev_dir) == 0){
+			return 0;
+		}
+
+	    res = f_findfirst(&dir, &fno, Save_dir, "*.csv");
+	    if (res != FR_OK) {
+			safe_printf("%sERROR:%s Unknown system command f_findfirst %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+			return 1;
+		}
+	    else if(strcmp(fno.fname, empty_fno) != 0){
+	    	safe_printf("First file %d found %s\n",Get_File_Num(), fno.fname);
+	    	Set_File_Name(Get_File_Num(), fno.fname);
+	    	Set_File_Num(1);
+	    }
+
+	    while(res == FR_OK){
+			res = f_findnext(&dir, &fno);                   /* Read a directory item */
+			if (res != FR_OK) {
+				safe_printf("%sERROR:%s Unknown system command f_findnext %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+				return 1;
+			}
+			if(strcmp(fno.fname, empty_fno) == 0){
+				break;
+			}
+			Set_File_Name(Get_File_Num(), fno.fname);
+			Set_File_Num(Get_File_Num() + 1);
+			safe_printf("Next file %d found %s\n",Get_File_Num(), fno.fname);
+	    }
+
+	    Prev_dir = Save_dir;
+
+
+	    Set_Dir_Chg(1);
+	return 0;
+}
 // clang-format off
 /***********************************************************************************************************************
 *************************************************Save, Load, Navigate***************************************************

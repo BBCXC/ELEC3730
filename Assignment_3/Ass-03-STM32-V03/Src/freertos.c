@@ -81,6 +81,7 @@ osMutexId windowbuf_Handle;
 osMutexId button_Handle;  // Protect button struct
 osMutexId popup_Handle;   // Protect popup struct
 osMutexId debug_Handle;   // Protect debug struct
+osMutexId file_Handle;    // Protect file struct
 
 osMessageQId myQueue02Handle;
 /* USER CODE END Variables */
@@ -138,6 +139,10 @@ void MX_FREERTOS_Init(void) {
     /* definition and creation of myMutex03 */
     osMutexDef(myMutex07);
     debug_Handle = osMutexCreate(osMutex(myMutex07));
+
+    /* definition and creation of myMutex03 */
+	osMutexDef(myMutex08);
+	file_Handle = osMutexCreate(osMutex(myMutex08));
     /* USER CODE END RTOS_MUTEX */
 
     /* Create the semaphores(s) */
