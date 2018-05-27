@@ -112,66 +112,66 @@ void Ass_03_Task_01(void const* argument) {
     }
 }
 
-// uint8_t myReadFile() {
-//#define READ_FILE "Hello.txt"
-//#define BUFF_SIZE 256
-//    uint8_t rtext[BUFF_SIZE];
-//    FRESULT res;
-//    uint32_t bytesread;
-//
-//    // Open file Hello.txt
-//    if ((res = f_open(&MyFile, READ_FILE, FA_READ)) != FR_OK) {
-//        safe_printf("ERROR: Opening '%s'\n", READ_FILE);
-//        return 1;
-//    }
-//    safe_printf("Task 1: Opened file '%s'\n", READ_FILE);
-//
-//    // Read data from file
-//    if ((res = f_read(&MyFile, rtext, BUFF_SIZE - 1, &bytesread)) != FR_OK) {
-//        safe_printf("ERROR: Reading '%s'\n", READ_FILE);
-//        f_close(&MyFile);
-//        return 1;
-//    }
-//
-//    //    TCHAR* buff;
-//    //	UINT len = 100;
-//    //    res = getcwd(&buff, len);
-//
-//    rtext[bytesread] = '\0';
-//    safe_printf("Task 1: Read: '%s'\n", rtext);
-//
-//    // Close file
-//    f_close(&MyFile);
-//
-//    return 0;
-//}
-//
-// uint8_t myWriteFile() {
-//#define WRITE_FILE "There.txt"
-//    FRESULT res;
-//    UINT byteswritten;
-//
-//    // Open file There.txt
-//    if ((res = f_open(&MyFile, WRITE_FILE, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
-//        safe_printf("ERROR: Opening '%s'\n", WRITE_FILE);
-//        return 1;
-//    }
-//    safe_printf("Task 1: Opened file '%s'\n", WRITE_FILE);
-//
-//    // Write to file
-//    if ((res = f_write(&MyFile, "Hello", 6, &byteswritten)) != FR_OK) {
-//        safe_printf("ERROR: Writing '%s'\n", WRITE_FILE);
-//        f_close(&MyFile);
-//        return 1;
-//    }
-//    safe_printf("Task 1: Written: %d bytes\n", byteswritten);
-//
-//    // Close file
-//    f_close(&MyFile);
-//
-//
-//    return 0;
-//}
+uint8_t myReadFile() {
+#define READ_FILE "Hello.txt"
+#define BUFF_SIZE 256
+    uint8_t rtext[BUFF_SIZE];
+    FRESULT res;
+    uint32_t bytesread;
+
+    // Open file Hello.txt
+    if ((res = f_open(&MyFile, READ_FILE, FA_READ)) != FR_OK) {
+        safe_printf("ERROR: Opening '%s'\n", READ_FILE);
+        return 1;
+    }
+    safe_printf("Task 1: Opened file '%s'\n", READ_FILE);
+
+    // Read data from file
+    if ((res = f_read(&MyFile, rtext, BUFF_SIZE - 1, &bytesread)) != FR_OK) {
+        safe_printf("ERROR: Reading '%s'\n", READ_FILE);
+        f_close(&MyFile);
+        return 1;
+    }
+
+    //    TCHAR* buff;
+    //	UINT len = 100;
+    //    res = getcwd(&buff, len);
+
+    rtext[bytesread] = '\0';
+    safe_printf("Task 1: Read: '%s'\n", rtext);
+
+    // Close file
+    f_close(&MyFile);
+
+    return 0;
+}
+
+uint8_t myWriteFile() {
+#define WRITE_FILE "There.txt"
+    FRESULT res;
+    UINT byteswritten;
+
+    // Open file There.txt
+    if ((res = f_open(&MyFile, WRITE_FILE, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+        safe_printf("ERROR: Opening '%s'\n", WRITE_FILE);
+        return 1;
+    }
+    safe_printf("Task 1: Opened file '%s'\n", WRITE_FILE);
+
+    // Write to file
+    if ((res = f_write(&MyFile, "Hello", 6, &byteswritten)) != FR_OK) {
+        safe_printf("ERROR: Writing '%s'\n", WRITE_FILE);
+        f_close(&MyFile);
+        return 1;
+    }
+    safe_printf("Task 1: Written: %d bytes\n", byteswritten);
+
+    // Close file
+    f_close(&MyFile);
+
+
+    return 0;
+}
 
 void CommandLineParserProcess(void) {
     char c;
