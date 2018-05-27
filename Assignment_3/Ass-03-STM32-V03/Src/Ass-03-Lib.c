@@ -104,7 +104,7 @@ double parseFormula() {
     output.result = parseSub();
     if (*output.formula == '\0') {
         // return output.result;
-    	DEBUG_P
+        DEBUG_P
         return 0;
     }
     printf("Expected end of output.input but found %c\n", *output.formula);
