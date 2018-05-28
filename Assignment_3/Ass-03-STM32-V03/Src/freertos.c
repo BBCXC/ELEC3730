@@ -141,8 +141,8 @@ void MX_FREERTOS_Init(void) {
     debug_Handle = osMutexCreate(osMutex(myMutex07));
 
     /* definition and creation of myMutex03 */
-	osMutexDef(myMutex08);
-	file_Handle = osMutexCreate(osMutex(myMutex08));
+    osMutexDef(myMutex08);
+    file_Handle = osMutexCreate(osMutex(myMutex08));
     /* USER CODE END RTOS_MUTEX */
 
     /* Create the semaphores(s) */
@@ -207,7 +207,7 @@ void MX_FREERTOS_Init(void) {
     myTask03Handle = osThreadCreate(osThread(myTask03), NULL);
 
     /* definition and creation of myTask04 */
-    osThreadDef(myTask04, StartTask04, osPriorityRealtime, 0, 2048);
+    osThreadDef(myTask04, StartTask04, osPriorityRealtime, 0, STACKSZ);
     myTask04Handle = osThreadCreate(osThread(myTask04), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
