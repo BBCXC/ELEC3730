@@ -38,5 +38,20 @@ window_t window;
 //int Window_buffer[250][2];
 
 extern void window_init();
+extern int Get_Window_Width();
+extern int Get_Window_Height();
+extern int Get_Window_Buffer(int Position, int Value);
+extern void Set_Window_Buffer(int Position, int Value1, int Value2);
+extern int Get_Zoom_Coeff_w();
+extern void Set_Zoom_Coeff_w(int Value);
+extern int Get_Buflen_w();
+extern void Set_Buflen_w(int Value);
+extern int Get_Auto_Scale_w();
+extern void Set_Auto_Scale_w(int Value);
+extern int Get_Next_w();
+extern void Set_Next_w(int Value);
+extern int Get_Colour_BG_w();
+extern int Get_Colour_Line_w();
+extern int Get_Colour_Grid_w();
 
 #endif /* ASS_03_WINDOW_H_ */

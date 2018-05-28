@@ -26,6 +26,19 @@ void window_init() {
                       // that is the latest filled
     osMutexRelease(windowbuf_Handle);
 }
+int Get_Window_Width() {
+    osMutexWait(windowbuf_Handle, osWaitForever);
+    int temp = window.width;
+    osMutexRelease(windowbuf_Handle);
+    return temp;
+}
+
+int Get_Window_Height() {
+    osMutexWait(windowbuf_Handle, osWaitForever);
+    int temp = window.height;
+    osMutexRelease(windowbuf_Handle);
+    return temp;
+}
 
 int Get_Window_Buffer(int Position, int Value) {
     osMutexWait(windowbuf_Handle, osWaitForever);

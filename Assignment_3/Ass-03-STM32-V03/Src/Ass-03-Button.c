@@ -51,7 +51,11 @@ button_s Popup_list[] = {
 // clang-format on
 
 int Populate_Button_Position() {
-
+	int line_width = 2;
+	int display_x = BSP_LCD_GetXSize();
+	int display_y = BSP_LCD_GetYSize();
+	int window_width = Get_Window_Width();
+	int window_height = Get_Window_Height();
     // Play, stop, save, load xpos
     for (int i = 0; i < 4; i++) {
         Button_list[i].position[0] = line_width;
@@ -174,7 +178,7 @@ int Draw_Button_boxes() {
     osMutexWait(button_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Button_list[i].NameString != NULL) {
-        safe_printf("Initilising button box %s\n", Button_list[i].NameString);
+        //safe_printf("Initilising button box %s\n", Button_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         BSP_LCD_DrawRect(Button_list[i].position[0],
@@ -193,7 +197,7 @@ int Draw_Popup_list() {
     osMutexWait(popup_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Popup_list[i].NameString != NULL) {
-        safe_printf("Initilising button %s\n", Popup_list[i].NameString);
+        //safe_printf("Initilising button %s\n", Popup_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         if (Popup_list[i].Function_p(i) == 0) {
@@ -233,7 +237,7 @@ int draw_blist_item(int index) {
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    safe_printf("x y pos of %s is %d, %d\n", item, x_cen, y_cen);
+    //safe_printf("x y pos of %s is %d, %d\n", item, x_cen, y_cen);
     osMutexWait(myMutex01Handle, osWaitForever);
     BSP_LCD_DisplayStringAt(x_cen, y_cen, (uint8_t*) item, CENTER_MODE);
     osMutexRelease(myMutex01Handle);
@@ -264,34 +268,35 @@ int draw_play(int index) {
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
 
-    int x_cen = ((x_max - x_min) / 2) + x_min;
-    int y_cen = ((y_max - y_min) / 2) + y_min;
+    int x_cen = ((x_max - x_min) / 2) + x_min;// - (SYMBOL_SIZE / 2);
+    //safe_printf("x_min %d, x_max %d, x_cen %d\n", x_min, x_max, x_cen);
+    int y_cen = ((y_max - y_min) / 2) + y_min - (SYMBOL_SIZE / 2);
 
     osMutexWait(myMutex01Handle, osWaitForever);
     int chg_dir = 0;
     int width   = 0;
     for (int row = 0; row < SYMBOL_SIZE - 1; row++) {
         BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-        if ((width < SYMBOL_SIZE / 2) && chg_dir == 0) {
-            width++;
+        if ((width < SYMBOL_SIZE) && chg_dir == 0) {
+            width+=2;
         }
         else {
             chg_dir = 1;
-            width--;
+            width-=2;
         }
-        safe_printf("Width %d, row %d", width, row);
+        //safe_printf("Width %d, row %d", width, row);
         BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
-        safe_printf(" Black Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+        //safe_printf(" Black Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
         if (width > 2) {
             BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
-            safe_printf(" Green Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+            //safe_printf(" Green Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
         }
         if (width > 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_DrawHLine(width + 1, y_cen + row, 1);
-            safe_printf(" Black Line x %d, y %d, len %d", width + 1, y_cen + row, 1);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1 + width - 1, y_cen + row, 1);
+            //safe_printf(" Black Line x %d, y %d, len %d", width + 1, y_cen + row, 1);
         }
         safe_printf("\n");
     }
@@ -301,15 +306,13 @@ int draw_play(int index) {
 }
 
 int draw_stop(int index) {
-    osMutexWait(button_Handle, osWaitForever);
     int x_min = Button_list[index].position[0];
     int x_max = Button_list[index].position[1];
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
-    osMutexRelease(button_Handle);
 
-    int x_cen = ((x_max - x_min) / 2) + x_min;
-    int y_cen = ((y_max - y_min) / 2) + y_min;
+    int x_cen = ((x_max - x_min) / 2) + x_min;// - (SYMBOL_SIZE / 2);
+    int y_cen = ((y_max - y_min) / 2) + y_min - (SYMBOL_SIZE / 2);
 
     osMutexWait(myMutex01Handle, osWaitForever);
     for (int row = 0; row < SYMBOL_SIZE - 1; row++) {
@@ -327,7 +330,7 @@ int draw_stop(int index) {
             BSP_LCD_SetTextColor(LCD_COLOR_RED);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, SYMBOL_SIZE - 2);
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-            BSP_LCD_DrawHLine(SYMBOL_SIZE, y_cen + row, 1);
+            BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + SYMBOL_SIZE - 1, y_cen + row, 1);
         }
     }
     osMutexRelease(myMutex01Handle);

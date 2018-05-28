@@ -8,6 +8,7 @@ void filew_init() {
     filew.num     = 1;
     filew.pos_x   = 70;
     filew.pos_y   = 220;
+    filew.name = (char**) calloc(10, sizeof(char*));
     filew.name[0] = "No Files";
     osMutexRelease(file_Handle);
 }
@@ -38,15 +39,16 @@ void Set_File_Index(int Value) {
     osMutexRelease(file_Handle);
 }
 
-char* Get_File_Name(int index) {
+void Get_File_Name(char** temp, int index) {
     DEBUG_P
     osMutexWait(file_Handle, osWaitForever);
     DEBUG_P
-    char* temp = filew.name[index];
+	safe_printf("%s\n", filew.name[0]);
     DEBUG_P
+    *temp =  filew.name[index];
+
     osMutexRelease(file_Handle);
     DEBUG_P
-    return temp;
 }
 
 void Set_File_Name(int index, char* name) {

@@ -24,7 +24,7 @@ extern int Get_Dir_Chg();
 extern void Set_Dir_Chg(int Value);
 extern int Get_File_Index();
 extern void Set_File_Index(int Value);
-extern char* Get_File_Name(int index);
+extern void Get_File_Name(char** temp, int index);
 extern void Set_File_Name(int index, char* name);
 extern int Get_File_Num();
 extern void Set_File_Num(int index);

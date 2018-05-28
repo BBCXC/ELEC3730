@@ -99,7 +99,7 @@ extern osMutexId file_Handle;      // Protect file struct
 
 #define DEFAULT_COLOUR_M KNRM
 #define DEBUG_M KYEL
-#define SYS_M KMAG
+#define SYS_M KYEL
 #define ERROR_M KRED
 
 #define HELP_M "%-25.25s\t%-35.35s"
@@ -148,6 +148,7 @@ extern int system_function(char** array_of_words_p[], int word_count, char** pat
 extern int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int reset_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern char* Get_Absolute_Path();
 
 
 // Question 1

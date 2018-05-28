@@ -85,28 +85,33 @@ void Ass_03_Task_01(void const* argument) {
         if (Get_First_Time() == 1) {
             Set_First_Time(0);
             safe_printf("--> Enter text: ");
+            //char* path = Get_Absolute_Path();
+            //safe_printf("%s", path);
+            fflush(stdout);
         }
-        //		if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
-        // printf("%c", c); TODO Should be fflush
-        c = getchar();
-        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
-        command_line[i] = c;
-        i++;
-        if (fflush(command_line) != 0) {
-            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
-        }
+        //if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+        	c = getchar();
+			safe_printf("%c", c); //TODO Should be fflush
+			fflush(stdout);
+	//        c = getchar();
+			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+			command_line[i] = c;
+			i++;
+	//        if (fflush(command_line) != 0) {
+	//            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
+	//        }
 
-        // If we get a return character then process the string
-        if (c == '\r' || i > 101) {
-            safe_printf("\n");
-            command_line[i - 1] = '\0';
-            if (StringProcess(&command_line, i) != 0) {
-                safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
-            }
-            i = 0;
-            Set_First_Time(1);
-        }
-        //		}
+			// If we get a return character then process the string
+			if (c == '\r' || i > 101) {
+				safe_printf("\n");
+				command_line[i - 1] = '\0';
+				if (StringProcess(&command_line, i) != 0) {
+					safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+				}
+				i = 0;
+				Set_First_Time(1);
+			}
+        //}
         // Get the files within the current folder *.csv
         // Store names in a list
     }
@@ -398,7 +403,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
         res = f_readdir(&dir, &fno); /* Read a directory item */
         // safe_printf("%s\n", fno.fname);/* It is a file. */
         if (fno.fattrib & AM_DIR) {
-            safe_printf("%s%s%s\n", KBLU, fno.fname, KNRM); /* It is a file. */
+            safe_printf("%s%s%s\n", KMAG, fno.fname, KNRM); /* It is a file. */
         }
         else {
             safe_printf("%s%s%s\n", KCYN, fno.fname, KNRM); /* It is a file. */
@@ -476,6 +481,7 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             return 1;
         }
     }
+    //TODO this moves the file not copy
     else {
         safe_printf("Too many arguments\n");
     }
@@ -499,16 +505,14 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     return 0;
 }
 
-int Get_Absolute_Path() {
+char* Get_Absolute_Path() {
     FRESULT fr;
     const int buf_len = 50;
-    char* Cur_dir     = (char*) calloc(buf_len, sizeof(char));
+    char* Cur_dir;
 
     fr = f_getcwd(Cur_dir, buf_len); /* Get current directory path */
 
-    free(Cur_dir);
-
-    return 0;
+    return Cur_dir;
 }
 
 int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
@@ -599,7 +603,11 @@ int help_function(char** array_of_words_p[], int word_count, char** path_p[], in
 }
 
 int FileProcess() {
-    // if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) {
+    	safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+
+    }
+
 
     FRESULT res;
     DIR dir;
@@ -621,7 +629,7 @@ int FileProcess() {
         return 0;
     }
 
-    res = f_findfirst(&dir, &fno, Save_dir, "*.csv");
+    res = f_findfirst(&dir, &fno, Save_dir, "*.txt");
     if (res != FR_OK) {
         safe_printf("%sERROR:%s Unknown system command f_findfirst %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
         return 1;
@@ -630,6 +638,7 @@ int FileProcess() {
         safe_printf("First file %d found %s\n", Get_File_Num(), fno.fname);
         Set_File_Name(Get_File_Num(), fno.fname);
         Set_File_Num(1);
+
     }
 
     while (res == FR_OK) {
@@ -638,9 +647,11 @@ int FileProcess() {
             safe_printf("%sERROR:%s Unknown system command f_findnext %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
+
         if (strcmp(fno.fname, empty_fno) == 0) {
             break;
         }
+
         Set_File_Name(Get_File_Num(), fno.fname);
         Set_File_Num(Get_File_Num() + 1);
         safe_printf("Next file %d found %s\n", Get_File_Num(), fno.fname);

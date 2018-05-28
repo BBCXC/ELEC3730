@@ -27,6 +27,7 @@ void Set_State_Thread(int Value) {
 int Get_Debug(void) {
     osMutexWait(debug_Handle, osWaitForever);
     int temp = info.debug;
+    safe_printf("Getting debug -> %d\n", info.debug);
     osMutexRelease(debug_Handle);
     return (temp);
 }

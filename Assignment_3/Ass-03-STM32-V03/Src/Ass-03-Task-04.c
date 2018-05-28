@@ -141,15 +141,19 @@ void Ass_03_Task_04(void const* argument) {
             Set_Dir_Chg(0);
             // Refresh the files shown
             Set_File_Index(0);
-
+            DEBUG_P
             safe_printf("Num %d, Index %d\n", Get_File_Num(), Get_File_Index());
+            DEBUG_P
             if (Get_File_Index() < Get_File_Num()) {
 
                 int index = Get_File_Index();
 
-                char* File_Name = "No File";
-                // char* F = Get_File_Name(index);
-                // safe_printf("File_Name ----> %s", F);
+                char* File_Name = "This is only a test";
+                DEBUG_P
+                Get_File_Name(&File_Name, index);
+                DEBUG_P
+                safe_printf("File_Name ----> %s\n", File_Name);
+                DEBUG_P
 
                 Set_File_Index(Get_File_Index() + 1);
                 int x_pos = Get_File_Window_x();
