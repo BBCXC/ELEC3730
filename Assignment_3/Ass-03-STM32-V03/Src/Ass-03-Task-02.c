@@ -124,7 +124,9 @@ void Ass_03_Task_02(void const* argument) {
 }
 
 int Save_Popup() {
-    debug_printf("Entered Save_Popup()\n");
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     // Set State to popup
     Set_Popup_Status(1);
     Set_State_Thread(2);
@@ -135,22 +137,30 @@ int Save_Popup() {
     return 0;
 }
 int Load_File() {
-    debug_printf("Entered Load_File()\n");
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Load_File()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     safe_printf("Unimplemented\n");
     return 0;
 }
 int Save_New() {
-    debug_printf("Entered Save_New()\n");
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_New()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     safe_printf("Unimplemented\n");
     return 0;
 }
 int Save_Overwrite() {
-    debug_printf("Entered Save_Overwrite()\n");
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Save_Overwrite()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     safe_printf("Unimplemented\n");
     return 0;
 }
 int Clear_Popup() {
-    debug_printf("Entered Clear_Popup()\n");
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG INFO:%s Entered Clear_Popup()\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     Set_Popup_Status(0);
     Task_4_Init();
     return 0;

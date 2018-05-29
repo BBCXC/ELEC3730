@@ -27,10 +27,13 @@ void Ass_03_Task_04(void const* argument) {
     int Current_State  = 0;
     int Previous_State = 0;
 
-    // Create a buffer for the window
-    //int Window_buffer[250] = calloc(250, sizeof(int));
-    // Create a buffer for the 10,000 samples
-    //uint16_t ADC_Buffer[10000] = calloc(10000, sizeof(uint16_t));
+    int Buf_len                = 250;
+    uint16_t *Window_buffer = calloc(250, sizeof(int));
+    static int semaphore_state = 0;
+    static int begin = 0;
+    static int win_ptr = 0;
+
+    uint16_t ADC_Value[1000];
 
     osSignalWait(1, osWaitForever);
     safe_printf("Hello from Task 4 - Analog Input (turn ADC knob or use pulse sensor)\n");
@@ -47,6 +50,11 @@ void Ass_03_Task_04(void const* argument) {
 
     // Start main loop
     while (1) {
+        //		State_Thread = osMessageGet(myQueue02Handle, osWaitForever);
+        //	    if (State_Thread.status == osEventMessage){
+        //	    	Current_State =  (uint16_t)(State_Thread.value.v);
+        //	    	safe_printf("Current State %d\n", Current_State);
+        //	    }
         Current_State = Get_State_Thread();
         if (Current_State == 0) {
             // Stop state
@@ -57,40 +65,137 @@ void Ass_03_Task_04(void const* argument) {
             Previous_State = 1;
             // Wait for first half of buffer
             int first = 1;
-            osSemaphoreWait(myBinarySem05Handle, osWaitForever);
-            osMutexWait(myMutex01Handle, osWaitForever);
-            for (i = 0; i < 1000; i = i + 500) {
-                BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-                BSP_LCD_DrawVLine(XOFF + xpos, YOFF, YSIZE);
-                BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-                ypos = (uint16_t)((uint32_t)(ADC_Value[i]) * YSIZE / 4096);
-                BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + xpos, YOFF + ypos);
-                //                Window_buffer[xpos] = ypos;
-                // BSP_LCD_FillRect(xpos,ypos,1,1);
-                last_xpos = xpos;
-                last_ypos = ypos;
-                xpos++;
-                if (last_xpos >= XSIZE - 1) {
-                    xpos      = 0;
-                    last_xpos = 0;
-                }
-                if (i < 1000 / 2) {
-                }
-                else if (first == 1) {
-                    first = 0;
-                    // Wait for second half of buffer
-                    osSemaphoreWait(myBinarySem06Handle, osWaitForever);
-                    HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET);
-                }
-                else {
-                }
-            }
-            osMutexRelease(myMutex01Handle);
-            if (last_xpos >= XSIZE - 1) {
-                xpos      = 0;
-                last_xpos = 0;
-            }
-            HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET);
+            int avg = 0;
+            // If these change maybe i should reprint it all
+			int Samples = Get_Zoom_Coeff_w() * 1000;
+			int Bin_len = Samples / Buf_len;
+
+			// Begin
+			// Bin_len ~ 40 can change with zoom
+			// Max value is 10,000
+			if (begin % 1000 > 500) {
+				// First semaphore on
+				semaphore_state = 0;
+			}
+			else {
+				// Second semaphore on
+				semaphore_state = 1;
+			}
+			for (int i = begin; i < begin + Bin_len; i++) {
+				// Store the ADC_Value in the ADC_Buffer
+				if ((begin % 1000 > 500) && semaphore_state == 1) {
+					osSemaphoreWait(myBinarySem05Handle, osWaitForever);
+					semaphore_state = 0;
+				}
+				else if ((begin % 1000 <= 500) && semaphore_state == 0) {
+					osSemaphoreWait(myBinarySem06Handle, osWaitForever);
+					semaphore_state = 1;
+				}
+
+				// Add up all of the average values
+				avg += ADC_Value[begin] * YSIZE / 4096;
+				//safe_printf("ADC_Value[begin] %d, avg %d, state %d\n", ADC_Value[begin], avg, semaphore_state);// * YSIZE / 4096, avg);
+			}
+
+			    // Store the average in the buffer
+//			    Increment_Win_Ptr();
+				win_ptr++;
+				if (win_ptr >= 250) {
+					win_ptr = 0;
+				}
+			    Window_buffer[win_ptr] = (int) (avg / ((double) Bin_len));
+			    //safe_printf("buf %d\n", Window_buffer[win_ptr]);
+
+//			    // Find max
+//			    int Max_Win = 0;
+//			    for (int i = 0; i < 250; i++) {
+//			        if (Window_buffer[i] > Max_Win) {
+//			            Max_Win = Window_buffer[i];
+//			        }
+//			    }
+			    osMutexWait(myMutex01Handle, osWaitForever);
+			    for(int i = 0; i < 250; i++){
+					BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+					BSP_LCD_DrawVLine(XOFF + win_ptr, YOFF, YSIZE);
+					BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+					ypos = Window_buffer[win_ptr];
+					BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + win_ptr, YOFF + ypos);
+
+
+
+				   last_xpos = win_ptr;
+				   last_ypos = ypos;
+				   win_ptr++;
+					if (win_ptr >= 250) {
+						win_ptr = 0;
+					}
+			    }
+			    osMutexRelease(myMutex01Handle);
+
+			    safe_printf("x1 %d, y1 %d, x2 %d, y2 %d\n",last_xpos, last_ypos, win_ptr, ypos)
+
+
+			    begin += Bin_len;
+			    safe_printf("Begin %d\n", begin);
+			    if (begin >= Samples / Get_Zoom_Coeff_w()) {
+			        begin = 0;
+			        safe_printf("Reset Begin ----->\n");
+			    }
+
+			    //osDelay(100);
+//			    // Draw Dot
+//			    int scale     = 1;//? ? ;
+//			    int win_ptr_s = win_ptr;
+//			    int y_pos     = Window_buffer[win_ptr];
+//			    int x_pos     = win_ptr;
+//			    win_ptr++;
+//			    if (win_ptr >= 250) {
+//			        win_ptr = 0;
+//			    }
+//			    while (win_ptr_s != win_ptr) {
+//			        // TODO scale
+//			        BSP(x_pos, y_pos * scale, win_ptr, Window_buffer[win_ptr] * scale);
+//			        x_pos = win_ptr;
+//			        y_pos = Window_buffer[win_ptr];
+//			        win_ptr++;
+//			        if (win_ptr >= 250) {
+//			            win_ptr = 0;
+//			        }
+//			    }
+//			    win_ptr++;
+//            osSemaphoreWait(myBinarySem05Handle, osWaitForever);
+//            osMutexWait(myMutex01Handle, osWaitForever);
+//            for (i = 0; i < 1000; i = i + 500) {
+//                BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+//                BSP_LCD_DrawVLine(XOFF + xpos, YOFF, YSIZE);
+//                BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+//                ypos = (uint16_t)((uint32_t)(ADC_Value[i]) * YSIZE / 4096);
+//                BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + xpos, YOFF + ypos);
+//
+//                last_xpos = xpos;
+//                last_ypos = ypos;
+//                xpos++;
+//                if (last_xpos >= XSIZE - 1) {
+//                    xpos      = 0;
+//                    last_xpos = 0;
+//                }
+//                if (i < 1000 / 2) {
+//                }
+//                else if (first == 1) {
+//                    first = 0;
+//                    // Wait for second half of buffer
+//                    osSemaphoreWait(myBinarySem06Handle, osWaitForever);
+//                    HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET);
+//                }
+//                else {
+//                }
+//            }
+//            osMutexRelease(myMutex01Handle);
+//            if (last_xpos >= XSIZE - 1) {
+//                xpos      = 0;
+//                last_xpos = 0;
+//            }
+//            HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET);
         }
         else if (Current_State == 2) {
             if (Previous_State != 2) {

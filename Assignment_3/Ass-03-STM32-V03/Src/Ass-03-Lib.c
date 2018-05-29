@@ -35,7 +35,7 @@ int command_parser(char** array_of_words_p[], int word_count, char** path_p[], i
     while (Command_list[i].NameString != NULL) {
         // If we find the function we want, call it
         if (strcmp((*array_of_words_p)[0], Command_list[i].NameString) == 0) {
-            debug_printf("Operation: %s\n", Command_list[i].NameString);
+            if (Get_Debug() == 1) printf("Operation: %s\n", Command_list[i].NameString);
             // If the function we wanted returned success
             if (Command_list[i].Function_p(array_of_words_p, word_count, path_p, path_count) == 0) {
                 Set_Result(result);
@@ -70,7 +70,7 @@ int help_parser(char** array_of_words_p[], int word_count) {
         while (Command_list[i].NameString != NULL) {
             // If we find the function we wanted, display the help message
             if (strcmp((*array_of_words_p)[1], Command_list[i].NameString) == 0) {
-                debug_printf("Operation: %s\n", Command_list[i].NameString);
+                if (Get_Debug() == 1) printf("Operation: %s\n", Command_list[i].NameString);
                 // Print Specific command list thing
                 printf(HELP_M "\n", Command_list[i].HelpString, Command_list[i].DescriptionString);
                 return 0;
@@ -79,7 +79,7 @@ int help_parser(char** array_of_words_p[], int word_count) {
         }
     }
     else if (word_count == 1) {
-        debug_printf("No Operation selected\n");
+        if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s No Operation selected\n", DEBUG_M, DEFAULT_COLOUR_M);
         // Loop through all command list and print
         while (Command_list[i].NameString != NULL) {
             printf(HELP_M "\n", Command_list[i].HelpString, Command_list[i].DescriptionString);
@@ -100,7 +100,7 @@ int help_parser(char** array_of_words_p[], int word_count) {
 // Calls next precedent
 // Returns answer at end
 double parseFormula() {
-    system_printf("Formula Parsed: %s\n", output.formula);
+    if (Get_System() == 1) printf("%sSYSTEM_INFO:%s Formula Parsed: %s\n", SYS_M, DEFAULT_COLOUR_M, output.formula);
     output.result = parseSub();
     if (*output.formula == '\0') {
         // return output.result;
@@ -458,6 +458,6 @@ double parseNumber() {
             printf("Syntax Error\n");
         }
     }
-    system_printf("Number Found: %lf\n", (number * neg_flag));
+    if (Get_System() == 1) printf("%sSYSTEM_INFO:%s Number Found: %lf\n", SYS_M, DEFAULT_COLOUR_M, (number * neg_flag));
     return (number * neg_flag);
 }

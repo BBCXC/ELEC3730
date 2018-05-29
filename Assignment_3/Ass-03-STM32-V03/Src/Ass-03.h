@@ -58,50 +58,30 @@ extern uint8_t getfp(Coordinate* display);
 // STEPIEN: Safe printf() to ensure that only one task can write to
 //          the console at a time
 
-#define safe_printf(fmt, ...)\
-	osMutexWait(myMutex02Handle, osWaitForever);\
-	printf(fmt, ##__VA_ARGS__);\
-	osMutexRelease(myMutex02Handle);
+#define safe_printf(fmt, ...)                                                                                          \
+    osMutexWait(myMutex02Handle, osWaitForever);                                                                       \
+    printf(fmt, ##__VA_ARGS__);                                                                                        \
+    osMutexRelease(myMutex02Handle);
 
 //
 // ADD YOUR CODE
 //
 
-#define debug_printf(fmt, ...)                                                                                         \
-    osMutexWait(debug_Handle, osWaitForever);                                                                          \
-    if (Get_Debug() == 1) {                                                                                            \
-        osMutexWait(myMutex02Handle, osWaitForever);                                                                   \
-        printf("%sDEBUG_INFO:%s ", DEBUG_M, DEFAULT_COLOUR_M);                                                                                        \
-        printf(fmt, ##__VA_ARGS__);                                                                                    \
-        osMutexRelease(myMutex02Handle);                                                                               \
-    }                                                                                                                  \
-    osMutexRelease(debug_Handle);
-
-#define system_printf(fmt, ...)                                                                                         \
-    osMutexWait(debug_Handle, osWaitForever);                                                                          \
-    if (Get_Debug() == 1) {                                                                                            \
-        osMutexWait(myMutex02Handle, osWaitForever);                                                                   \
-        printf("%sSYSTEM_INFO:%s ", SYS_M, DEFAULT_COLOUR_M);                                                                                        \
-        printf(fmt, ##__VA_ARGS__);                                                                                    \
-        osMutexRelease(myMutex02Handle);                                                                               \
-    }                                                                                                                  \
-    osMutexRelease(debug_Handle);
-
 extern osMessageQId myQueue02Handle;  // State message
 
 #include "Ass-03-Button.h"
 #include "Ass-03-Debug.h"
-#include "Ass-03-Equation.h"
-#include "Ass-03-File-w.h"
-#include "Ass-03-Input.h"
 #include "Ass-03-Popup.h"
 #include "Ass-03-Window.h"
+#include "Ass-03-Equation.h"
+#include "Ass-03-Input.h"
+#include "Ass-03-File-w.h"
 
 extern osMutexId windowbuf_Handle;  // Protect Window buffer
 extern osMutexId button_Handle;     // Protect button struct
 extern osMutexId popup_Handle;      // Protect popup struct
 extern osMutexId debug_Handle;      // Protect debug struct
-extern osMutexId file_Handle;       // Protect file struct
+extern osMutexId file_Handle;      // Protect file struct
 
 #define KNRM "\e[0m"
 #define KRED "\e[31m"  //"\x1B[31m"
@@ -116,8 +96,6 @@ extern osMutexId file_Handle;       // Protect file struct
 #define RESET_M "\033[3J"
 
 #define MemExpand 10
-
-#define STACKSZ 22048
 
 #define DEFAULT_COLOUR_M KNRM
 #define DEBUG_M KYEL

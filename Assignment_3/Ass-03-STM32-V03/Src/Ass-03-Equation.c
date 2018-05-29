@@ -114,7 +114,13 @@ int reallocate_memory() {
     // Shifts old_chunk into new chunck
 
     for (int i = 0; i < equation.pos; i++) {
-        debug_printf("Equation.Input[%i] Before %s length %i\n", i, equation.input[i], strlen(equation.input[i]));
+        if (Get_Debug() == 1)
+            printf("%sDEBUG_INFO:%s Equation.Input[%i] Before %s length %i\n",
+                   DEBUG_M,
+                   DEFAULT_COLOUR_M,
+                   i,
+                   equation.input[i],
+                   strlen(equation.input[i]));
     }
 
     equation.input = (char**) realloc(equation.input, (equation.size + MemExpand) * sizeof(char*));
@@ -125,7 +131,13 @@ int reallocate_memory() {
     equation.size = equation.size + MemExpand;
 
     for (int i = 0; i < equation.pos; i++) {
-        debug_printf("Equation.Input[%i] After %s  length %i\n", i, equation.input[i], strlen(equation.input[i]));
+        if (Get_Debug() == 1)
+            printf("%sDEBUG_INFO:%s Equation.Input[%i] After %s  length %i\n",
+                   DEBUG_M,
+                   DEFAULT_COLOUR_M,
+                   i,
+                   equation.input[i],
+                   strlen(equation.input[i]));
     }
 
     for (int i = equation.pos; i < equation.size; i++) {
@@ -133,7 +145,13 @@ int reallocate_memory() {
     }
 
     for (int i = 0; i < equation.size; i++) {
-        debug_printf("Equation.Input[%i] After %s  length %i\n", i, equation.input[i], strlen(equation.input[i]));
+        if (Get_Debug() == 1)
+            printf("%sDEBUG_INFO:%s Equation.Input[%i] After %s  length %i\n",
+                   DEBUG_M,
+                   DEFAULT_COLOUR_M,
+                   i,
+                   equation.input[i],
+                   strlen(equation.input[i]));
     }
 
     return 0;
@@ -151,10 +169,10 @@ int Input_append(char* item) {
 
     equation.input[num_char] = &new_string[0];
     if (Get_Debug() == 1) {
-        debug_printf("Item expected %s\n", item);
-        debug_printf("String copied %s\n", new_string);
-        debug_printf("String stored %s\n", (equation.input[num_char]));
-        debug_printf("Num_char %i\n", num_char);
+        printf("%sDEBUG_INFO:%s Item expected %s\n", DEBUG_M, DEFAULT_COLOUR_M, item);
+        printf("%sDEBUG_INFO:%s String copied %s\n", DEBUG_M, DEFAULT_COLOUR_M, new_string);
+        printf("%sDEBUG_INFO:%s String stored %s\n", DEBUG_M, DEFAULT_COLOUR_M, (equation.input[num_char]));
+        printf("%sDEBUG_INFO:%s Num_char %i\n", DEBUG_M, DEFAULT_COLOUR_M, num_char);
     }
 
     if (strcmp(new_string, (equation.input[num_char])) != 0) {
@@ -169,13 +187,15 @@ int Input_append(char* item) {
             return 1;
         }
         strncpy(output.formula, equation.input[0], strlen(equation.input[0]));
-        debug_printf("formula contains %s\n", output.formula);
+        if (Get_Debug() == 1 || Get_System() == 1)
+            printf("%sDEBUG_INFO:%s formula contains %s\n", DEBUG_M, DEFAULT_COLOUR_M, output.formula);
     }
 
     else {
         // Reallocate memory if needed
         strcat(output.formula, equation.input[equation.pos]);
-        debug_printf("formula contains %s\n", output.formula);
+        if (Get_Debug() == 1 || Get_System() == 1)
+            printf("%sDEBUG_INFO:%s formula contains %s\n", DEBUG_M, DEFAULT_COLOUR_M, output.formula);
     }
     // Call function to display equation on screen
     if (clear_equation() != 0) printf("%sERROR:%s Could not clear equation\n", ERROR_M, DEFAULT_COLOUR_M);
@@ -203,8 +223,18 @@ int draw_equation() {
     int x_pos = ((x_max - x_min) / 2.0) + x_min;
     int y_pos = ((y_max - y_min) / 2.0) + y_min;
 
-    debug_printf(
-        "x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, y_pos %i\n", x_min, x_max, y_min, y_max, x_pos, y_pos);
+    if (Get_Debug() == 1)
+        printf(
+            "%sDEBUG_INFO:%s x_min %i, x_max %i, y_min %i, y_max %i, x_pos %i, "
+            "y_pos %i\n",
+            DEBUG_M,
+            DEFAULT_COLOUR_M,
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            x_pos,
+            y_pos);
 
     // Roll around the display
     int LCDResultlen = 20;

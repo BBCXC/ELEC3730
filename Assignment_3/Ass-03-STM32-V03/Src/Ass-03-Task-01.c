@@ -48,16 +48,12 @@ void Ass_03_Task_01(void const* argument) {
 
     // Initilise structs here
     debug_init();
-    DEBUG_P
     window_init();
-    DEBUG_P
     // button_init();
     popup_init();
-    DEBUG_P
     Equation_Init();
-    DEBUG_P
     filew_init();
-    DEBUG_P
+
     safe_printf("All structures initilised\n");
 
     // Signal other tasks to start
@@ -89,32 +85,32 @@ void Ass_03_Task_01(void const* argument) {
         if (Get_First_Time() == 1) {
             Set_First_Time(0);
             safe_printf("--> Enter text: ");
-            // char* path = Get_Absolute_Path();
-            // safe_printf("%s", path);
+            //char* path = Get_Absolute_Path();
+            //safe_printf("%s", path);
             fflush(stdout);
         }
-        // if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
-        c = getchar();
-        safe_printf("%c", c);  // TODO Should be fflush
-        fflush(stdout);
-        //        c = getchar();
-        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
-        command_line[i] = c;
-        i++;
-        //        if (fflush(command_line) != 0) {
-        //            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
-        //        }
+        //if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+        	c = getchar();
+			safe_printf("%c", c); //TODO Should be fflush
+			fflush(stdout);
+	//        c = getchar();
+			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+			command_line[i] = c;
+			i++;
+	//        if (fflush(command_line) != 0) {
+	//            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
+	//        }
 
-        // If we get a return character then process the string
-        if (c == '\r' || i > 101) {
-            safe_printf("\n");
-            command_line[i - 1] = '\0';
-            if (StringProcess(&command_line, i) != 0) {
-                safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
-            }
-            i = 0;
-            Set_First_Time(1);
-        }
+			// If we get a return character then process the string
+			if (c == '\r' || i > 101) {
+				safe_printf("\n");
+				command_line[i - 1] = '\0';
+				if (StringProcess(&command_line, i) != 0) {
+					safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+				}
+				i = 0;
+				Set_First_Time(1);
+			}
         //}
         // Get the files within the current folder *.csv
         // Store names in a list
@@ -232,7 +228,7 @@ int StringProcess(char* command_line, int i) {
 
     if (1) {
         for (int i = 0; i < word_count; i++) {
-            system_printf("Word %i: %s\n", i, array_of_words_p[i]);
+            printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
         }
     }
     int mode = -1;
@@ -339,7 +335,7 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
 
 int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
-    debug_printf("Analog function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
@@ -359,7 +355,7 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    debug_printf("ls function detected\n");
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
     DIR dir;
@@ -433,7 +429,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 }
 
 int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("cd function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
@@ -455,7 +451,7 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 }
 
 int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("mkdir function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
@@ -476,7 +472,7 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
 
 int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    debug_printf("cp function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     FRESULT res;
     if (word_count == 3) {
         res = f_rename((*array_of_words_p)[1], (*array_of_words_p)[2]);
@@ -485,7 +481,7 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             return 1;
         }
     }
-    // TODO this moves the file not copy
+    //TODO this moves the file not copy
     else {
         safe_printf("Too many arguments\n");
     }
@@ -493,7 +489,7 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 }
 
 int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("rm function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
     if (word_count > 1) {
@@ -520,7 +516,7 @@ char* Get_Absolute_Path() {
 }
 
 int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Analog function detected\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         Set_Formula((*array_of_words_p)[1]);
@@ -536,7 +532,7 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
 
 // Change between setting on and off
 int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Entered Debug Mode\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
             Set_Debug(1);
@@ -559,7 +555,7 @@ int debug_function(char** array_of_words_p[], int word_count, char** path_p[], i
 
 // Change between setting on and off
 int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Entered System Mode\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
             Set_System(1);
@@ -585,21 +581,21 @@ int system_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 // Clear function, clear terminal screen
 int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Entered HELP function\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     printf(CLEAR_M);
     return 0;
 }
 
 // Reset function, reset terminal scrollback
 int reset_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Entered HELP function\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     printf(RESET_M);
     return 0;
 }
 
 // Help function, display help messages
 int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    debug_printf("Entered HELP function\n");
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (help_parser(array_of_words_p, word_count) != 0) {
         printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
     }
@@ -607,7 +603,10 @@ int help_function(char** array_of_words_p[], int word_count, char** path_p[], in
 }
 
 int FileProcess() {
-    debug_printf("FileProcess function detected\n");
+    if (Get_Debug() == 1) {
+    	safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+
+    }
 
 
     FRESULT res;
@@ -639,6 +638,7 @@ int FileProcess() {
         safe_printf("First file %d found %s\n", Get_File_Num(), fno.fname);
         Set_File_Name(Get_File_Num(), fno.fname);
         Set_File_Num(1);
+
     }
 
     while (res == FR_OK) {
