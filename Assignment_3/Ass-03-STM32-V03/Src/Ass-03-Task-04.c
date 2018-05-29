@@ -28,9 +28,9 @@ void Ass_03_Task_04(void const* argument) {
     int Previous_State = 0;
 
     // Create a buffer for the window
-    int Window_buffer[250] = calloc(250, sizeof(int));
+    //int Window_buffer[250] = calloc(250, sizeof(int));
     // Create a buffer for the 10,000 samples
-    uint16_t ADC_Buffer[10000] = calloc(10000, sizeof(uint16_t));
+    //uint16_t ADC_Buffer[10000] = calloc(10000, sizeof(uint16_t));
 
     osSignalWait(1, osWaitForever);
     safe_printf("Hello from Task 4 - Analog Input (turn ADC knob or use pulse sensor)\n");

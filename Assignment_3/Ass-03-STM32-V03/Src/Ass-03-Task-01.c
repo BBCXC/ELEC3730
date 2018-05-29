@@ -48,12 +48,16 @@ void Ass_03_Task_01(void const* argument) {
 
     // Initilise structs here
     debug_init();
+    DEBUG_P
     window_init();
+    DEBUG_P
     // button_init();
     popup_init();
+    DEBUG_P
     Equation_Init();
+    DEBUG_P
     filew_init();
-
+    DEBUG_P
     safe_printf("All structures initilised\n");
 
     // Signal other tasks to start

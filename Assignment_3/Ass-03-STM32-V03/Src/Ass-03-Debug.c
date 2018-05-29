@@ -84,25 +84,3 @@ void Set_First_Time(int Value) {
     info.first_time = Value;
     osMutexRelease(debug_Handle);
 }
-
-void debug_printf(fmt, ...) {
-    osMutexWait(debug_Handle, osWaitForever);
-    if (Get_Debug() == 1) {
-        osMutexWait(myMutex02Handle, osWaitForever);
-        printf("%sDEBUG_INFO:%s ", DEBUG_M, DEFAULT_COLOUR_M);
-        printf(fmt, ##__VA_ARGS__);
-        osMutexRelease(myMutex02Handle);
-    }
-    osMutexRelease(debug_Handle);
-}
-
-void system_printf(fmt, ...) {
-    osMutexWait(debug_Handle, osWaitForever);
-    if (Get_Debug() == 1) {
-        osMutexWait(myMutex02Handle, osWaitForever);
-        printf("%sSYSTEM_INFO:%s ", SYSTEM_M, DEFAULT_COLOUR_M);
-        printf(fmt, ##__VA_ARGS__);
-        osMutexRelease(myMutex02Handle);
-    }
-    osMutexRelease(debug_Handle);
-}
