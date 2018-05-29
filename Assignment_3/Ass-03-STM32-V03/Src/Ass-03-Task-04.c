@@ -96,7 +96,9 @@ void Ass_03_Task_04(void const* argument) {
 				avg += ADC_Value[begin] * YSIZE / 4096;
 				//safe_printf("ADC_Value[begin] %d, avg %d, state %d\n", ADC_Value[begin], avg, semaphore_state);// * YSIZE / 4096, avg);
 			}
-
+			//safe_printf("Avg %d, state %d\n", avg, semaphore_state);// * YSIZE / 4096, avg);
+			static int count = 0;
+			//safe_printf("Count %d\n", count++);
 			    // Store the average in the buffer
 //			    Increment_Win_Ptr();
 				win_ptr++;
@@ -113,36 +115,39 @@ void Ass_03_Task_04(void const* argument) {
 //			            Max_Win = Window_buffer[i];
 //			        }
 //			    }
+			    last_xpos = 0;
+			    last_ypos = 0;
 			    osMutexWait(myMutex01Handle, osWaitForever);
 			    for(int i = 0; i < 250; i++){
-					BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-					BSP_LCD_DrawVLine(XOFF + win_ptr, YOFF, YSIZE);
-					BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-					ypos = Window_buffer[win_ptr];
-					BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + win_ptr, YOFF + ypos);
-
-
-
-				   last_xpos = win_ptr;
-				   last_ypos = ypos;
-				   win_ptr++;
+			    	win_ptr++;
 					if (win_ptr >= 250) {
 						win_ptr = 0;
 					}
+					BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+					BSP_LCD_DrawVLine(XOFF + i, YOFF, YSIZE);
+					BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+					ypos = Window_buffer[win_ptr];
+					BSP_LCD_DrawLine(XOFF + last_xpos, YOFF + last_ypos, XOFF + i, YOFF + ypos);
+
+
+
+				   last_xpos = i;
+				   last_ypos = ypos;
+
 			    }
 			    osMutexRelease(myMutex01Handle);
 
-			    safe_printf("x1 %d, y1 %d, x2 %d, y2 %d\n",last_xpos, last_ypos, win_ptr, ypos)
+			    //safe_printf("x1 %d, y1 %d, x2 %d, y2 %d\n",last_xpos, last_ypos, win_ptr, ypos)
 
 
 			    begin += Bin_len;
-			    safe_printf("Begin %d\n", begin);
+			    //safe_printf("Begin %d Samples\n", begin);
 			    if (begin >= Samples / Get_Zoom_Coeff_w()) {
 			        begin = 0;
-			        safe_printf("Reset Begin ----->\n");
+			        //safe_printf("1000 Samples\n");
 			    }
 
-			    //osDelay(100);
+			    osDelay(100);
 //			    // Draw Dot
 //			    int scale     = 1;//? ? ;
 //			    int win_ptr_s = win_ptr;

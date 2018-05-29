@@ -17,7 +17,7 @@ void window_init() {
     window.bg_colour   = LCD_COLOR_WHITE;
     window.line_colour = LCD_COLOR_BLACK;
     window.grid_colour = LCD_COLOR_GRAY;
-    window.zoom_coeff  = 10;   // Number between 1 and MAX_ZOOM
+    window.zoom_coeff  = 40;   // Number between 1 and MAX_ZOOM
     window.buflen      = 40;  // Number of input values that are mapped to the window buffer
 
     window.auto_scale = 1023;  // Holds the maximum value that the window buffer has on the screen
