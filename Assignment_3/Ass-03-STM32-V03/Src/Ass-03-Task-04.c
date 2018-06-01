@@ -86,7 +86,7 @@ void Ass_03_Task_04(void const* argument) {
                     }
 
                     // Add up all of the average values
-                    avg += ADC_Value[begin] * YSIZE / 4096;
+                    avg += ADC_Value[i] * YSIZE / 4096;
                 }
 
                 win_ptr++;
