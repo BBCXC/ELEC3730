@@ -55,14 +55,15 @@ void Ass_03_Task_03(void const* argument) {
                 if (pressed_count == 0) {
                     pressed_count = ON_COUNT;
 
-//                    // A button was pressed, highlight the cell of the button
-//                    if (button_highlight == 0) {
-//                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
-//                        if (LCD_Cell_Highlight(button_highlight, touch_pos) != 0) {
-//                            printf("%sERROR:%s Could not highlight cell\n", ERROR_M, DEFAULT_COLOUR_M);
-//                        }
-//                        button_highlight = 1;
-//                    }
+                    //                    // A button was pressed, highlight the cell of the button
+                    //                    if (button_highlight == 0) {
+                    //                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
+                    //                        if (LCD_Cell_Highlight(button_highlight, touch_pos) != 0) {
+                    //                            printf("%sERROR:%s Could not highlight cell\n", ERROR_M,
+                    //                            DEFAULT_COLOUR_M);
+                    //                        }
+                    //                        button_highlight = 1;
+                    //                    }
                 }
             }
             else {
@@ -74,15 +75,17 @@ void Ass_03_Task_03(void const* argument) {
             if (pressed_count > 0) {
                 pressed_count--;
                 if (pressed_count == 0) {
-//                    if (button_highlight == 1) {
-//                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
-//                        if (LCD_Cell_Highlight(button_highlight, touch_pos) != 0) {
-//                            printf("%sERROR:%s Could not highlight cell\n", ERROR_M, DEFAULT_COLOUR_M);
-//                        }
-//                        button_highlight = 0;
-//                        if (Get_System() == 1)
-//                            printf("%sSYSTEM_INFO:%s Cleared Highlight Now\n", SYS_M, DEFAULT_COLOUR_M);
-//                    }
+                    //                    if (button_highlight == 1) {
+                    //                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
+                    //                        if (LCD_Cell_Highlight(button_highlight, touch_pos) != 0) {
+                    //                            printf("%sERROR:%s Could not highlight cell\n", ERROR_M,
+                    //                            DEFAULT_COLOUR_M);
+                    //                        }
+                    //                        button_highlight = 0;
+                    //                        if (Get_System() == 1)
+                    //                            printf("%sSYSTEM_INFO:%s Cleared Highlight Now\n", SYS_M,
+                    //                            DEFAULT_COLOUR_M);
+                    //                    }
                     // Debounced: queue key pressed message
                     pressed_num++;
                     safe_printf("Task 3: %d (sent %3d,%3d)\n", pressed_num, display.x, display.y);
