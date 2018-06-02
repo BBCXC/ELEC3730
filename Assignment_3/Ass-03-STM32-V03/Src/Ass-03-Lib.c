@@ -17,6 +17,7 @@ const command_s Command_list[] = {
     {"cp",      &cp_function,      "cp <source> <destination>",	"Copy from source to destination"},
     {"rm",      &rm_function,      "rm <path/dirname>",			"Delete folder"},
     {"expr",    &expr_function,    "expr <formula>",			"Solve formula entered"},
+	{"cat",     &cat_function,     "cat <path/dirname>",	    "Read file"},
     {"debug",   &debug_function,   "debug <on|off>",            "Display debug messages"},
     {"system",  &system_function,  "system <on|off>",           "Display system messages"},
     {"clear",   &clear_function,   "reset",                     "Clear terminal screen"},

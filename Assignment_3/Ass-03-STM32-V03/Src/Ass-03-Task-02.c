@@ -96,6 +96,7 @@ void Ass_03_Task_02(void const* argument) {
                     if (Save_New() != 0) {
                         safe_printf("%sERROR:%s Save_New function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
+
                 }
                 else if (strcmp(button_pressed, OVERWRITE_BUTTON) == 0) {
                     safe_printf("Button pressed OVERWRITE_BUTTON\n");
@@ -148,6 +149,10 @@ int Save_New() {
         safe_printf("%sDEBUG INFO:%s Entered Save_New()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
+    int temp_buf[250] = {24};
+    if(Write_CSV(0, &temp_buf, 250) != 0){
+    	safe_printf("%sERROR:%s Clear_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+    }
     return 0;
 }
 int Save_Overwrite() {

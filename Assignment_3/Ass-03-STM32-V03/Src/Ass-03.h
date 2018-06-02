@@ -143,6 +143,7 @@ extern int mkdir_function(char** array_of_words_p[], int word_count, char** path
 extern int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);

@@ -16,7 +16,7 @@
 // *** MAKE UPDATES TO THE CODE AS REQUIRED ***
 //
 
-uint8_t myReadFile();
+uint8_t myReadFile(char*);
 uint8_t myWriteFile();
 
 FIL MyFile;
@@ -117,8 +117,8 @@ void Ass_03_Task_01(void const* argument) {
     }
 }
 
-uint8_t myReadFile() {
-#define READ_FILE "Hello.txt"
+uint8_t myReadFile(char* READ_FILE) {
+//#define READ_FILE "Hello.txt"
 #define BUFF_SIZE 256
     uint8_t rtext[BUFF_SIZE];
     FRESULT res;
@@ -530,6 +530,18 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
     return 0;
 }
 
+int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s CAT function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+
+    if (word_count == 2) {
+    	Read_CSV((*array_of_words_p)[1]);
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+    return 0;
+}
+
 // Change between setting on and off
 int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
@@ -682,3 +694,116 @@ int FileProcess() {
 // TODO
 // Navigate
 // This will take the current directory and give the list of correct files to the other thread
+
+//Write CSV
+int Write_CSV(int save_state, int *data, int data_len){
+	//Do we want to write to a new file or overwrite?
+	//If new
+	FIL fp;
+	char* FILE_NAME = "test1.csv";
+	UINT byteswritten;
+	FRESULT res;
+
+	if(save_state == 0){
+		//Create file pointer
+		//Open file with that name
+		if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+			safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
+			return 1;
+		}
+		safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+	}
+	else{
+		// We must be overwriting a file
+		// Get name of file to overwrite and delete that file
+		// Create file pointer
+		// Open file with that name
+		if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+			safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
+			return 1;
+		}
+		safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+	}
+
+	for(int i = 0; i < data_len; i++){
+		if ((res = f_write(&fp, i, sizeof(int), &byteswritten)) != FR_OK) {
+			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+			f_close(&fp);
+			return 1;
+		}
+		if ((res = f_write(&fp, ",", sizeof(char), &byteswritten)) != FR_OK) {
+			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+			f_close(&fp);
+			return 1;
+		}
+		if ((res = f_write(&fp, data[i], sizeof(int), &byteswritten)) != FR_OK) {
+	        safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+	        f_close(&fp);
+	        return 1;
+	    }
+		if ((res = f_write(&fp, "\n", sizeof(char), &byteswritten)) != FR_OK) {
+			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+			f_close(&fp);
+			return 1;
+		}
+	}
+
+	if ((res = f_close(&fp)) != FR_OK) {
+		safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+		f_close(&fp);
+		return 1;
+	}
+
+	safe_printf("Wrote to file %s\n", FILE_NAME);
+	return 0;
+
+}
+
+
+
+int Read_CSV(char* FILE_NAME) {
+    FRESULT res;
+    uint32_t bytesread;
+    int temp_i = 0;
+    char* temp_s = "";
+    FIL fp;
+
+    // Open file Hello.txt
+    if ((res = f_open(&fp, FILE_NAME, FA_READ)) != FR_OK) {
+        safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
+        return 1;
+    }
+    safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+
+    for(int i = 0; i < 250; i++){
+    		if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+    			f_close(&fp);
+    			return 1;
+    		}
+    		safe_printf("X pos %3d", temp_i);
+    		if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+    			f_close(&fp);
+    			return 1;
+    		}
+    		safe_printf("%s ", temp_s);
+    		if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+    	        safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+    	        f_close(&fp);
+    	        return 1;
+    	    }
+    		safe_printf("Value %d", temp_i);
+    		if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+    			f_close(&fp);
+    			return 1;
+    		}
+    		safe_printf("%s\n", temp_s);
+    	}
+
+    // Close file
+    f_close(&fp);
+
+    return 0;
+}
