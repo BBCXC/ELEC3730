@@ -85,32 +85,32 @@ void Ass_03_Task_01(void const* argument) {
         if (Get_First_Time() == 1) {
             Set_First_Time(0);
             safe_printf("--> Enter text: ");
-            //char* path = Get_Absolute_Path();
-            //safe_printf("%s", path);
+            // char* path = Get_Absolute_Path();
+            // safe_printf("%s", path);
             fflush(stdout);
         }
-        //if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
-        	c = getchar();
-			safe_printf("%c", c); //TODO Should be fflush
-			fflush(stdout);
-	//        c = getchar();
-			HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
-			command_line[i] = c;
-			i++;
-	//        if (fflush(command_line) != 0) {
-	//            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
-	//        }
+        // if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+        c = getchar();
+        safe_printf("%c", c);  // TODO Should be fflush
+        fflush(stdout);
+        //        c = getchar();
+        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+        command_line[i] = c;
+        i++;
+        //        if (fflush(command_line) != 0) {
+        //            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
+        //        }
 
-			// If we get a return character then process the string
-			if (c == '\r' || i > 101) {
-				safe_printf("\n");
-				command_line[i - 1] = '\0';
-				if (StringProcess(&command_line, i) != 0) {
-					safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
-				}
-				i = 0;
-				Set_First_Time(1);
-			}
+        // If we get a return character then process the string
+        if (c == '\r' || i > 101) {
+            safe_printf("\n");
+            command_line[i - 1] = '\0';
+            if (StringProcess(&command_line, i) != 0) {
+                safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+            }
+            i = 0;
+            Set_First_Time(1);
+        }
         //}
         // Get the files within the current folder *.csv
         // Store names in a list
@@ -470,9 +470,9 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
     return 0;
 }
 
-int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
+int mv_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     FRESULT res;
     if (word_count == 3) {
         res = f_rename((*array_of_words_p)[1], (*array_of_words_p)[2]);
@@ -481,12 +481,49 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
             return 1;
         }
     }
-    //TODO this moves the file not copy
+    // TODO this moves the file not copy
     else {
         safe_printf("Too many arguments\n");
     }
     return 0;
 }
+
+
+int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
+
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    FRESULT res;
+    if (word_count == 3) {
+        FIL fsrc, fdst;    /* File objects */
+        BYTE buffer[4096]; /* File copy buffer */
+        FRESULT fr;        /* FatFs function common result code */
+        UINT br, bw;       /* File read/write count */
+
+        /* Open source file on the drive 1 */
+        fr = f_open(&fsrc, (*array_of_words_p)[1], FA_READ);
+        if (fr) return (int) fr;
+
+        /* Create destination file on the drive 0 */
+        fr = f_open(&fdst, (*array_of_words_p)[2], FA_WRITE | FA_CREATE_ALWAYS);
+        if (fr) return (int) fr;
+
+        /* Copy source to destination */
+        for (;;) {
+            fr = f_read(&fsrc, buffer, sizeof buffer, &br); /* Read a chunk of source file */
+            if (fr || br == 0) break;                       /* error or eof */
+            fr = f_write(&fdst, buffer, br, &bw);           /* Write it to the destination file */
+            if (fr || bw < br) break;                       /* error or disk full */
+        }
+
+        /* Close open files */
+        f_close(&fsrc);
+        f_close(&fdst);
+
+        return (int) fr;
+    }
+    return -1;
+}
+
 
 int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
@@ -534,7 +571,27 @@ int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int
     if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s CAT function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
-    	Read_CSV((*array_of_words_p)[1]);
+        Read_CSV((*array_of_words_p)[1]);
+    }
+    else {
+        safe_printf("Too many arguments\n");
+    }
+    return 0;
+}
+
+int record_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
+    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Record function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    Set_State_Thread(3);
+    if (word_count >= 2) {
+        if (word_count == 4) {
+            if (strcmp("delay", (*array_of_words_p)[2]) == 0) {
+                Set_Delay_Time((*array_of_words_p)[3]);
+            }
+        }
+        else {
+            Set_Delay_Time(0);
+        }
+        Set_Record_Time((*array_of_words_p)[1]);
     }
     else {
         safe_printf("Too many arguments\n");
@@ -616,8 +673,7 @@ int help_function(char** array_of_words_p[], int word_count, char** path_p[], in
 
 int FileProcess() {
     if (Get_Debug() == 1) {
-    	safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
-
+        safe_printf("%sDEBUG_INFO:%s FileProcess function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
 
 
@@ -650,7 +706,6 @@ int FileProcess() {
         safe_printf("First file %d found %s\n", Get_File_Num(), fno.fname);
         Set_File_Name(Get_File_Num(), fno.fname);
         Set_File_Num(1);
-
     }
 
     while (res == FR_OK) {
@@ -695,76 +750,74 @@ int FileProcess() {
 // Navigate
 // This will take the current directory and give the list of correct files to the other thread
 
-//Write CSV
-int Write_CSV(int save_state, int *data, int data_len){
-	//Do we want to write to a new file or overwrite?
-	//If new
-	FIL fp;
-	char* FILE_NAME = "test1.csv";
-	UINT byteswritten;
-	FRESULT res;
+// Write CSV
+int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
+    // Do we want to write to a new file or overwrite?
+    // If new
+    FIL fp;
+    // char* FILE_NAME = "test1.csv";
+    UINT byteswritten;
+    FRESULT res;
 
-	if(save_state == 0){
-		//Create file pointer
-		//Open file with that name
-		if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
-			safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
-			return 1;
-		}
-		safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
-	}
-	else{
-		// We must be overwriting a file
-		// Get name of file to overwrite and delete that file
-		// Create file pointer
-		// Open file with that name
-		if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
-			safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
-			return 1;
-		}
-		safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
-	}
+    if (save_state == 0) {
+        // Create file pointer
+        // Open file with that name
+        if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+            safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
+            return 1;
+        }
+        safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+    }
+    else {
+        // We must be overwriting a file
+        // Get name of file to overwrite and delete that file
+        // Create file pointer
+        // Open file with that name
+        if ((res = f_open(&fp, FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
+            safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
+            return 1;
+        }
+        safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+    }
 
-	for(int i = 0; i < data_len; i++){
-		if ((res = f_write(&fp, i, sizeof(int), &byteswritten)) != FR_OK) {
-			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-			f_close(&fp);
-			return 1;
-		}
-		if ((res = f_write(&fp, ",", sizeof(char), &byteswritten)) != FR_OK) {
-			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-			f_close(&fp);
-			return 1;
-		}
-		if ((res = f_write(&fp, data[i], sizeof(int), &byteswritten)) != FR_OK) {
-	        safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-	        f_close(&fp);
-	        return 1;
-	    }
-		if ((res = f_write(&fp, "\n", sizeof(char), &byteswritten)) != FR_OK) {
-			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-			f_close(&fp);
-			return 1;
-		}
-	}
+    for (int i = 0; i < data_len; i++) {
+        if ((res = f_write(&fp, i, sizeof(int), &byteswritten)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        if ((res = f_write(&fp, ",", sizeof(char), &byteswritten)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        if ((res = f_write(&fp, data[i], sizeof(int), &byteswritten)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        if ((res = f_write(&fp, "\n", sizeof(char), &byteswritten)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+    }
 
-	if ((res = f_close(&fp)) != FR_OK) {
-		safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-		f_close(&fp);
-		return 1;
-	}
+    if ((res = f_close(&fp)) != FR_OK) {
+        safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+        f_close(&fp);
+        return 1;
+    }
 
-	safe_printf("Wrote to file %s\n", FILE_NAME);
-	return 0;
-
+    safe_printf("Wrote to file %s\n", FILE_NAME);
+    return 0;
 }
-
 
 
 int Read_CSV(char* FILE_NAME) {
     FRESULT res;
     uint32_t bytesread;
-    int temp_i = 0;
+    int temp_i   = 0;
     char* temp_s = "";
     FIL fp;
 
@@ -775,32 +828,36 @@ int Read_CSV(char* FILE_NAME) {
     }
     safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
 
-    for(int i = 0; i < 250; i++){
-    		if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
-    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-    			f_close(&fp);
-    			return 1;
-    		}
-    		safe_printf("X pos %3d", temp_i);
-    		if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
-    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-    			f_close(&fp);
-    			return 1;
-    		}
-    		safe_printf("%s ", temp_s);
-    		if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
-    	        safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-    	        f_close(&fp);
-    	        return 1;
-    	    }
-    		safe_printf("Value %d", temp_i);
-    		if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
-    			safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
-    			f_close(&fp);
-    			return 1;
-    		}
-    		safe_printf("%s\n", temp_s);
-    	}
+    for (int i = 0; i < 250; i++) {
+        if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        safe_printf("X pos %3d", temp_i);
+        if (br == 0) break;
+        if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        safe_printf("%s ", temp_s);
+        if (br == 0) break;
+        if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        safe_printf("Value %d", temp_i);
+        if (br == 0) break;
+        if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+            safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
+            f_close(&fp);
+            return 1;
+        }
+        safe_printf("%s\n", temp_s);
+        if (br == 0) break;
+    }
 
     // Close file
     f_close(&fp);

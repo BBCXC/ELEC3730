@@ -58,6 +58,7 @@ void Ass_03_Task_02(void const* argument) {
                 }
                 else if (strcmp(button_pressed, SAVE_BUTTON) == 0) {
                     safe_printf("Button pressed SAVE_BUTTON\n");
+                    Set_State_Thread(0);
                     // TODO Call save function - popup window
                     if (Save_Popup() != 0) {
                         safe_printf("%sERROR:%s Save_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
@@ -96,7 +97,6 @@ void Ass_03_Task_02(void const* argument) {
                     if (Save_New() != 0) {
                         safe_printf("%sERROR:%s Save_New function failed\n", ERROR_M, DEFAULT_COLOUR_M);
                     }
-
                 }
                 else if (strcmp(button_pressed, OVERWRITE_BUTTON) == 0) {
                     safe_printf("Button pressed OVERWRITE_BUTTON\n");
@@ -142,6 +142,9 @@ int Load_File() {
         safe_printf("%sDEBUG INFO:%s Entered Load_File()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
+    if (Read_CSV(FILE_NAME) != 0) {
+        safe_printf("%sERROR:%s Read CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+    }
     return 0;
 }
 int Save_New() {
@@ -150,8 +153,8 @@ int Save_New() {
     }
     safe_printf("Unimplemented\n");
     int temp_buf[250] = {24};
-    if(Write_CSV(0, &temp_buf, 250) != 0){
-    	safe_printf("%sERROR:%s Clear_Popup function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+    if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
+        safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     return 0;
 }
@@ -160,6 +163,10 @@ int Save_Overwrite() {
         safe_printf("%sDEBUG INFO:%s Entered Save_Overwrite()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
+    int temp_buf[250] = {24};
+    if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
+        safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
+    }
     return 0;
 }
 int Clear_Popup() {

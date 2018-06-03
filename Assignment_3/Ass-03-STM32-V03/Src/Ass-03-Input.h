@@ -10,23 +10,6 @@
 #include "Ass-03.h"
 
 typedef struct {
-    int width;        //       = 250;
-    int height;       //     = 142;
-    int position[4];  // = {x_min, x_max, y_min, y_max};
-
-    int bg_colour;
-    int line_colour;
-    int grid_colour;
-
-    int zoom_coeff;  // = 1;  // Number between 1 and MAX_ZOOM
-    int buflen;      // Number of input values that are mapped to the
-                     // window buffer
-
-    int auto_scale;  // =  // Holds the maximum value that the window buffer has on the
-                     // screen
-
-    int next;  // = 0;  // Holds the position in the window buffer array
-               // that is the latest filled
 
 } input_t;
 input_t input;

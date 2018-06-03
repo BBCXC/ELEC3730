@@ -46,6 +46,11 @@ void Ass_03_Task_04(void const* argument) {
     int prev_bpm    = 0;
     int last_bpm    = 0;
 
+    int recording    = 0;
+    int record_steps = 0;
+    int record_time  = 0;
+
+
     uint16_t ADC_Value[1000];
 
     osSignalWait(1, osWaitForever);
@@ -164,6 +169,24 @@ void Ass_03_Task_04(void const* argument) {
         //        }
 
         else if (Current_State == 1) {
+            if (recording == 1) {
+                if (record_delay > 0) {
+                    record_delay--;
+                }
+                else if (record_steps > record_time) {
+                    Set_State_Thread(0);
+                    data_len = 250;
+                    data_ptr = win_ptr;
+                    data     = Window_buffer;
+                    // TODO
+                    Write_CSV(FILE_NAME, save_state, data, data_len);
+                    recording = 0;
+                }
+                if (record_delay == 0) {
+                    record_steps++;
+                }
+            }
+
             Previous_State = 1;
             // Wait for first half of buffer
             int first = 1;
@@ -299,6 +322,17 @@ void Ass_03_Task_04(void const* argument) {
             else {
                 osDelay(100);
             }
+        }
+        else if (Current_State == 3) {
+            // We must be recording
+            // Set the record variable
+            record_time = Get_Record_Time();
+            // Set the delay time
+            record_delay = Get_Record_Delay();
+            // State recording
+            recording = 1;
+
+            Set_State_Thread(1);
         }
         else {
             safe_printf("Current State is %d\n", Current_State);
