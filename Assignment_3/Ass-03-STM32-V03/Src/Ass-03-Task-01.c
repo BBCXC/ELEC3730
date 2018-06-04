@@ -585,13 +585,23 @@ int record_function(char** array_of_words_p[], int word_count, char** path_p[], 
     if (word_count >= 2) {
         if (word_count == 4) {
             if (strcmp("delay", (*array_of_words_p)[2]) == 0) {
-                Set_Delay_Time((*array_of_words_p)[3]);
+            	int value_1;
+				if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
+				   printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+				   return 1;
+			   }
+                Set_Delay_Time(value_1);
             }
         }
         else {
             Set_Delay_Time(0);
         }
-        Set_Record_Time((*array_of_words_p)[1]);
+        int value_1;
+        if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
+		   printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+		   return 1;
+	   }
+        Set_Record_Time(value_1);
     }
     else {
         safe_printf("Too many arguments\n");

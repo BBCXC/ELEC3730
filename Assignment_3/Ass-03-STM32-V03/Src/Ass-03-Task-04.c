@@ -29,7 +29,7 @@ void Ass_03_Task_04(void const* argument) {
     int Current_State  = 0;
     int Previous_State = 0;
 
-    int Get_Zoom_Coeff_w = 2;
+    static int Get_Zoom_Coeff_w = 10;
     int zoom             = 500;
     int max              = 142;
     int scale            = 1;
@@ -172,9 +172,11 @@ void Ass_03_Task_04(void const* argument) {
         else if (Current_State == 1) {
             if (recording == 1) {
                 if (record_delay > 0) {
-                    record_delay--;
+                	safe_printf("Recording in %d\n", record_delay);
+                	record_delay--;
                 }
-                else if (record_steps > record_time) {
+                else if (record_steps > record_time * 1000 / zoom) {
+                	safe_printf("Recording complete\n");
                     Set_State_Thread(0);
                     int data_len = 250;
                     int data[250];
@@ -189,11 +191,16 @@ void Ass_03_Task_04(void const* argument) {
                     // TODO
                     int save_state = 0;
                     char* FILE_NAME = "test.csv";
+                    safe_printf("Writing recorded data\n");
                     Write_CSV(FILE_NAME, save_state, data, data_len);
                     recording = 0;
                 }
+                else{
+                	safe_printf("Recording delay %d\n", record_delay);
+                }
                 if (record_delay == 0) {
                     record_steps++;
+                    safe_printf("Record steps %d of %d\n", record_steps, record_time * 1000 / zoom);
                 }
             }
 
@@ -340,6 +347,8 @@ void Ass_03_Task_04(void const* argument) {
             // Set the delay time
             record_delay = Get_Record_Delay();
             // State recording
+            safe_printf("You want to record??\n");
+            Get_Zoom_Coeff_w = record_time;
             recording = 1;
 
             Set_State_Thread(1);

@@ -161,6 +161,8 @@ int Save_New() {
     if (Write_CSV(FILE_NAME, 0, temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
+    Set_Popup_Status(0);
+       Task_4_Init();
     return 0;
 }
 int Save_Overwrite() {
@@ -173,6 +175,8 @@ int Save_Overwrite() {
     if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
+    Set_Popup_Status(0);
+       Task_4_Init();
     return 0;
 }
 int Clear_Popup() {
