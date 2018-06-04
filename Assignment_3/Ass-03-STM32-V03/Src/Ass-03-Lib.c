@@ -10,21 +10,22 @@
 
 // clang-format off
 const command_s Command_list[] = {
-    {"analog",  &analog_function,  "analog <time>",				"Time interval on pulse monitor"},
-    {"ls",      &ls_function,      "ls <path>",					"List the contents of the current folder"},
-    {"cd",      &cd_function,      "cd <path>",					"Change directory"},
-    {"mkdir",   &mkdir_function,   "mkdir <path/dirname>",		"Make directory"},
-    {"mv",      &mv_function,      "mv <source> <destination>",	"Move from source to destination"},
-    {"cp",      &cp_function,      "cp <source> <destination>", "Copy from source to destination"},
-    {"rm",      &rm_function,      "rm <path/dirname>",			"Delete folder"},
-    {"expr",    &expr_function,    "expr <formula>",			"Solve formula entered"},
-	{"cat",     &cat_function,     "cat <path/dirname>",	    "Read file"},
-    {"debug",   &debug_function,   "debug <on|off>",            "Display debug messages"},
-    {"system",  &system_function,  "system <on|off>",           "Display system messages"},
-    {"clear",   &clear_function,   "reset",                     "Clear terminal screen"},
-    {"reset",   &reset_function,   "clear",                     "Reset terminal scrollback"},
-    {"help",    &help_function,    "help <command>",            "Display help messages"},
-    {NULL,      NULL,              NULL,                        NULL}};
+    {"analog",  &analog_function,  "analog <time>",				  "Time interval on pulse monitor"},
+    {"ls",      &ls_function,      "ls <path>",					  "List the contents of the current folder"},
+    {"cd",      &cd_function,      "cd <path>",					  "Change directory"},
+    {"mkdir",   &mkdir_function,   "mkdir <path/dirname>",		  "Make directory"},
+    {"mv",      &mv_function,      "mv <source> <destination>",	  "Move from source to destination"},
+    {"cp",      &cp_function,      "cp <source> <destination>",   "Copy from source to destination"},
+    {"rm",      &rm_function,      "rm <path/dirname>",			  "Delete folder"},
+    {"expr",    &expr_function,    "expr <formula>",			  "Solve formula entered"},
+	{"cat",     &cat_function,     "cat <path/dirname>",	      "Read file"},
+	{"record",  &record_function,  "record <time>, delay <time>", "Records file"},
+    {"debug",   &debug_function,   "debug <on|off>",              "Display debug messages"},
+    {"system",  &system_function,  "system <on|off>",             "Display system messages"},
+    {"clear",   &clear_function,   "reset",                       "Clear terminal screen"},
+    {"reset",   &reset_function,   "clear",                       "Reset terminal scrollback"},
+    {"help",    &help_function,    "help <command>",              "Display help messages"},
+    {NULL,      NULL,              NULL,                          NULL}};
 
 // clang-format on
 

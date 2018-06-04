@@ -4,8 +4,8 @@
 void debug_init() {
     osMutexWait(debug_Handle, osWaitForever);
     info.State_Thread = 1;
-    info.debug        = 1;
-    info.system       = 1;
+    info.debug        = 0;
+    info.system       = 0;
     info.first_time   = 1;
     info.analog       = 10;
     osMutexRelease(debug_Handle);
@@ -27,7 +27,7 @@ void Set_State_Thread(int Value) {
 int Get_Debug(void) {
     osMutexWait(debug_Handle, osWaitForever);
     int temp = info.debug;
-    safe_printf("Getting debug -> %d\n", info.debug);
+    //safe_printf("Getting debug -> %d\n", info.debug);
     osMutexRelease(debug_Handle);
     return (temp);
 }

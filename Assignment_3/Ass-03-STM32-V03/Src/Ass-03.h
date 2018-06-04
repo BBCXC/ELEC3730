@@ -82,6 +82,7 @@ extern osMutexId button_Handle;     // Protect button struct
 extern osMutexId popup_Handle;      // Protect popup struct
 extern osMutexId debug_Handle;      // Protect debug struct
 extern osMutexId file_Handle;       // Protect file struct
+extern osMutexId input_Handle;       // Protect input struct
 
 #define KNRM "\e[0m"
 #define KRED "\e[31m"  //"\x1B[31m"
@@ -145,6 +146,7 @@ extern int cp_function(char** array_of_words_p[], int word_count, char** path_p[
 extern int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
+extern int record_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);
 extern int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count);

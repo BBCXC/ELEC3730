@@ -49,6 +49,7 @@ void Ass_03_Task_04(void const* argument) {
     int recording    = 0;
     int record_steps = 0;
     int record_time  = 0;
+    int record_delay = 0;
 
 
     uint16_t ADC_Value[1000];
@@ -175,10 +176,19 @@ void Ass_03_Task_04(void const* argument) {
                 }
                 else if (record_steps > record_time) {
                     Set_State_Thread(0);
-                    data_len = 250;
-                    data_ptr = win_ptr;
-                    data     = Window_buffer;
+                    int data_len = 250;
+                    int data[250];
+                    for(int i=0; i<data_len; i++){
+                    	data[i] = Window_buffer[win_ptr];
+                    	win_ptr++;
+                    	if(win_ptr >= 250){
+                    		win_ptr = 0;
+                    	}
+                    }
+
                     // TODO
+                    int save_state = 0;
+                    char* FILE_NAME = "test.csv";
                     Write_CSV(FILE_NAME, save_state, data, data_len);
                     recording = 0;
                 }

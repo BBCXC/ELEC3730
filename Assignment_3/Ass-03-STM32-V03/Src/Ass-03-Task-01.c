@@ -781,7 +781,8 @@ int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
     }
 
     for (int i = 0; i < data_len; i++) {
-        if ((res = f_write(&fp, i, sizeof(int), &byteswritten)) != FR_OK) {
+    	safe_printf("Writing '%d'", i);
+        if ((res = f_write(&fp, &i, sizeof(int), &byteswritten)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
@@ -791,7 +792,8 @@ int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
             f_close(&fp);
             return 1;
         }
-        if ((res = f_write(&fp, data[i], sizeof(int), &byteswritten)) != FR_OK) {
+        safe_printf(", '%d'\n", data[i]);
+        if ((res = f_write(&fp, &data[i], sizeof(int), &byteswritten)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
@@ -829,34 +831,34 @@ int Read_CSV(char* FILE_NAME) {
     safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
 
     for (int i = 0; i < 250; i++) {
-        if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+        if ((res = f_read(&fp, &temp_i, sizeof(int), &bytesread)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
         }
         safe_printf("X pos %3d", temp_i);
-        if (br == 0) break;
-        if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+        if (bytesread == 0) break;
+        if ((res = f_read(&fp, &temp_s, sizeof(char), &bytesread)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
         }
         safe_printf("%s ", temp_s);
-        if (br == 0) break;
-        if ((res = f_read(&fp, temp_i, sizeof(int), &bytesread)) != FR_OK) {
+        if (bytesread == 0) break;
+        if ((res = f_read(&fp, &temp_i, sizeof(int), &bytesread)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
         }
         safe_printf("Value %d", temp_i);
-        if (br == 0) break;
-        if ((res = f_read(&fp, temp_s, sizeof(char), &bytesread)) != FR_OK) {
+        if (bytesread == 0) break;
+        if ((res = f_read(&fp, &temp_s, sizeof(char), &bytesread)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
             return 1;
         }
         safe_printf("%s\n", temp_s);
-        if (br == 0) break;
+        if (bytesread == 0) break;
     }
 
     // Close file

@@ -138,6 +138,7 @@ int Save_Popup() {
     return 0;
 }
 int Load_File() {
+	char* FILE_NAME = "test.csv";
     if (Get_Debug() == 1) {
         safe_printf("%sDEBUG INFO:%s Entered Load_File()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
@@ -148,22 +149,27 @@ int Load_File() {
     return 0;
 }
 int Save_New() {
+	char* FILE_NAME = "test.csv";
+	int temp_buf[250];
+	for(int i = 0; i<250; i++){
+		temp_buf[i] = sin(i/10);
+	}
     if (Get_Debug() == 1) {
         safe_printf("%sDEBUG INFO:%s Entered Save_New()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
-    int temp_buf[250] = {24};
-    if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
+    if (Write_CSV(FILE_NAME, 0, temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     return 0;
 }
 int Save_Overwrite() {
+	char* FILE_NAME = "test.csv";
+	int temp_buf[250] = {24};
     if (Get_Debug() == 1) {
         safe_printf("%sDEBUG INFO:%s Entered Save_Overwrite()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
-    int temp_buf[250] = {24};
     if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }

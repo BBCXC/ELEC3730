@@ -14,6 +14,17 @@ typedef struct {
 } input_t;
 input_t input;
 
+typedef struct {
+	int record_time;
+	int delay_time;
+}record_t;
+record_t record;
+
 extern void inputInit();
+extern int Get_Record_Time();
+extern int Get_Record_Delay();
+extern void Set_Delay_Time(int Value);
+extern void Set_Record_Time(int Value);
+
 
 #endif /* ASS_03_INPUT_H_ */
