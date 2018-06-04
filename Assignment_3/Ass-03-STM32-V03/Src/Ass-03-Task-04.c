@@ -29,7 +29,7 @@ void Ass_03_Task_04(void const* argument) {
     int Current_State  = 0;
     int Previous_State = 0;
 
-    static int Get_Zoom_Coeff_w = 10;
+//    static int Get_Zoom_Coeff_w() = 10;
     int zoom             = 500;
     int max              = 142;
     int scale            = 1;
@@ -80,12 +80,13 @@ void Ass_03_Task_04(void const* argument) {
             osDelay(100);
             // safe_printf("Stopped at position %d\n", last_xpos);
         }
+
         //        else if (Current_State == 1) {
         //        	// Wait for first half of buffer
         //        	    int first = 1;
         //
         //        	    // If these change maybe i should reprint it all
-        //        	    int Samples = Get_Zoom_Coeff_w * 1000;  // (1 to 10) * 1000hz
+        //        	    int Samples = Get_Zoom_Coeff_w() * 1000;  // (1 to 10) * 1000hz
         //        	    int Bin_len = Samples / Buf_len;
         //
         ////        	    while (begin < 1000) {
@@ -207,7 +208,7 @@ void Ass_03_Task_04(void const* argument) {
             Previous_State = 1;
             // Wait for first half of buffer
             int first = 1;
-            zoom      = 50 * Get_Zoom_Coeff_w;
+            zoom      = 50 * Get_Zoom_Coeff_w();
             osSemaphoreWait(myBinarySem05Handle, osWaitForever);
             for (i = 0; i < 1000; i = i + zoom) {
                 osMutexWait(myMutex01Handle, osWaitForever);
@@ -295,7 +296,7 @@ void Ass_03_Task_04(void const* argument) {
                 prev_bpm    = 0;
                 bpm_samples = 0;
 
-                safe_printf("BPM is %d\n", (int) (bpm_avg * 60 / Get_Zoom_Coeff_w));
+                //TODO This should print safe_printf("BPM is %d\n", (int) (bpm_avg * 60 / Get_Zoom_Coeff_w()));
             }
 
             if (last_xpos >= XSIZE - 1) {
@@ -348,7 +349,7 @@ void Ass_03_Task_04(void const* argument) {
             record_delay = Get_Record_Delay();
             // State recording
             safe_printf("You want to record??\n");
-            Get_Zoom_Coeff_w = record_time;
+            Set_Zoom_Coeff_w(record_time);
             recording = 1;
 
             Set_State_Thread(1);

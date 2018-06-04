@@ -74,14 +74,24 @@ void Ass_03_Task_02(void const* argument) {
                 else if (strcmp(button_pressed, ZOOM_IN_BUTTON) == 0) {
                     safe_printf("Button pressed ZOOM_IN_BUTTON\n");
                     // TODO increment zoom_coeff
+                    if(Get_Zoom_Coeff_w() > 1){
+						Set_Zoom_Coeff_w(Get_Zoom_Coeff_w() - 1);
+						safe_printf("Zoom set to %d\n", Get_Zoom_Coeff_w());
+					}
                 }
                 else if (strcmp(button_pressed, ZOOM_OUT_BUTTON) == 0) {
                     safe_printf("Button pressed ZOOM_OUT_BUTTON\n");
                     // TODO decrement zoom_coeff
+                    if(Get_Zoom_Coeff_w() < 10){
+                    	Set_Zoom_Coeff_w(Get_Zoom_Coeff_w() + 1);
+                    	safe_printf("Zoom set to %d\n", Get_Zoom_Coeff_w());
+                    }
                 }
                 else if (strcmp(button_pressed, RESET_BUTTON) == 0) {
                     safe_printf("Button pressed RESET_BUTTON\n");
                     // TODO Reset zoom_coeff to default
+                    Set_Zoom_Coeff_w(10);
+					safe_printf("Zoom set to %d\n", Get_Zoom_Coeff_w());
                 }
                 else if (strcmp(button_pressed, UP_BUTTON) == 0) {
                     safe_printf("Button pressed UP_BUTTON\n");
@@ -158,7 +168,7 @@ int Save_New() {
         safe_printf("%sDEBUG INFO:%s Entered Save_New()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
-    if (Write_CSV(FILE_NAME, 0, temp_buf, 250) != 0) {
+    if (Write_CSV(&FILE_NAME, 0, temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     Set_Popup_Status(0);
@@ -167,12 +177,12 @@ int Save_New() {
 }
 int Save_Overwrite() {
 	char* FILE_NAME = "test.csv";
-	int temp_buf[250] = {24};
+	int temp_buf[250] = {0};
     if (Get_Debug() == 1) {
         safe_printf("%sDEBUG INFO:%s Entered Save_Overwrite()\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     safe_printf("Unimplemented\n");
-    if (Write_CSV(FILE_NAME, 0, &temp_buf, 250) != 0) {
+    if (Write_CSV(&FILE_NAME, 0, &temp_buf, 250) != 0) {
         safe_printf("%sERROR:%s Write CSV function failed\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     Set_Popup_Status(0);

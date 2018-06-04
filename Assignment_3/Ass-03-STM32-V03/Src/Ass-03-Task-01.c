@@ -228,14 +228,16 @@ int StringProcess(char* command_line, int i) {
 
     if (1) {
         for (int i = 0; i < word_count; i++) {
-            printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
+            if(Get_Debug() == 1){
+            	safe_printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
+            }
         }
     }
     int mode = -1;
     mode     = command_parser(&array_of_words_p, word_count, &path_p, &path_count);
 
     if (mode == -1) {
-        printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
+    	safe_printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
         return -1;
     }
     return 0;
@@ -274,14 +276,14 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
     // Allocate enough memory to store a pointer to each word
     *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
     if (array_of_words_p == 0) {  // If malloc fails returns NULL ptr
-        printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+    	safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
                DEFAULT_COLOUR_M);  // Log
         return -1;                 // Return Failed
     }
     // Set pointer to first word
     char* word_array = (char*) calloc((characters + num_words), sizeof(char));
     if (word_array == 0) {  // If malloc fails returns NULL ptr
-        printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+    	safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
                DEFAULT_COLOUR_M);  // Log
         free(*array_of_words_p);
         return -1;  // Return Failed
@@ -335,11 +337,11 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
 
 int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
-            printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+        	safe_printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
         else {
@@ -355,7 +357,9 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1){
+    	safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
 
     FRESULT res;
     DIR dir;
@@ -429,7 +433,7 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 }
 
 int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s cd function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s cd function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
@@ -451,7 +455,7 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 }
 
 int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mkdir function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s mkdir function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
 
@@ -472,7 +476,7 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
 
 int mv_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     FRESULT res;
     if (word_count == 3) {
         res = f_rename((*array_of_words_p)[1], (*array_of_words_p)[2]);
@@ -491,7 +495,7 @@ int mv_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
 int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     FRESULT res;
     if (word_count == 3) {
         FIL fsrc, fdst;    /* File objects */
@@ -526,7 +530,7 @@ int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
 
 int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s rm function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s rm function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     FRESULT res;
     if (word_count > 1) {
@@ -553,7 +557,7 @@ char* Get_Absolute_Path() {
 }
 
 int expr_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         Set_Formula((*array_of_words_p)[1]);
@@ -568,7 +572,7 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
 }
 
 int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s CAT function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s CAT function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         Read_CSV((*array_of_words_p)[1]);
@@ -580,7 +584,7 @@ int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int
 }
 
 int record_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Record function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Record function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     Set_State_Thread(3);
     if (word_count >= 2) {
         if (word_count == 4) {
@@ -611,41 +615,43 @@ int record_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 // Change between setting on and off
 int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) {
+    	safe_printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
             Set_Debug(1);
-            printf("Debug ON\n");
+            safe_printf("Debug ON\n");
         }
         else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
             Set_Debug(0);
-            printf("Debug OFF\n");
+            safe_printf("Debug OFF\n");
         }
         else {
-            printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
+        	safe_printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
     }
     else {
-        printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
+    	safe_printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
     }
     return 0;
 }
 
 // Change between setting on and off
 int system_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Entered System Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
             Set_System(1);
-            printf("%sSYSTEM_INFO:%s System ON\n", SYS_M, DEFAULT_COLOUR_M);
+            safe_printf("%sSYSTEM_INFO:%s System ON\n", SYS_M, DEFAULT_COLOUR_M);
         }
         else if (strcmp("off", (*array_of_words_p)[1]) == 0) {
             Set_System(0);
-            printf("%sSYSTEM_INFO:%s System OFF\n", SYS_M, DEFAULT_COLOUR_M);
+            safe_printf("%sSYSTEM_INFO:%s System OFF\n", SYS_M, DEFAULT_COLOUR_M);
         }
         else {
-            printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+        	safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
     }
@@ -660,23 +666,23 @@ int system_function(char** array_of_words_p[], int word_count, char** path_p[], 
 
 // Clear function, clear terminal screen
 int clear_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
-    printf(CLEAR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    safe_printf(CLEAR_M);
     return 0;
 }
 
 // Reset function, reset terminal scrollback
 int reset_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
-    printf(RESET_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    safe_printf(RESET_M);
     return 0;
 }
 
 // Help function, display help messages
 int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (help_parser(array_of_words_p, word_count) != 0) {
-        printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
+    	safe_printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     return 0;
 }
@@ -707,7 +713,7 @@ int FileProcess() {
         return 0;
     }
 
-    res = f_findfirst(&dir, &fno, Save_dir, "*.txt");
+    res = f_findfirst(&dir, &fno, Save_dir, "*.csv");
     if (res != FR_OK) {
         safe_printf("%sERROR:%s Unknown system command f_findfirst %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
         return 1;
@@ -728,10 +734,13 @@ int FileProcess() {
         if (strcmp(fno.fname, empty_fno) == 0) {
             break;
         }
-
         Set_File_Name(Get_File_Num(), fno.fname);
         Set_File_Num(Get_File_Num() + 1);
         safe_printf("Next file %d found %s\n", Get_File_Num(), fno.fname);
+
+        char* test;
+        Get_File_Name(&test, Get_File_Num() - 1);
+        safe_printf("This is in test %s\n", test);
     }
 
     Prev_dir = Save_dir;

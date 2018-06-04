@@ -57,6 +57,7 @@ int Get_Analog(void) {
 void Set_Analog(int Value) {
     osMutexWait(debug_Handle, osWaitForever);
     info.analog = Value;
+    Set_Zoom_Coeff_w(Value);
     osMutexRelease(debug_Handle);
 }
 
