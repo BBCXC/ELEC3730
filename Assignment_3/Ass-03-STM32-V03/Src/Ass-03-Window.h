@@ -14,9 +14,9 @@
 #define MIN_ZOOM 1
 
 typedef struct {
-    int width;        //       = 250;
-    int height;       //     = 142;
-    int position[4];  // = {x_min, x_max, y_min, y_max};
+    int width;        // 250;
+    int height;       // 142;
+    int position[4];  // {x_min, x_max, y_min, y_max};
 
     int bg_colour;
     int line_colour;
@@ -34,8 +34,6 @@ typedef struct {
 
 } window_t;
 window_t window;
-
-//int Window_buffer[250][2];
 
 extern void window_init();
 extern int Get_Window_Width();

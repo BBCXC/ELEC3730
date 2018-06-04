@@ -6,13 +6,13 @@ void window_init() {
     osMutexWait(windowbuf_Handle, osWaitForever);
     window.zoom_coeff = 10;
     window.buflen     = Max_Samples / window.zoom_coeff / window.width;
-    window.width      = 250;  // TODO Calculate
-    window.height     = 142;  // TODO Calculate
+    window.width      = 250;
+    window.height     = 142;
 
-    window.position[0] = 68;                                  // TODO Calculate
-    window.position[1] = window.position[0] + window.width;   // TODO Calculate
-    window.position[2] = 2;                                   // TODO Calculate
-    window.position[3] = window.position[2] + window.height;  // TODO Calculate
+    window.position[0] = 68;
+    window.position[1] = window.position[0] + window.width;
+    window.position[2] = 2;
+    window.position[3] = window.position[2] + window.height;
 
     window.bg_colour   = LCD_COLOR_WHITE;
     window.line_colour = LCD_COLOR_BLACK;

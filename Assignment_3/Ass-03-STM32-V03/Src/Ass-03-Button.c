@@ -6,13 +6,13 @@ void button_init() {
     BSP_LCD_SetFont(&Font12);
     BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
     if (Populate_Button_Position() == 0) {
-        safe_printf("Initilised Buttons\n");
+        safe_printf("Initilised Button Positions\n");
     }
     if (Draw_Button_list() == 0) {
-        safe_printf("Initilised Buttons\n");
+        safe_printf("Initilised Button List\n");
     }
     if (Draw_Button_boxes() == 0) {
-        safe_printf("Initilised Boxes\n");
+        safe_printf("Initilised Button Boxes\n");
     }
 }
 
@@ -30,15 +30,15 @@ void pbutton_init() {
 
 // clang-format off
 button_s Button_list[] = {
-    {"play",      {0,    66,     0,    60},     &draw_play, "play"},	//&draw_play
-    {"stop",      {0,    66,     60,   120},    &draw_stop, "stop"},	//&draw_stop
+    {"play",      {0,    66,     0,    60},     &draw_play, "play"},
+    {"stop",      {0,    66,     60,   120},    &draw_stop, "stop"},
     {"save",      {0,    66,     120,  180},    &draw_blist_item, "save"},
     {"load",      {0,    66,     180,  240},    &draw_blist_item, "load"},
     {"zoom_in",   {66,   129,    120,  180},    &draw_blist_item, "+"},
     {"zoom_out",  {129,  192,    120,  180},    &draw_blist_item, "-"},
     {"reset",     {192,  255,    120,  180},    &draw_blist_item, "x"},
-    {"up",        {255,  320,    120,  180},    &draw_blist_item, "up"}, //draw_up
-    {"down",      {255,  320,    180,  240},    &draw_blist_item, "down"}, //draw_down
+    {"up",        {255,  320,    120,  180},    &draw_blist_item, "up"},
+    {"down",      {255,  320,    180,  240},    &draw_blist_item, "down"},
     {NULL,        {NULL, NULL,   NULL, NULL},   NULL,             NULL}};
 // clang-format on
 
@@ -51,11 +51,11 @@ button_s Popup_list[] = {
 // clang-format on
 
 int Populate_Button_Position() {
-	int line_width = 2;
-	int display_x = BSP_LCD_GetXSize();
-	int display_y = BSP_LCD_GetYSize();
-	int window_width = Get_Window_Width();
-	int window_height = Get_Window_Height();
+    int line_width    = 2;
+    int display_x     = BSP_LCD_GetXSize();
+    int display_y     = BSP_LCD_GetYSize();
+    int window_width  = Get_Window_Width();
+    int window_height = Get_Window_Height();
     // Play, stop, save, load xpos
     for (int i = 0; i < 4; i++) {
         Button_list[i].position[0] = line_width;
@@ -178,7 +178,6 @@ int Draw_Button_boxes() {
     osMutexWait(button_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Button_list[i].NameString != NULL) {
-        //safe_printf("Initilising button box %s\n", Button_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         BSP_LCD_DrawRect(Button_list[i].position[0],
@@ -197,7 +196,6 @@ int Draw_Popup_list() {
     osMutexWait(popup_Handle, osWaitForever);
     // While we haven't checked the whole list
     while (Popup_list[i].NameString != NULL) {
-        //safe_printf("Initilising button %s\n", Popup_list[i].NameString);
         // If we find the function we want, call it
         // Draws all of the buttons
         if (Popup_list[i].Function_p(i) == 0) {
@@ -237,7 +235,7 @@ int draw_blist_item(int index) {
     int x_cen = ((x_max - x_min) / 2) + x_min;
     int y_cen = ((y_max - y_min) / 2) + y_min;
 
-    //safe_printf("x y pos of %s is %d, %d\n", item, x_cen, y_cen);
+    // safe_printf("x y pos of %s is %d, %d\n", item, x_cen, y_cen);
     osMutexWait(myMutex01Handle, osWaitForever);
     BSP_LCD_DisplayStringAt(x_cen, y_cen, (uint8_t*) item, CENTER_MODE);
     osMutexRelease(myMutex01Handle);
@@ -268,8 +266,8 @@ int draw_play(int index) {
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
 
-    int x_cen = ((x_max - x_min) / 2) + x_min;// - (SYMBOL_SIZE / 2);
-    //safe_printf("x_min %d, x_max %d, x_cen %d\n", x_min, x_max, x_cen);
+    int x_cen = ((x_max - x_min) / 2) + x_min;  // - (SYMBOL_SIZE / 2);
+    // safe_printf("x_min %d, x_max %d, x_cen %d\n", x_min, x_max, x_cen);
     int y_cen = ((y_max - y_min) / 2) + y_min - (SYMBOL_SIZE / 2);
 
     osMutexWait(myMutex01Handle, osWaitForever);
@@ -278,25 +276,25 @@ int draw_play(int index) {
     for (int row = 0; row < SYMBOL_SIZE - 1; row++) {
         BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
         if ((width < SYMBOL_SIZE) && chg_dir == 0) {
-            width+=2;
+            width += 2;
         }
         else {
             chg_dir = 1;
-            width-=2;
+            width -= 2;
         }
-        //safe_printf("Width %d, row %d", width, row);
+        // safe_printf("Width %d, row %d", width, row);
         BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
-        //safe_printf(" Black Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
+        // safe_printf(" Black Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2), y_cen + row, 1);
 
         if (width > 2) {
             BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
-            //safe_printf(" Green Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
+            // safe_printf(" Green Line x %d, y %d, len %d", x_cen - (SYMBOL_SIZE / 2) + 1, y_cen + row, width - 2);
         }
         if (width > 1) {
             BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
             BSP_LCD_DrawHLine(x_cen - (SYMBOL_SIZE / 2) + 1 + width - 1, y_cen + row, 1);
-            //safe_printf(" Black Line x %d, y %d, len %d", width + 1, y_cen + row, 1);
+            // safe_printf(" Black Line x %d, y %d, len %d", width + 1, y_cen + row, 1);
         }
         safe_printf("\n");
     }
@@ -311,7 +309,7 @@ int draw_stop(int index) {
     int y_min = Button_list[index].position[2];
     int y_max = Button_list[index].position[3];
 
-    int x_cen = ((x_max - x_min) / 2) + x_min;// - (SYMBOL_SIZE / 2);
+    int x_cen = ((x_max - x_min) / 2) + x_min;  // - (SYMBOL_SIZE / 2);
     int y_cen = ((y_max - y_min) / 2) + y_min - (SYMBOL_SIZE / 2);
 
     osMutexWait(myMutex01Handle, osWaitForever);

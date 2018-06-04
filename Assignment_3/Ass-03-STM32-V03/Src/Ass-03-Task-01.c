@@ -16,13 +16,6 @@
 // *** MAKE UPDATES TO THE CODE AS REQUIRED ***
 //
 
-uint8_t myReadFile(char*);
-uint8_t myWriteFile();
-
-FIL MyFile;
-FIL MyFile2, MyFile3;
-FRESULT Status;
-
 void Ass_03_Task_01(void const* argument) {
 
     uint32_t loop = 0;
@@ -35,8 +28,7 @@ void Ass_03_Task_01(void const* argument) {
     safe_printf(CLEAR_M);
     safe_printf(KNRM);
 
-    safe_printf("Hello from Task 1 - Console (serial input)\n");
-    safe_printf("INFO: Initialise LCD and TP first...\n");
+    safe_printf("Task 1 Initialize\n");
 
     // STEPIEN: Initialize and turn on LCD and calibrate the touch panel
     BSP_LCD_Init();
@@ -54,22 +46,12 @@ void Ass_03_Task_01(void const* argument) {
     Equation_Init();
     filew_init();
 
-    safe_printf("All structures initilised\n");
+    safe_printf("Structures initilised\n");
 
     // Signal other tasks to start
     osSignalSet(myTask02Handle, 1);
     osSignalSet(myTask03Handle, 1);
     osSignalSet(myTask04Handle, 1);
-
-    // Display welcome message
-    osMutexWait(myMutex01Handle, osWaitForever);
-    BSP_LCD_Clear(LCD_COLOR_WHITE);
-    BSP_LCD_SetFont(&Font12);
-    // BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-    // BSP_LCD_DisplayStringAt(5, 5, (uint8_t*) "ELEC3730 Assignment 3 (v03 $Rev: 1330 $)", LEFT_MODE);
-    // BSP_LCD_DisplayStringAt(5, 20, (uint8_t*) "This demonstration code can be used", LEFT_MODE);
-    // BSP_LCD_DisplayStringAt(5, 35, (uint8_t*) "as a starting point for the assignment.", LEFT_MODE);
-    osMutexRelease(myMutex01Handle);
 
     // myReadFile();
 
@@ -77,7 +59,7 @@ void Ass_03_Task_01(void const* argument) {
         if (FileProcess() != 0) {
             safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
         }
-        // safe_printf("Here\n");
+
         char c;
         static int i = 0;
         static char command_line[101];
@@ -91,15 +73,12 @@ void Ass_03_Task_01(void const* argument) {
         }
         // if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
         c = getchar();
-        safe_printf("%c", c);  // TODO Should be fflush
+        safe_printf("%c", c);
         fflush(stdout);
-        //        c = getchar();
+
         HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
         command_line[i] = c;
         i++;
-        //        if (fflush(command_line) != 0) {
-        //            safe_printf("%sERROR:%s Flush failed\n", ERROR_M, DEFAULT_COLOUR_M);
-        //        }
 
         // If we get a return character then process the string
         if (c == '\r' || i > 101) {
@@ -112,110 +91,47 @@ void Ass_03_Task_01(void const* argument) {
             Set_First_Time(1);
         }
         //}
-        // Get the files within the current folder *.csv
-        // Store names in a list
     }
 }
 
-uint8_t myReadFile(char* READ_FILE) {
-//#define READ_FILE "Hello.txt"
-#define BUFF_SIZE 256
-    uint8_t rtext[BUFF_SIZE];
-    FRESULT res;
-    uint32_t bytesread;
+// void CommandLineParserProcess(void) {
+//     char c;
+//     static int i = 0;
+//     static char command_line[101];
+//     FRESULT res;
+//     int buf_len = 50;
+//     char Cur_dir[buf_len];
 
-    // Open file Hello.txt
-    if ((res = f_open(&MyFile, READ_FILE, FA_READ)) != FR_OK) {
-        safe_printf("ERROR: Opening '%s'\n", READ_FILE);
-        return 1;
-    }
-    safe_printf("Task 1: Opened file '%s'\n", READ_FILE);
+//     if (Get_First_Time() == 1) {
 
-    // Read data from file
-    if ((res = f_read(&MyFile, rtext, BUFF_SIZE - 1, &bytesread)) != FR_OK) {
-        safe_printf("ERROR: Reading '%s'\n", READ_FILE);
-        f_close(&MyFile);
-        return 1;
-    }
+//         Set_First_Time(0);
 
-    //    TCHAR* buff;
-    //	UINT len = 100;
-    //    res = getcwd(&buff, len);
+//         res = f_getcwd(Cur_dir, buf_len);
+//         if (res != FR_OK) {
+//             safe_printf("%sERROR:%s Function f_getcwd failed %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+//         }
+//         safe_printf("%s\n", Cur_dir);
+//         fflush(stdout);
+//     }
+//     if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
+//         safe_printf("%c", c);
+//         fflush(stdout);
+//         HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
+//         command_line[i] = c;
+//         i++;
 
-    rtext[bytesread] = '\0';
-    safe_printf("Task 1: Read: '%s'\n", rtext);
-
-    // Close file
-    f_close(&MyFile);
-
-    return 0;
-}
-
-uint8_t myWriteFile() {
-#define WRITE_FILE "There.txt"
-    FRESULT res;
-    UINT byteswritten;
-
-    // Open file There.txt
-    if ((res = f_open(&MyFile, WRITE_FILE, FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK) {
-        safe_printf("ERROR: Opening '%s'\n", WRITE_FILE);
-        return 1;
-    }
-    safe_printf("Task 1: Opened file '%s'\n", WRITE_FILE);
-
-    // Write to file
-    if ((res = f_write(&MyFile, "Hello", 6, &byteswritten)) != FR_OK) {
-        safe_printf("ERROR: Writing '%s'\n", WRITE_FILE);
-        f_close(&MyFile);
-        return 1;
-    }
-    safe_printf("Task 1: Written: %d bytes\n", byteswritten);
-
-    // Close file
-    f_close(&MyFile);
-
-
-    return 0;
-}
-
-void CommandLineParserProcess(void) {
-    char c;
-    static int i = 0;
-    static char command_line[101];
-    FRESULT res;
-    int buf_len = 50;
-    char Cur_dir[buf_len];
-
-    if (Get_First_Time() == 1) {
-
-        Set_First_Time(0);
-
-        res = f_getcwd(Cur_dir, buf_len);
-        if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
-        }
-        safe_printf("%s\n", Cur_dir);
-        fflush(stdout);
-    }
-    if (HAL_UART_Receive(&huart2, &c, 1, 0x0) == HAL_OK) {
-        safe_printf("%c", c);  // TODO Should be fflush
-        fflush(stdout);
-        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);  // Toggle LED4
-        command_line[i] = c;
-        i++;
-
-        // If we get a return character then process the string
-        if (c == '\r' || i > 101) {
-            safe_printf("\n");
-            command_line[i - 1] = '\0';
-            if (StringProcess(&command_line, i) != 0) {
-                safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
-            }
-            i = 0;
-            Set_First_Time(1);
-        }
-    }
-}
+//         // If we get a return character then process the string
+//         if (c == '\r' || i > 101) {
+//             safe_printf("\n");
+//             command_line[i - 1] = '\0';
+//             if (StringProcess(&command_line, i) != 0) {
+//                 safe_printf("%sERROR:%s Could not process string\n", ERROR_M, DEFAULT_COLOUR_M);
+//             }
+//             i = 0;
+//             Set_First_Time(1);
+//         }
+//     }
+// }
 
 int StringProcess(char* command_line, int i) {
     static double prev_ans = 0;
@@ -228,8 +144,8 @@ int StringProcess(char* command_line, int i) {
 
     if (1) {
         for (int i = 0; i < word_count; i++) {
-            if(Get_Debug() == 1){
-            	safe_printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
+            if (Get_Debug() == 1) {
+                safe_printf("%sSYSTEM_INFO:%s Word %i: %s\n", SYS_M, DEFAULT_COLOUR_M, i, array_of_words_p[i]);
             }
         }
     }
@@ -237,7 +153,7 @@ int StringProcess(char* command_line, int i) {
     mode     = command_parser(&array_of_words_p, word_count, &path_p, &path_count);
 
     if (mode == -1) {
-    	safe_printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
+        safe_printf("%sERROR:%s Unknown Operation\n", ERROR_M, DEFAULT_COLOUR_M);
         return -1;
     }
     return 0;
@@ -276,15 +192,15 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
     // Allocate enough memory to store a pointer to each word
     *array_of_words_p = (char**) calloc(num_words, sizeof(char*));
     if (array_of_words_p == 0) {  // If malloc fails returns NULL ptr
-    	safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
-               DEFAULT_COLOUR_M);  // Log
-        return -1;                 // Return Failed
+        safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+                    DEFAULT_COLOUR_M);  // Log
+        return -1;                      // Return Failed
     }
     // Set pointer to first word
     char* word_array = (char*) calloc((characters + num_words), sizeof(char));
     if (word_array == 0) {  // If malloc fails returns NULL ptr
-    	safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
-               DEFAULT_COLOUR_M);  // Log
+        safe_printf("%sERROR:%s Memory allocation failed\n", ERROR_M,
+                    DEFAULT_COLOUR_M);  // Log
         free(*array_of_words_p);
         return -1;  // Return Failed
     }
@@ -337,11 +253,12 @@ int string_parser(char* inp, char** array_of_words_p[], char delim) {
 
 int analog_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     int value_1;
-    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
-
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG_INFO:%s Analog function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    }
     if (word_count == 2) {
         if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
-        	safe_printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
         else {
@@ -350,15 +267,15 @@ int analog_function(char** array_of_words_p[], int word_count, char** path_p[], 
         }
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
 
 int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1){
-    	safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) {
+        safe_printf("%sDEBUG_INFO:%s ls function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
 
     FRESULT res;
@@ -379,14 +296,12 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     res = f_getcwd(Save_dir, buf_len);
     if (res != FR_OK) {
-        safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+        safe_printf("%sERROR:%s Function f_getcwd failed %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
         return 1;
     }
-    safe_printf("Current Directory %s\n", Save_dir);
 
     if (word_count > 1) {
         // get current directory and store it, f_getcwd
-        safe_printf("Need to change dir\n");
         chgdir_flag = 1;
 
         res = f_chdir((*array_of_words_p)[1]);
@@ -397,10 +312,9 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
         res = f_getcwd(Cur_dir, buf_len);
         if (res != FR_OK) {
-            safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+            safe_printf("%sERROR:%s Function f_getcwd failed %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
             return 1;
         }
-        safe_printf("Current Directory %s\n", Cur_dir);
     }
     res = f_opendir(&dir, Cur_dir); /* Open the directory */
     while (res == FR_OK) {
@@ -419,7 +333,6 @@ int ls_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
     // Change back to the original directory if there was one
     if (chgdir_flag == 1) {
-        safe_printf("Need to change dir back\n");
         // change directory back
         if (f_chdir(Save_dir) != FR_OK) {
             safe_printf("%sERROR:%s Unknown system command %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
@@ -449,7 +362,7 @@ int cd_function(char** array_of_words_p[], int word_count, char** path_p[], int 
         }
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
@@ -460,7 +373,6 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
     FRESULT res;
 
     if (word_count > 1) {
-        safe_printf("HERE\n");
         safe_printf("Making folder %s\n", (*array_of_words_p)[1]);
         res = f_mkdir((*array_of_words_p)[1]);
         if (res != FR_OK) {
@@ -469,7 +381,7 @@ int mkdir_function(char** array_of_words_p[], int word_count, char** path_p[], i
         }
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
@@ -487,7 +399,7 @@ int mv_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     }
     // TODO this moves the file not copy
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
@@ -495,7 +407,7 @@ int mv_function(char** array_of_words_p[], int word_count, char** path_p[], int 
 
 int cp_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
 
-    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s mv function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s cp function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
     FRESULT res;
     if (word_count == 3) {
         FIL fsrc, fdst;    /* File objects */
@@ -546,6 +458,7 @@ int rm_function(char** array_of_words_p[], int word_count, char** path_p[], int 
     return 0;
 }
 
+// TODO Remove if unused
 char* Get_Absolute_Path() {
     FRESULT fr;
     const int buf_len = 50;
@@ -566,19 +479,19 @@ int expr_function(char** array_of_words_p[], int word_count, char** path_p[], in
         }
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
 
 int cat_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
-    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s CAT function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
+    if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s cat function detected\n", DEBUG_M, DEFAULT_COLOUR_M);
 
     if (word_count == 2) {
         Read_CSV((*array_of_words_p)[1]);
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
@@ -589,11 +502,11 @@ int record_function(char** array_of_words_p[], int word_count, char** path_p[], 
     if (word_count >= 2) {
         if (word_count == 4) {
             if (strcmp("delay", (*array_of_words_p)[2]) == 0) {
-            	int value_1;
-				if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
-				   printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
-				   return 1;
-			   }
+                int value_1;
+                if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
+                    printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+                    return 1;
+                }
                 Set_Delay_Time(value_1);
             }
         }
@@ -602,13 +515,13 @@ int record_function(char** array_of_words_p[], int word_count, char** path_p[], 
         }
         int value_1;
         if (sscanf((*array_of_words_p)[1], "%d", &value_1) != 1) {
-		   printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
-		   return 1;
-	   }
+            printf("%sERROR:%s Found unknown argument\n", ERROR_M, DEFAULT_COLOUR_M);
+            return 1;
+        }
         Set_Record_Time(value_1);
     }
     else {
-        safe_printf("Too many arguments\n");
+        safe_printf("Argument Error\n");
     }
     return 0;
 }
@@ -616,7 +529,7 @@ int record_function(char** array_of_words_p[], int word_count, char** path_p[], 
 // Change between setting on and off
 int debug_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) {
-    	safe_printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
+        safe_printf("%sDEBUG_INFO:%s Entered Debug Mode\n", DEBUG_M, DEFAULT_COLOUR_M);
     }
     if (word_count > 1) {
         if (strcmp("on", (*array_of_words_p)[1]) == 0) {
@@ -628,12 +541,12 @@ int debug_function(char** array_of_words_p[], int word_count, char** path_p[], i
             safe_printf("Debug OFF\n");
         }
         else {
-        	safe_printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown debug command\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
     }
     else {
-    	safe_printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
+        safe_printf("Debug messages currently %s\n", Get_Debug() == 0 ? "OFF" : "ON");
     }
     return 0;
 }
@@ -651,7 +564,7 @@ int system_function(char** array_of_words_p[], int word_count, char** path_p[], 
             safe_printf("%sSYSTEM_INFO:%s System OFF\n", SYS_M, DEFAULT_COLOUR_M);
         }
         else {
-        	safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
+            safe_printf("%sERROR:%s Unknown system command\n", ERROR_M, DEFAULT_COLOUR_M);
             return 1;
         }
     }
@@ -682,7 +595,7 @@ int reset_function(char** array_of_words_p[], int word_count, char** path_p[], i
 int help_function(char** array_of_words_p[], int word_count, char** path_p[], int path_count) {
     if (Get_Debug() == 1) safe_printf("%sDEBUG_INFO:%s Entered HELP function\n", DEBUG_M, DEFAULT_COLOUR_M);
     if (help_parser(array_of_words_p, word_count) != 0) {
-    	safe_printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
+        safe_printf("%sERROR:%s Help Funtion\n", ERROR_M, DEFAULT_COLOUR_M);
     }
     return 0;
 }
@@ -705,7 +618,7 @@ int FileProcess() {
 
     res = f_getcwd(Save_dir, buf_len);
     if (res != FR_OK) {
-        safe_printf("%sERROR:%s Unknown system command f_getcwd %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
+        safe_printf("%sERROR:%s Function f_getcwd failed %d\n", ERROR_M, DEFAULT_COLOUR_M, res);
         return 1;
     }
 
@@ -738,9 +651,11 @@ int FileProcess() {
         Set_File_Num(Get_File_Num() + 1);
         safe_printf("Next file %d found %s\n", Get_File_Num(), fno.fname);
 
+        // TODO Remove test code
         char* test;
         Get_File_Name(&test, Get_File_Num() - 1);
         safe_printf("This is in test %s\n", test);
+        // TODO Remove test code
     }
 
     Prev_dir = Save_dir;
@@ -772,9 +687,8 @@ int FileProcess() {
 // Write CSV
 int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
     // Do we want to write to a new file or overwrite?
-    // If new
+
     FIL fp;
-    // char* FILE_NAME = "test1.csv";
     UINT byteswritten;
     FRESULT res;
 
@@ -785,7 +699,7 @@ int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
             safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
             return 1;
         }
-        safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+        safe_printf("Task 1: Opened New file '%s'\n", FILE_NAME);
     }
     else {
         // We must be overwriting a file
@@ -796,11 +710,11 @@ int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
             safe_printf("ERROR: Opening '%s'\n", FILE_NAME);
             return 1;
         }
-        safe_printf("Task 1: Opened file '%s'\n", FILE_NAME);
+        safe_printf("Task 1: Overwriting file '%s'\n", FILE_NAME);
     }
 
     for (int i = 0; i < data_len; i++) {
-    	safe_printf("Writing '%d'", i);
+        safe_printf("Writing data '%d'", i);
         if ((res = f_write(&fp, &i, sizeof(int), &byteswritten)) != FR_OK) {
             safe_printf("ERROR: Writing '%s'\n", FILE_NAME);
             f_close(&fp);
@@ -830,7 +744,7 @@ int Write_CSV(char* FILE_NAME, int save_state, int* data, int data_len) {
         return 1;
     }
 
-    safe_printf("Wrote to file %s\n", FILE_NAME);
+    safe_printf("Completed writing to file -> %s\n", FILE_NAME);
     return 0;
 }
 

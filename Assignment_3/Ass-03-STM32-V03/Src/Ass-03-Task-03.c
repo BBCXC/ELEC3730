@@ -45,7 +45,7 @@ void Ass_03_Task_03(void const* argument) {
     int touch_pos               = 100;
 
     osSignalWait(1, osWaitForever);
-    safe_printf("Hello from Task 3 - Front Panel (detects touch screen presses)\n");
+    safe_printf("Task 3 Initialize\n");
 
     while (1) {
         if (BSP_TP_GetDisplayPoint(&display) != 0) {
@@ -55,6 +55,7 @@ void Ass_03_Task_03(void const* argument) {
                 if (pressed_count == 0) {
                     pressed_count = ON_COUNT;
 
+                    // TODO Fix
                     //                    // A button was pressed, highlight the cell of the button
                     //                    if (button_highlight == 0) {
                     //                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
@@ -75,6 +76,7 @@ void Ass_03_Task_03(void const* argument) {
             if (pressed_count > 0) {
                 pressed_count--;
                 if (pressed_count == 0) {
+                    // TODO FIX
                     //                    if (button_highlight == 1) {
                     //                        touch_pos = get_touch_pos(display.x, display.y, Get_Popup_Status());
                     //                        if (LCD_Cell_Highlight(button_highlight, touch_pos) != 0) {
